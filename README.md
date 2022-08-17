@@ -1,11 +1,11 @@
 # Gradolator
 
 Technologies used:
-<li>
-  <ul>PostgreSQL</ul>
-  <ul>ExpressJS</ul>
-  <ul>ElectronJS</ul>
-  <ul>ReactJS</ul>
-  <ul>NodeJS</ul>
-  <ul>RestAPI</ul>
-</li>
+<ul>
+  <li>PostgreSQL</li>
+  <li>ExpressJS</li>
+  <li>ElectronJS</li>
+  <li>ReactJS</li>
+  <li>NodeJS</li>
+  <li>RestAPI</li>
+</ul>

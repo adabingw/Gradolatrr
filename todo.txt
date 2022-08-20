@@ -1,0 +1,9 @@
+# frontend
+    - login
+    - home
+    - courses
+    - profile
+
+# backend
+    - get all - course 
+    - update

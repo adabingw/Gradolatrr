@@ -1,0 +1,24 @@
+.logoLogin {
+    width: 100vw;
+    margin-top: 15vh;
+}
+
+.logoLogin:hover {
+    cursor: pointer;
+}
+
+.h3Button {
+    font-size: 1.5vw;
+    margin-top: 15px;
+}
+
+.h3Button:hover {
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.flexColHome {
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+}

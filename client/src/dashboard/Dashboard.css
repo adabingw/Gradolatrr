@@ -1,0 +1,288 @@
+.logoDashboard {
+    width: 50vw;
+    margin-left: 2vw;
+}
+
+.FlexRow {
+    margin-top: 15px;
+    display: flex; 
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.CourseFlexRow {
+    font-size: 20px;
+    letter-spacing: 3px;
+    display: flex; 
+    flex-direction: row; 
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    align-self: center;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    padding-top: 7px; 
+    padding-bottom: 0px; 
+    border: 1px solid black;
+    border-radius: 12px;
+}
+
+.CourseFlexRow-Archive {
+    background-color: aliceblue;
+    font-size: 1.5vw;
+    letter-spacing: 3px;
+    display: flex; 
+    flex-direction: row; 
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    align-self: center;
+    margin-left: 10vw;
+    margin-right: 10vw;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    padding-top: 7px; 
+    padding-bottom: 0px; 
+    border: 1px solid black;
+    border-radius: 12px;
+}
+
+.courseMark {
+    margin-right: 20px;
+}
+
+.edit {
+    font-weight: 900;
+}
+
+.edit:hover {
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.CourseFlexRow2 {
+    display: flex; 
+    flex-direction: row; 
+}
+
+.homeButton {
+    margin-right: 1vw;
+    font-size: 1.5vw;
+}
+
+.homeButton:hover {
+    cursor: pointer;
+}
+
+.profileButton {
+    margin-left: 1vw;
+    font-size: 1.5vw;
+}
+
+.profileButton:hover {
+    cursor: pointer;
+}
+
+.newThing {
+    font-size: 1.5vw;
+    margin-left: 60px;
+    margin-top: 30px;
+}
+
+.newThing:hover {
+    cursor: pointer;
+}
+
+.newUnit {
+    font-size: 1.5vw;
+    margin-left: 60px;
+    margin-top: 10px;
+}
+
+.newUnit:hover {
+    cursor: pointer;
+}
+
+.courses {
+    border-bottom: 1px solid black;
+    margin-left: 10vw;
+    margin-right: 10vw;
+}
+
+.courseElementDiv {
+    display: flex; 
+    flex-direction: row;
+    font-size: 1.5vw;
+    letter-spacing: 3px;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 10vw;
+    margin-right: 10vw;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    padding-top: 0px; 
+    padding-bottom: 0px; 
+}
+
+.unitName {
+    margin-top: -10px;
+    font-style: italic;
+}
+
+.unitName:hover {
+    cursor: pointer;
+}
+
+.weight {
+    font-size: 1.8vw;
+    margin-left: 15px;
+}
+
+.tokenHeader {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid black;
+}
+
+.courseName {
+    font-weight: bold;
+    margin-left: 50px;
+    font-size: 20px !important;
+    margin-bottom: 10px;
+}
+
+.details {
+    margin-left: 10px;
+    font-size: 1.2vw; 
+    letter-spacing: 3px;
+    font-style: italic;
+}
+
+.details:hover {
+    cursor: pointer;
+    font-style: normal;
+}
+
+.elementName {
+
+}
+
+.tagName {
+    border: 1px solid black; 
+    background-color: aliceblue;
+    border-radius: 15px;
+    font-size: 1.2vw;
+    padding-left: 12px;
+    padding-top: 5px;
+    padding-right: 12px;
+    padding-bottom: 5px;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+}
+
+.elementMark {
+
+}
+
+#dropdown-basic {
+    /* background-color: #749672; */
+    background-color: #fffff5;
+    color: #000000;
+    border: 0px;
+    outline: none;
+    box-shadow: inset 20px 20px #ffffff;
+    text-align: left;
+    width: auto;
+}
+
+#dropdownmenu {
+    max-height: 280px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+#dropdown {
+    padding-right: 20px;
+}
+
+.styleModal {
+    background-color: white;
+    width: 60vw;
+    margin-top: 10vh;
+    padding: 10px;
+    padding-left: 30px;
+    margin-left: 20vw;
+    border: 1px solid black;
+    border-radius: 1%;
+}
+  
+.styleModal:active {
+    border: 1px solid black;
+    outline: 0px;
+}
+  
+.styleModal:focus {
+    border: 1px solid black;
+    outline: 0px;
+}
+  
+.styleModal::selection {
+    border: 1px solid black;
+    outline: 0px;
+}
+  
+.styleModal:focus-visible {
+    border: 1px solid black;
+    outline: 0px;
+}
+
+.modalStyle {
+    margin-left: 20px;
+}
+
+.modalLines {
+    font-size: 1.5vw;
+    font-weight: 500;
+    padding-left: 25px; 
+    margin-top: -3px;
+}
+
+.modalRow {
+    display: flex; 
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top:15px;
+}
+
+.modalButtons {
+    margin-right: 30px;
+}
+
+.modalButtons:hover {
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tagLine {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalTitle {
+    font-size: 1.6vw;
+}
+
+.unitSummary {
+    margin-left: 15px;
+}

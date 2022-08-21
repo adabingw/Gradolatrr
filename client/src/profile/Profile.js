@@ -11,8 +11,8 @@ function Profile(props) {
             </div>
             <div>
                 <div className="profileRow">
-                    <h4 className="name">name</h4>
-                    <h4 className="userName">username</h4>
+                    <h4 className="name">{props.name}</h4>
+                    <h4 className="userName">{props.username}</h4>
                 </div>
                 <div className="profileButtons">
                     <h4>change username</h4>

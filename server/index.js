@@ -79,8 +79,30 @@ app.delete("/todos/:id", async (req, res) => {
     }
 });
 
-// get user
+
 // create user
+app.post("/user", async (req, res) => {
+  try {
+    const user = await pool.query(
+      "INSERT INTO user_info (username, name, password) VALUES($1, $2, $3) RETURNING *",
+      [req.body.username, req.body.name, req.body.password]
+    );
+    res.json(user.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// get user
+app.get("/user", async (req, res) => {
+  try {
+    const allUsers = await pool.query("SELECT * FROM user_info");
+    console.log(allUsers)
+    res.json(allUsers.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
 
 // get all grades
 // insert grade (unit/course/assignment)

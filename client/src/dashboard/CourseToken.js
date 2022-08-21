@@ -6,6 +6,7 @@ import Dropdown from "react-bootstrap/Dropdown"
 
 function CourseElement(props) {
     const [unitModal, setUnitModal] = useState(false)
+    const [assignModal, setAssignModal] = useState(false)
 
     // set default value
 
@@ -17,11 +18,24 @@ function CourseElement(props) {
             </div>
             <h4 className="tagName">TAG</h4>
             <h4 className="elementMark">MARK%</h4>
-            <h4 className="edit" onClick={() => setUnitModal(true)}>EDIT</h4>
+            <h4 className="edit" onClick={() => setAssignModal(true)}>EDIT</h4>
             <Modal isOpen={unitModal} className="styleModal">
                 <div>
-                    <h3 className="modalTitle">EDIT ASSIGNMENT</h3>
                     <div className="FlexCol">
+                        <h3 className="modalTitle">UNIT NAME</h3>
+                        <input className="textfield" placeholder="unit name"/>
+                        <input className="textfield" placeholder="unit weight"/>
+                    </div>
+                    <div className="modalRow">
+                        <h4 className="modalButtons">SAVE</h4>
+                        <h4 className="modalButtons" onClick={() => setUnitModal(false)}>CANCEL</h4>
+                    </div>
+                </div>
+            </Modal>
+            <Modal isOpen={assignModal} className="styleModal">
+                <div>
+                    <div className="FlexCol">
+                        <h3 className="modalTitle">EDIT ASSIGNMENT</h3>
                         <input className="textfield" placeholder="assignment name"/>
                         <input className="textfield" placeholder="assignment mark"/>
                         <Dropdown>
@@ -41,7 +55,7 @@ function CourseElement(props) {
                     <div className="modalRow">
                         <h4 className="modalButtons">SAVE</h4>
                         <h4 className="modalButtons">DELETE</h4>
-                        <h4 className="modalButtons" onClick={() => setUnitModal(false)}>CANCEL</h4>
+                        <h4 className="modalButtons" onClick={() => setAssignModal(false)}>CANCEL</h4>
                     </div>
                 </div>
             </Modal>
@@ -53,6 +67,7 @@ function CourseToken(props) {
 
     const [courseModal, setCourseModal] = useState(false)
     const [newUnit, setNewUnit] = useState(false)
+    const [newAssign, setNewAssign] = useState(false)
 
     function setModal(status) {
         setModal(status)
@@ -65,6 +80,7 @@ function CourseToken(props) {
                 <h4 className="details" onClick={()=>setCourseModal(true)} setModal={setModal}>DETAILS</h4>
             </div>
             <h4 className="newUnit" onClick={() => setNewUnit(true)}> + N E W   U N I T</h4>
+            <h4 className="newUnit" onClick={() => setNewAssign(true)}> + N E W   A S S I G N M E N T</h4>
             <CourseElement />
             <Modal isOpen={courseModal} className="styleModal">
                 <div className="modalStyle">
@@ -99,6 +115,33 @@ function CourseToken(props) {
                     <div className="modalRow">
                         <h4 className="modalButtons">SAVE</h4>
                         <h4 className="modalButtons" onClick={() => setNewUnit(false)}>CANCEL</h4>
+                    </div>
+                </div>
+            </Modal>
+            <Modal isOpen={newAssign} className="styleModal">
+                <div>
+                    <div className="FlexCol">
+                        <h3 className="modalTitle">NEW ASSIGNMENT</h3>
+                        <input className="textfield" placeholder="assignment name"/>
+                        <input className="textfield" placeholder="assignment mark"/>
+                        <Dropdown>
+                            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                <span id="dropdown">Select Tag</span>
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu id="dropdownmenu">
+                                <Dropdown.Item className="item">
+                                    Tag
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </div>
+                    <div className="tagLine"><h4 className="tagName">TAG</h4></div>
+                    
+                    <div className="modalRow">
+                        <h4 className="modalButtons">SAVE</h4>
+                        <h4 className="modalButtons">DELETE</h4>
+                        <h4 className="modalButtons" onClick={() => setNewAssign(false)}>CANCEL</h4>
                     </div>
                 </div>
             </Modal>

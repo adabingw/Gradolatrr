@@ -21,7 +21,7 @@ function Dashboard(props) {
         } else if (dive && !profile) {
             return <CourseToken />
         } else if (profile) {
-            return <Profile />
+            return <Profile name={props.name} username={props.username}/>
         }
     }
 

@@ -1,4 +1,4 @@
-![alt text](https://imgur.com/9kWv8Ke)
+![alt text](https://i.imgur.com/9kWv8Ke.png)
 
 Rewritten from my old project <a href="https://github.com/adabingw/CalculatingGrade">CalculatingGrade</a> that uses Java Swing, Java AWT and MySQL.
 

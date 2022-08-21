@@ -1,4 +1,6 @@
-# Gradolator
+<img src="https://imgur.com/a/TMnyacv" />
+
+Rewritten from my old project <a href="https://github.com/adabingw/CalculatingGrade">CalculatingGrade</a> that uses Java Swing, Java AWT and MySQL.
 
 Technologies used:
 <ul>

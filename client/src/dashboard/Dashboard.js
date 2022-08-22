@@ -21,7 +21,8 @@ function Dashboard(props) {
         } else if (dive && !profile) {
             return <CourseToken />
         } else if (profile) {
-            return <Profile name={props.name} username={props.username}/>
+            console.log("profile")
+            return <Profile name={props.name} username={props.username} id={props.id} password={props.password} logout={props.logout}/>
         }
     }
 

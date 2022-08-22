@@ -21,7 +21,7 @@ function Login(props) {
             for (var i = 0; i < Object.keys(jsonRes).length; i++) {
                 if (jsonRes[i].username == username) {
                     if (jsonRes[i].password == password) {
-                        props.authorized(username, jsonRes[i].name)
+                        props.authorized(username, jsonRes[i].name, jsonRes[i].id, jsonRes[i].password)
                     } else {
                         setErr(true)
                         return
@@ -39,7 +39,7 @@ function Login(props) {
         <div className="FlexCol">
             <img src={GRADOLATOR} alt="" className="logoLogin" onClick={() => props.homeClick()}/>
             <input className="textfield" placeholder="username" onChange={(e) => setUser(e.target.value)}/>
-            <input className="textfield" placeholder="password" onChange={(e) => setPassword(e.target.value)} type="passwrd"/>
+            <input className="textfield" placeholder="password" onChange={(e) => setPassword(e.target.value)} type="password"/>
             <h3 className="h3Submit" onClick={(e) => onLogin(e)}>L O G I N</h3>
             <h6 className="path">Don't have an account yet? <span className="re" onClick={() => props.signupClick()}>Signup.</span></h6>
             <Modal isOpen={err} className="styleModal">

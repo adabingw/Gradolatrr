@@ -216,7 +216,13 @@
 
 .styleModal {
     background-color: white;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
     width: 60vw;
+    height: 80vh;
     margin-top: 10vh;
     padding: 10px;
     padding-left: 30px;
@@ -285,4 +291,25 @@
 
 .unitSummary {
     margin-left: 15px;
+}
+
+.textfield_w {
+    margin-left: 10px;
+    outline: none;
+    width: 100px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    border: 0.5px solid black;
+    text-align:center;
+    padding-top: 5px; 
+    padding-bottom: 5px;
+}
+
+.tagDiv {
+    height: 40vh;
+    overflow-y: auto;
+}
+
+.newTag:hover {
+    cursor: pointer;
 }

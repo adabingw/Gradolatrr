@@ -6,6 +6,7 @@ import Modal from "react-modal"
 
 function Signup(props) {
 
+    const [id, setId] = useState()
     const [name, setName] = useState()
     const [username, setUser] = useState()
     const [password, setPassword] = useState()
@@ -37,8 +38,20 @@ function Signup(props) {
                 body: JSON.stringify(body)
                 }
             );
+
+            const res1 = await fetch("http://localhost:5000/user")
+            const jsonRes1 = await res1.json()
+
+            console.log(jsonRes1)
+
+            for (var i = 0; i < Object.keys(jsonRes1).length; i++) {
+                if (jsonRes[i].username == username) {
+                    setId(jsonRes[i].id)
+                }
+            }
+
             console.log(response)
-            props.authorized(username, name)
+            props.authorized(username, name, id, password)
         } catch(err) {
             console.error(err.message)
         }

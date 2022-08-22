@@ -7,9 +7,27 @@ import Dropdown from "react-bootstrap/Dropdown"
 function CourseElement(props) {
     const [unitModal, setUnitModal] = useState(false)
     const [assignModal, setAssignModal] = useState(false)
+    const [editUnit, setEditUnit] = useState(false)
+
+    // get unit info 
+    // get assignment info
+    // get course info
+
+    // update unit
+    // update course
+    // update assignment
+    // update tag
+
+    // insert unit
+    // insert assignment
+    // insert tag
+
+    // delete unit
+    // delete course
+    // delete assignment
+    // delete tag
 
     // set default value
-
     return(
         <div className="courseElementDiv">
             <div>
@@ -23,12 +41,28 @@ function CourseElement(props) {
                 <div>
                     <div className="FlexCol">
                         <h3 className="modalTitle">UNIT NAME</h3>
+                        <h4>UNIT NAME: </h4>
+                        <h4>UNIT WEIGHT: </h4>
+                        <h4>UNIT FINAL: </h4>
+                        <h4>UNIT MARK: </h4>
+                    </div>
+                    <div className="modalRow">
+                        <h4 className="modalButtons" onClick={() => setEditUnit(true)}>EDIT</h4>
+                        <h4 className="modalButtons" onClick={() => setUnitModal(false)}>CANCEL</h4>
+                    </div>
+                </div>
+            </Modal>
+            <Modal isOpen={editUnit} className="styleModal">
+                <div>
+                    <div className="FlexCol">
+                        <h3 className="modalTitle">EDIT UNIT</h3>
                         <input className="textfield" placeholder="unit name"/>
                         <input className="textfield" placeholder="unit weight"/>
+                        <input className="textfield" placeholder="unit final"/>
                     </div>
                     <div className="modalRow">
                         <h4 className="modalButtons">SAVE</h4>
-                        <h4 className="modalButtons" onClick={() => setUnitModal(false)}>CANCEL</h4>
+                        <h4 className="modalButtons" onClick={() =>  {setUnitModal(true); setEditUnit(false)}}>CANCEL</h4>
                     </div>
                 </div>
             </Modal>
@@ -107,10 +141,6 @@ function CourseToken(props) {
                         <h3 className="modalTitle">NEW UNIT</h3>
                         <input className="textfield" placeholder="unit name"/>
                         <input className="textfield" placeholder="unit weight"/>
-                        <div className="tagLine"><h4 className="tagName">TAG</h4> <h4 className="weight">WEIGHT</h4></div>
-                        <div>
-                            <h4>+ N E W T A G</h4>
-                        </div>
                     </div>
                     <div className="modalRow">
                         <h4 className="modalButtons">SAVE</h4>

@@ -142,10 +142,13 @@ app.put("/user_name", async (req, res) => {
 //=================================================================================================================================================
 
 // get courses
-app.get("/grade_course", async (req, res) => {
+app.get("/grade_course/:id/:type", async (req, res) => {
   try {
-    const user_id = req.body.user_id;
-    const type = req.body.type; 
+    console.log("PARAMS: ", req.params)
+    const user_id = req.params.id;
+    console.log("user_id: ", user_id)
+    const type = req.params.type;
+    console.log("type: ", type) 
     if (type == "all") {
         const allTodos = await pool.query("SELECT course_id, course_name, course_mark, course_credits, tag, tag_weights FROM course WHERE user_id = $1", [user_id]);
         res.json(allTodos.rows);
@@ -193,7 +196,7 @@ app.put("/grade_course", async (req, res) => {
 //=================================================================================================================================================
 
 // get units
-app.get("/grade_course", async (req, res) => {
+app.get("/grade_unit", async (req, res) => {
   try {
     const user_id = req.body.user_id;
     const type = req.body.type; 

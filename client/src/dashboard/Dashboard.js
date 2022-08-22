@@ -17,11 +17,10 @@ function Dashboard(props) {
 
     function getTile() {
         if (!dive && !profile) {
-            return <Course editClick={editClick} />
+            return <Course editClick={editClick} id={props.id}/>
         } else if (dive && !profile) {
-            return <CourseToken />
+            return <CourseToken id={props.id}/>
         } else if (profile) {
-            console.log("profile")
             return <Profile name={props.name} username={props.username} id={props.id} password={props.password} logout={props.logout}/>
         }
     }

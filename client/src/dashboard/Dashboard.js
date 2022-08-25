@@ -10,16 +10,23 @@ function Dashboard(props) {
 
     const [dive, setDive] = useState(false)
     const [profile, setProfile] = useState(false)
+    const [courseInfo, setCourseInfo] = useState()
 
-    function editClick() {
+    function editClick(course) {
         setDive(true)
+        setCourseInfo(course)
     }
+
+    useEffect(() => {
+        console.log(courseInfo)
+    }, [courseInfo])
 
     function getTile() {
         if (!dive && !profile) {
             return <Course editClick={editClick} id={props.id}/>
         } else if (dive && !profile) {
-            return <CourseToken id={props.id}/>
+            console.log("courseInfo: ", courseInfo)
+            return <CourseToken id={props.id} course={courseInfo}/>
         } else if (profile) {
             return <Profile name={props.name} username={props.username} id={props.id} password={props.password} logout={props.logout}/>
         }
@@ -30,7 +37,7 @@ function Dashboard(props) {
             <div className="FlexRow">
                 <h4 className="homeButton" onClick={() => {setDive(false); setProfile(false)}}>H O M E</h4>
                 <img src={GRADOLATOR_BANNER} alt="" className="logoDashboard" onClick={() => props.homeClick()}/>
-                <h4 className="profileButton" onClick={() => setProfile(true)}>P R O F I L E</h4>
+                <h4 className="profileButton" onClick={() => {setDive(false); setProfile(true)}}>P R O F I L E</h4>
             </div>
             <div>
                 {getTile()}

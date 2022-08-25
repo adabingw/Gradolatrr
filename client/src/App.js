@@ -72,7 +72,7 @@ function App() {
     } else if (login) {
         return <Login homeClick={homeClick} signupClick={signupClick} authorized={authorized}/>
     } else if (dashboard) {
-        return <Dashboard name={name} username={username} id={id} password={password} logout={logout}/>
+        // return <Dashboard name={name} username={username} id={id} password={password} logout={logout}/>
     } else if (auth) {
         return <Dashboard name={name} username={username} id={id} password={password} logout={logout}/>
     }

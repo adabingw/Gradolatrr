@@ -1,9 +1,18 @@
-# frontend
-    - login
-    - home
-    - courses
-    - profile
+    - edit course 
+        * tag names 
+        * delete
+        * update 
+    - edit unit 
+        * update unit 
+        * delete unit 
+    - edit assign 
+        * update assign 
+        * delete assign
 
-# backend
-    - get all - course 
-    - update
+    - calculations 
+        * after tag change
+        * after assignment change 
+
+    - display units
+
+    - grades analytics

@@ -7,79 +7,6 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-// test post
-app.post("/grade", async (req, res) => {
-    try {
-      console.log(req.body)
-      const { description } = req.body;
-      const newTodo = await pool.query(
-        "INSERT INTO test (description) VALUES($1) RETURNING *",
-        [description]
-      );
-  
-      res.json(newTodo.rows[0]);
-    } catch (err) {
-      console.error(err.message);
-    }
-});
-
-// test get
-app.get("/todos", async (req, res) => {
-    try {
-      const allTodos = await pool.query("SELECT * FROM todo");
-      res.json(allTodos.rows);
-    } catch (err) {
-      console.error(err.message);
-    }
-});
-
-//get a todo
-
-app.get("/todos/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const todo = await pool.query("SELECT * FROM todo WHERE todo_id = $1", [
-        id
-      ]);
-  
-      res.json(todo.rows[0]);
-    } catch (err) {
-      console.error(err.message);
-    }
-});
-  
-  //update a todo
-  
-app.put("/todos/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { description } = req.body;
-      const updateTodo = await pool.query(
-        "UPDATE todo SET description = $1 WHERE todo_id = $2",
-        [description, id]
-      );
-  
-      res.json("Todo was updated!");
-    } catch (err) {
-      console.error(err.message);
-    }
-});
-  
-  //delete a todo
-  
-app.delete("/todos/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const deleteTodo = await pool.query("DELETE FROM todo WHERE todo_id = $1", [
-        id
-      ]);
-      res.json("Todo was deleted!");
-    } catch (err) {
-      console.log(err.message);
-    }
-});
-
-
 // create user
 app.post("/user", async (req, res) => {
   try {
@@ -142,7 +69,7 @@ app.put("/user_name", async (req, res) => {
 //=================================================================================================================================================
 
 // get courses
-app.get("/grade_course/:id/:type", async (req, res) => {
+app.get("/grade_course/:id/:course_id/:type", async (req, res) => {
   try {
     console.log("PARAMS: ", req.params)
     const user_id = req.params.id;
@@ -153,7 +80,7 @@ app.get("/grade_course/:id/:type", async (req, res) => {
         const allTodos = await pool.query("SELECT course_id, course_name, course_mark, course_credits, tag, tag_weights FROM course WHERE user_id = $1", [user_id]);
         res.json(allTodos.rows);
     } else if (type == "one") {
-        const course_id = req.body.course_id;
+        const course_id = req.params.course_id;
         const allTodos = await pool.query("SELECT course_name, course_mark, course_credits, tag, tag_weights FROM course WHERE (user_id = $1 AND course_id = $2)", 
           [user_id, course_id]);
         res.json(allTodos.rows);
@@ -168,49 +95,89 @@ app.post("/grade_course", async (req, res) => {
   try {
     console.log(req.body)
     const course_name = req.body.courseName; 
-    const course_creds = req.body.courseCreds; 
-    const tag = req.body.tag;
-    const tag_weights = req.body.tag_weights;
+    const course_creds = req.body.courseCred; 
+    const tag = req.body.newTagList;
+    const tag_weights = req.body.newTagWList;
     const id = req.body.id;
-    const newTodo = await pool.query(
+    const newCourse = await pool.query(
       "INSERT INTO course (course_name, course_credits, user_id, tag, tag_weights) VALUES($1, $2, $3, $4, $5) RETURNING *",
       [course_name, course_creds, id, tag, tag_weights]
     );
-    res.json(newTodo.rows[0]);
+    res.json(newCourse.rows[0]);
   } catch (err) {
     console.error(err.message);
   }
 });
 
 // update course
-app.put("/grade_course", async (req, res) => {
+app.put("/course_tag", async (req, res) => {
   try {
-    
+    const id = req.body.id;
+    const type = req.body.type;
+    const course_id = req.body.course_id
+    console.log(req.body)
+    if (type = "tag") {
+      const tag = req.body.tag;
+      const weight = req.body.weight
+      const updateTag = await pool.query(
+        "UPDATE course SET tag = $1 WHERE (user_id = $2 AND course_id = $3)",
+        [tag, id, course_id]
+      );
+      const updateWeight = await pool.query(
+        "UPDATE course SET tag_weights = $1 WHERE (user_id = $2 AND course_id = $3)",
+        [weight, id, course_id]
+      );
+    } else if (type = "name") {
+      const course_name = req.body.course_name; 
+      const updateName = await pool.query(
+        "UPDATE course SET course_name = $1 WHERE (user_id = $2 AND course_id = $3)",
+        [course_name, id, course_id]
+      );
+    } else if (type = "credits") {
+      const course_cred = req.body.course_name; 
+      const updateCreds = await pool.query(
+        "UPDATE course SET course_credits = $1 WHERE (user_id = $2 AND course_id = $3)",
+        [course_cred, id, course_id]
+      );
+    }
+    res.json("Course was updated!");
   } catch (err) {
     console.error(err.message);
   }
 });
 
 // delete a course
+app.delete("/grade_course", async (req, res) => {
+  try {
+    const id = req.body.id; 
+    const course_id = req.body.course_id;
+    const deleteCourse = await pool.query("DELETE FROM course WHERE (user_id = $1 AND course_id = $2)", [
+      id, course_id
+    ]);
+    res.json("Course was deleted!");
+  } catch (err) {
+    console.log(err.message);
+  }
+});
 
 //=================================================================================================================================================
 
 // get units
-app.get("/grade_unit", async (req, res) => {
+app.get("/grade_unit/:id/:type/:unit_id/:course_id", async (req, res) => {
   try {
-    const user_id = req.body.user_id;
-    const type = req.body.type; 
+    const user_id = req.params.id;
+    const type = req.params.type; 
     if (type == "all") {
-        const allTodos = await pool.query("SELECT unit_id, course_id, unit_weight, unit_final, unit_mark FROM course WHERE user_id = $1", [user_id]);
-        res.json(allTodos.rows);
-    } else if (type == "one") {
-        const course_id = req.body.course_id;
-        const allTodos = await pool.query("SELECT unit_id, course_id, unit_weight, unit_final, unit_mark FROM course WHERE (user_id = $1 AND course_id = $2)", 
-          [user_id, course_id]);
+        const allTodos = await pool.query("SELECT unit_name, unit_id, course_id, unit_weight, unit_final, unit_mark FROM unit WHERE user_id = $1", [user_id]);
         res.json(allTodos.rows);
     } else if (type == "course") {
-        const unit_id = req.body.unit_id;
-        const allTodos = await pool.query("SELECT unit_id, course_id, unit_weight, unit_final, unit_mark FROM course WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3)", 
+        const course_id = req.params.course_id;
+        const allTodos = await pool.query("SELECT unit_name, unit_id, course_id, unit_weight, unit_final, unit_mark FROM unit WHERE (user_id = $1 AND course_id = $2)", 
+          [user_id, course_id]);
+        res.json(allTodos.rows);
+    } else if (type == "one") {
+        const unit_id = req.params.unit_id;
+        const allTodos = await pool.query("SELECT unit_name, unit_id, course_id, unit_weight, unit_final, unit_mark FROM unit WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3)", 
           [user_id, course_id, unit_id]);
         res.json(allTodos.rows);
     }
@@ -223,13 +190,14 @@ app.get("/grade_unit", async (req, res) => {
 app.post("/grade_unit", async (req, res) => {
   try {
     console.log(req.body)
-    const unit_name = req.body.unitName; 
-    const unit_weight = req.body.unitWeight; 
+    const unit_name = req.body.uName; 
+    const unit_weight = req.body.uW; 
     const id = req.body.id;
     const course_id = req.body.course_id;
+    const course_name = req.body.course_name;
     const newTodo = await pool.query(
-      "INSERT INTO unit (unit_name, unit_weight, course_id, user_id) VALUES($1, $2, $3, $4) RETURNING *",
-      [unit_name, unit_weight, course_id, id]
+      "INSERT INTO unit (unit_name, unit_weight, course_id, user_id, course_name) VALUES($1, $2, $3, $4, $5) RETURNING *",
+      [unit_name, unit_weight, course_id, id, course_name]
     );
     res.json(newTodo.rows[0]);
   } catch (err) {
@@ -238,7 +206,59 @@ app.post("/grade_unit", async (req, res) => {
 });
 
 // update a unit
+app.put("/grade_unit", async (req, res) => {
+  try {
+    const id = req.body.id;
+    const type = req.body.type;
+    const unit_id = req.body.unit_id
+    const tag = req.body.tag;
+    const weight = req.body.weight
+    console.log(req.body)
+    if (type == "name") {
+      const course_name = req.body.course_name
+      const updateName = await pool.query(
+        "UPDATE unit SET unit_name = $1 WHERE (user_id = $2 AND unit_id = $3)",
+        [course_name, id, unit_id]
+      );
+    } else if (type == "weight") {
+      const weight = req.body.course_weight
+      const updateWeight = await pool.query(
+        "UPDATE unit SET unit_weight = $1 WHERE (user_id = $2 AND unit_id = $3)",
+        [weight, id, unit_id]
+      );
+    } else if (type == "final") {
+      const final = req.body.final
+      const updateFinal = await pool.query(
+        "UPDATE unit SET unit_final = $1 WHERE (user_id = $2 AND unit_id = $3)",
+        [final, id, unit_id]
+      );
+    } else if (type == "mark") {
+      // not accessible to be changed by user
+      const mark = req.body.final
+      const updateMark = await pool.query(
+        "UPDATE unit SET unit_mark = $1 WHERE (user_id = $2 AND unit_id = $3)",
+        [mark, id, unit_id]
+      );
+    }
+    res.json("Unit was updated!");
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // delete a unit
+app.delete("/grade_unit", async (req, res) => {
+  try {
+    const id = req.body.id; 
+    const unit_id = req.body.unit_id;
+    const deleteUnit = await pool.query("DELETE FROM unit WHERE (user_id = $1 AND unit_id = $2)", [
+      id, unit_id
+    ]);
+    res.json("Unit was deleted!");
+  } catch (err) {
+    console.log(err.message);
+  }
+});
 
 //=================================================================================================================================================
 
@@ -247,12 +267,17 @@ app.post("/grade_assign", async (req, res) => {
   try {
     console.log(req.body)
     const assign_name = req.body.assignName; 
+    const assign_mark = req.body.assignMark;
+    const tag = req.body.tag;
     const id = req.body.id;
     const course_id = req.body.course_id;
+    const course_name = req.body.course_name;
     const unit_id = req.body.unit_id;
+    const unit_name = req.body.unit_name;
+
     const newTodo = await pool.query(
-      "INSERT INTO assignment (assign_name, course_id, unit_id, user_id) VALUES($1, $2, $3, $4) RETURNING *",
-      [assign_name, course_id, unit_id, id]
+      "INSERT INTO assignment (assign_name, course_id, unit_id, user_id, unit_name, course_name, assign_mark, tag) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+      [assign_name, course_id, unit_id, id, unit_name, course_name, assign_mark, tag]
     );
     res.json(newTodo.rows[0]);
   } catch (err) {
@@ -261,13 +286,135 @@ app.post("/grade_assign", async (req, res) => {
 });
 
 // get assignments
+app.get("/grade_assign/:id/:type/:unit_id/:course_id/:assign_id", async (req, res) => {
+  try {
+    const user_id = req.params.id;
+    const type = req.params.type; 
+    if (type == "all") {
+        console.log("all!")
+        const allAssigns = await pool.query(
+          "SELECT course_id, unit_id, user_id, assign_id, course_name, assign_name, tag, unit_name, assign_mark FROM assignment WHERE user_id = $1", 
+          [user_id]);
+        res.json(allAssigns.rows);
+        console.log(allAssigns.rows)
+    } else if (type == "one") {
+        const course_id = req.params.course_id;
+        const unit_id = req.params.unit_id;
+        const oneAssign = await pool.query(
+          "SELECT  course_id, unit_id, user_id, assign_id, course_name, assign_name, tag, unit_name, assign_mark FROM assignment WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3 and assign_id = $4)", 
+          [user_id, course_id, unit_id, course_id]);
+        res.json(oneAssign.rows);
+    } else if (type == "course") {
+      const course_id = req.params.course_id;
+        const allTodos = await pool.query(
+          "SELECT  course_id, unit_id, user_id, assign_id, course_name, assign_name, tag, unit_name, assign_mark FROM assignment WHERE (user_id = $1 AND course_id = $2)", 
+          [user_id, course_id]);
+        res.json(allTodos.rows);
+    } else if (type == "unit") {
+      const course_id = req.params.course_id;
+      const unit_id = req.params.unit_id;
+      const allTodos = await pool.query(
+        "SELECT  course_id, unit_id, user_id, assign_id, course_name, assign_name, tag, unit_name, assign_mark FROM assignment WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3)", 
+        [user_id, course_id, unit_id]);
+      res.json(allTodos.rows);
+    }
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // update an assignment
+app.put("/grade_assign", async (req, res) => {
+  try {
+    const id = req.body.id;
+    const course_id = req.body.course_id
+    const unit_id = req.body.unit_id 
+    const assign_id = req.body.assign_id 
+    const type = req.body.type
+    const name = req.body.name 
+    const mark = req.body.mark 
+    const tag = req.body.tag;
+    console.log(req.body)
+    if (type == "name") {
+      const updateType = await pool.query(
+        "UPDATE assignment SET assign_name = $1 WHERE (user_id = $2 AND course_id = $3 AND unit_id = $4 AND assign_id = $5)",
+        [name, id, course_id, unit_id, assign_id]
+      );
+    } else if (type == "mark") {
+      const updateMark = await pool.query(
+        "UPDATE assignment SET assign_mark = $1 WHERE (user_id = $2 AND course_id = $3 AND unit_id = $4 AND assign_id = $5)",
+        [mark, id, course_id, unit_id, assign_id]
+      );
+    } else if (type == "tag") {
+      const updateTag = await pool.query(
+        "UPDATE assignment SET tag = $1 WHERE (user_id = $2 AND course_id = $3 AND unit_id = $4 AND assign_id = $5)",
+        [tag, id, course_id, unit_id, assign_id]
+      );
+    }
+    res.json("Assignment was updated!");
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // delete an assignment
+app.delete("/grade_assign", async (req, res) => {
+  try {
+    const id = req.body.id; 
+    const course_id = req.body.course_id;
+    const unit_id = req.body.unit_id 
+    const assign_id = req.body.assign_id 
+    const deleteAssignment = await pool.query("DELETE FROM assignment WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3 AND assign_id = $4)", 
+    [id, course_id, unit_id, assign_id]);
+    res.json("Course was deleted!");
+  } catch (err) {
+    console.log(err.message);
+  }
+});
 
 //=================================================================================================================================================
 
-// insert a tag
+// get tags 
+app.get("/course_tag/:id/:type/:course_id", async (req, res) => {
+  try {
+    const user_id = req.params.id;
+    const type = req.params.type; 
+    if (type == "all") {
+        const allTags = await pool.query("SELECT tags and tagweights FROM course WHERE user_id = $1", [user_id]);
+        res.json(allTodos.rows);
+    } else if (type == "one") {
+        const course_id = req.params.course_id;
+        const oneTag = await pool.query("SELECT tags and tagweights FROM course WHERE (user_id = $1 AND course_id = $2)", 
+          [user_id, course_id]);
+        res.json(allTodos.rows);
+    }
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // update a tag
+app.put("/course_tag", async (req, res) => {
+  try {
+    const id = req.body.id;
+    const course_id = req.body.course_id
+    const tag = req.body.tag;
+    const weight = req.body.weight
+    console.log(req.body)
+    const updateTag = await pool.query(
+      "UPDATE course SET tag = $1 WHERE (user_id = $2 AND course_id = $3)",
+      [tag, id, course_id]
+    );
+    const updateWeight = await pool.query(
+      "UPDATE course SET tag_weights = $1 WHERE (user_id = $2 AND course_id = $3)",
+      [weight, id, course_id]
+    );
+    res.json("Tag was updated!");
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // delete a tag
 
 app.listen(5000, () => {

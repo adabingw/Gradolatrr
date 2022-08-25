@@ -12,8 +12,7 @@ function Signup(props) {
     const [password, setPassword] = useState()
     const [err, setErr] = useState(false)
 
-    const onSignUp = async(e) => {
-        e.preventDefault()
+    const onSignUp = async() => {
         try {
             const body = {name, username, password}
             console.log(body)
@@ -42,11 +41,9 @@ function Signup(props) {
             const res1 = await fetch("http://localhost:5000/user")
             const jsonRes1 = await res1.json()
 
-            console.log(jsonRes1)
-
             for (var i = 0; i < Object.keys(jsonRes1).length; i++) {
-                if (jsonRes[i].username == username) {
-                    setId(jsonRes[i].id)
+                if (jsonRes1[i]["username"] == username) {
+                    setId(jsonRes1[i].id)
                 }
             }
 
@@ -57,13 +54,22 @@ function Signup(props) {
         }
     }
 
+    function keyDown(event) {
+        if(event.key === 'Enter'){
+            onSignUp()
+        }
+    }
+
     return(
         <div className="FlexCol">
             <img src={GRADOLATOR} alt="" className="logoLogin" onClick={() => props.homeClick()}/>
-            <input className="textfield" placeholder="name" onChange={(e) => setName(e.target.value)}/>
-            <input className="textfield" placeholder="username" onChange={(e) => setUser(e.target.value)}/>
-            <input className="textfield" placeholder="password" onChange={(e) => setPassword(e.target.value)} type="password"/>
-            <h3 className="h3Submit" onClick={(e) => onSignUp(e)}>S I G N    U P</h3>
+            <input className="textfield" placeholder="name" 
+                onChange={(e) => setName(e.target.value)} onKeyPress={(e) => keyDown(e)}/>
+            <input className="textfield" placeholder="username" 
+                onChange={(e) => setUser(e.target.value)} onKeyPress={(e) => keyDown(e)}/>
+            <input className="textfield" placeholder="password" onChange={(e) => setPassword(e.target.value)} 
+                type="password" onKeyPress={(e) => keyDown(e)}/>
+            <h3 className="h3Submit" onClick={() => onSignUp()}>S I G N    U P</h3>
             <h6 className="path">Already have an account? <span className="re" onClick={() => props.loginClick()}>Login.</span></h6>
             <Modal isOpen={err} className="styleModal">
                 <div className="modalStyle">

@@ -10,8 +10,7 @@ function Login(props) {
     const [password, setPassword] = useState()
     const [err, setErr] = useState(false)
 
-    const onLogin = async(e) => {
-        e.preventDefault()
+    const onLogin = async() => {
         try {
             const res = await fetch("http://localhost:5000/user")
             const jsonRes = await res.json()
@@ -35,12 +34,18 @@ function Login(props) {
         }
     }
 
+    function keyDown(event) {
+        if(event.key === 'Enter'){
+            onLogin()
+        }
+    }
+
     return(
         <div className="FlexCol">
             <img src={GRADOLATOR} alt="" className="logoLogin" onClick={() => props.homeClick()}/>
-            <input className="textfield" placeholder="username" onChange={(e) => setUser(e.target.value)}/>
-            <input className="textfield" placeholder="password" onChange={(e) => setPassword(e.target.value)} type="password"/>
-            <h3 className="h3Submit" onClick={(e) => onLogin(e)}>L O G I N</h3>
+            <input className="textfield" placeholder="username" onChange={(e) => setUser(e.target.value)} onKeyPress={(e) => keyDown(e)} />
+            <input className="textfield" placeholder="password" onChange={(e) => setPassword(e.target.value)} type="password" onKeyPress={(e) => keyDown(e)} />
+            <h3 className="h3Submit" onClick={() => onLogin()}>L O G I N</h3>
             <h6 className="path">Don't have an account yet? <span className="re" onClick={() => props.signupClick()}>Signup.</span></h6>
             <Modal isOpen={err} className="styleModal">
                 <div className="modalStyle">

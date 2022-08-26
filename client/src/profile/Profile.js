@@ -33,7 +33,6 @@ function Profile(props) {
         type = "name"
         setName(name2)
         try {
-            console.log(props.password)
             const body = { id, type, name2, username, password }
             console.log(body)
 

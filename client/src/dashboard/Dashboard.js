@@ -17,16 +17,15 @@ function Dashboard(props) {
         setCourseInfo(course)
     }
 
-    useEffect(() => {
-        console.log(courseInfo)
-    }, [courseInfo])
+    function exitCourse() {
+        setDive(false)
+    }
 
     function getTile() {
         if (!dive && !profile) {
             return <Course editClick={editClick} id={props.id}/>
         } else if (dive && !profile) {
-            console.log("courseInfo: ", courseInfo)
-            return <CourseToken id={props.id} course={courseInfo}/>
+            return <CourseToken id={props.id} course={courseInfo} exit={exitCourse}/>
         } else if (profile) {
             return <Profile name={props.name} username={props.username} id={props.id} password={props.password} logout={props.logout}/>
         }

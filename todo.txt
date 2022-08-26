@@ -1,18 +1,12 @@
     - edit course 
-        * tag names 
-        * delete
-        * update 
-    - edit unit 
-        * update unit 
-        * delete unit 
-    - edit assign 
-        * update assign 
-        * delete assign
+        * refresh
 
     - calculations 
         * after tag change
         * after assignment change 
 
-    - display units
+    - check input
+    - warning for delete 
+        * warn deleted unit / tag 
 
     - grades analytics

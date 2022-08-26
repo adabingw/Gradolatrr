@@ -136,10 +136,6 @@
     font-style: italic;
 }
 
-.unitName:hover {
-    cursor: pointer;
-}
-
 .weight {
     font-size: 1.8vw;
     margin-left: 15px;
@@ -224,11 +220,13 @@
     width: 60vw;
     height: 85vh;
     margin-top: 10vh;
-    padding: 10px;
+    padding-top: 30px;
+    padding-bottom: 30px;
     padding-left: 30px;
     margin-left: 20vw;
     border: 1px solid black;
     border-radius: 1%;
+    overflow-y: auto;
 }
   
 .styleModal:active {
@@ -253,6 +251,8 @@
 
 .modalStyle {
     margin-left: 20px;
+    padding-top: 20px; 
+    padding-bottom: 20px;
 }
 
 .modalLines {
@@ -308,7 +308,7 @@
 }
 
 .tagDiv {
-    height: 40vh;
+    max-height: 40vh;
     overflow-y: auto;
     padding-right: 10px;
     margin-bottom: 15px;
@@ -333,4 +333,34 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
+}
+
+.tagVal {
+    margin-left: 15px;
+}
+
+.units {
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.unitEdit {
+    margin-left: 15px;
+    font-weight: bold;
+}
+
+.unitEdit:hover {
+    cursor: pointer;
+}
+
+.filterUnit {
+
+}
+
+.filterUnit:hover {
+    font-weight: bold;
+    cursor: pointer;
 }

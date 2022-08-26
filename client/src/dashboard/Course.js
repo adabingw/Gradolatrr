@@ -50,8 +50,7 @@ function Course(props) {
     const [newTagItem, setNewTagItem] = useState()
     const [newTagW, setTagW] = useState()
     const [courseName, setCourseName] = useState() 
-    const [courseCred, setCourseCred] = useState()
-    const [refresh, setRefresh] = useState(true)
+    const [courseCred, setCourseCred] = useState() 
 
     let id = props.id
 
@@ -73,7 +72,6 @@ function Course(props) {
             console.log(response)
             setTagList(["FINAL", "MIDTERM", "QUIZ", "LAB", "ASSIGNMENT", "UNIT FINAL"])
             setTagWList([0, 0, 0, 0, 0, 0])
-            setRefresh(!refresh)
             getCourse()
         } catch(err) {
             console.error(err.message)
@@ -150,9 +148,9 @@ function Course(props) {
                     return <CourseTile editClick={props.editClick} name={course.course_name} mark={course.course_mark} course={course}/>
                 })}
             </div>
-            <div className="archived">
+            {/* <div className="archived">
                 <ArchivedCourseTile editClick={props.editClick}/>
-            </div>
+            </div> */}
             <Modal isOpen={newCourse} className="styleModal">
                 <div className="modalStyle">
                     <div className="FlexCol">
@@ -168,7 +166,6 @@ function Course(props) {
                                             onChange={(e) => {
                                                 let newArr = [...newTagWList]; // copying the old datas array
                                                 newArr[index] = e.target.value; // replace e.target.value with whatever you want to change it to
-                                                console.log(newArr)
                                                 setTagWList(newArr);
                                             }}/>
                                         <h4 className="delete" onClick={(e) => deleteTag(e, tag)}>×</h4>

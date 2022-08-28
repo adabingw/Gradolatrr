@@ -9,9 +9,9 @@ import "bootstrap/dist/js/bootstrap.js";
 function CourseTile(props) {
     let mark;
     if (props.mark == null) {
-        mark = "N/A"
+        mark = 0
     } else {
-        mark = props.mark
+        mark = (props.mark).toFixed(2)
     }
 
     let course = props.course
@@ -20,7 +20,7 @@ function CourseTile(props) {
         <div className="CourseFlexRow">
             <h4>{props.name}</h4>
             <div className="CourseFlexRow2">
-                <h4 className="courseMark">{mark}</h4>
+                <h4 className="courseMark">{mark}%</h4>
                 <h4 className="edit" onClick={() => props.editClick(course)}>EDIT</h4>
             </div>
         </div>
@@ -61,15 +61,11 @@ function Course(props) {
             const body = { id, courseName, courseCred, newTagList, newTagWList }
             console.log(body)
 
-            const response = await fetch(
-                `http://localhost:5000/grade_course`,
-                {
+            const response = await fetch(`http://localhost:5000/grade_course`,{
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(body)
-                }
-            );
-            console.log(response)
+            });
             setTagList(["FINAL", "MIDTERM", "QUIZ", "LAB", "ASSIGNMENT", "UNIT FINAL"])
             setTagWList([0, 0, 0, 0, 0, 0])
             getCourse()
@@ -85,9 +81,6 @@ function Course(props) {
         try {
             const res = await fetch(`http://localhost:5000/grade_course/${id}/${course_id}/${type}`)
             const jsonRes = await res.json()
-
-            console.log(jsonRes)
-            console.log(jsonRes[0])
             setCourseList(jsonRes)
         } catch(err) {
             console.error(err.message)
@@ -122,29 +115,14 @@ function Course(props) {
 
     useEffect(() => {
         getCourse()
-        console.log(courseList)
-        courseList.forEach((course, index) => {
-            console.log(course, index)
-        })
     }, [])
-
-    useEffect(() => {
-        courseList.map((course, index) => {
-            console.log(course, index)
-            console.log("course: ", course.course_name)
-        })
-    }, [courseList])
-
-    useEffect(() => {
-        console.log("newTagList: ", newTagWList)
-    }, [newTagWList])
 
     return(
         <div>
             <h4 className="newThing" onClick={() => setNewCourse(true)}> + N E W   C O U R S E</h4>
             <div className="courses">
-                {/* <CourseTile editClick={props.editClick} name="COURSE NAME" mark="94%"/> */}
                 { courseList.map((course, index) => {
+                    console.log(course)
                     return <CourseTile editClick={props.editClick} name={course.course_name} mark={course.course_mark} course={course}/>
                 })}
             </div>

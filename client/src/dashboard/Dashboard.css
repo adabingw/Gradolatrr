@@ -16,6 +16,7 @@
     letter-spacing: 3px;
     display: flex; 
     flex-direction: row; 
+    width: 80vw;
     justify-content: space-between;
     align-items: center;
     align-content: center;
@@ -101,7 +102,8 @@
 .newUnit {
     font-size: 1.5vw;
     margin-left: 60px;
-    margin-top: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .newUnit:hover {
@@ -118,17 +120,36 @@
     display: flex; 
     flex-direction: row;
     font-size: 1.5vw;
+    width: 80vw;
+    letter-spacing: 3px;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-left: 10vw;
+    margin-right: 10vw;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    padding-top: 0px; 
+    padding-bottom: 5px;
+}
+
+.courseElementDiv2 {
+    display: flex; 
+    flex-direction: row;
+    font-size: 1.5vw;
     letter-spacing: 3px;
     justify-content: space-between;
     align-items: center;
     margin-left: 10vw;
     margin-right: 10vw;
-    margin-bottom: 10px;
-    margin-top: 20px;
     padding-left: 5vw;
     padding-right: 5vw;
     padding-top: 0px; 
-    padding-bottom: 0px; 
+}
+
+.courseElement {
+    padding-bottom: 50px;
 }
 
 .unitName {
@@ -164,7 +185,7 @@
 
 .details:hover {
     cursor: pointer;
-    font-style: normal;
+    font-weight: bold;
 }
 
 .elementName {
@@ -222,7 +243,7 @@
     margin-top: 10vh;
     padding-top: 30px;
     padding-bottom: 30px;
-    padding-left: 30px;
+    /* padding-left: 30px; */
     margin-left: 20vw;
     border: 1px solid black;
     border-radius: 1%;
@@ -363,4 +384,16 @@ input[type=number]::-webkit-outer-spin-button {
 .filterUnit:hover {
     font-weight: bold;
     cursor: pointer;
+}
+
+.unitThing {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.buttonRow {
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    padding-left: 30px;
 }

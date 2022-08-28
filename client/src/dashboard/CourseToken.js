@@ -106,9 +106,7 @@ function CourseToken(props) {
     const [assignList, setAssignList] = useState([])
     const [unitList, setUnitList] = useState([])
     // selected
-    const [assign, setAssign] = useState(0)
     const [filter, setFilter] = useState([{ assign_name: "null", tag: "null", assign_mark: "null" }])
-    const [unit, setUnit] = useState(0)
     // edit assign / new assign
     const [tag, setTag] = useState("Select Tag")
     const [assignName, setAssignName] = useState(0)
@@ -133,6 +131,7 @@ function CourseToken(props) {
 
     function refresh() {
         getCourseAssignments()
+        updateUnitMark()
     }
 
     // get unit info 
@@ -155,6 +154,7 @@ function CourseToken(props) {
             const res = await fetch(`http://localhost:5000/grade_unit/${id}/${type}/${unit_id}/${course_id}`)
             const jsonRes = await res.json()         
             setUnitList(jsonRes)
+            console.log(jsonRes)
         } catch(err) {
             console.error(err.message)
         }
@@ -163,8 +163,8 @@ function CourseToken(props) {
     // get assignments
     const getAllAssignments = async() => {
         let type = "all"
-        let unit_id = unit
-        let assign_id = assign
+        let unit_id = 0
+        let assign_id = 0
         try {
             const res = await fetch(`http://localhost:5000/grade_assign/${id}/${type}/${unit_id}/${course_id}/${assign_id}`)
             const jsonRes = await res.json()
@@ -177,8 +177,8 @@ function CourseToken(props) {
 
     const getCourseAssignments = async() => {
         let type = "course"
-        let unit_id = unit 
-        let assign_id = assign 
+        let unit_id = 0 
+        let assign_id = 0 
         try {
             const res = await fetch(`http://localhost:5000/grade_assign/${id}/${type}/${unit_id}/${course_id}/${assign_id}`)
             const jsonRes = await res.json()
@@ -190,8 +190,7 @@ function CourseToken(props) {
     }
 
     // insert unit
-    const insertUnit = async(e) => {
-        e.preventDefault()
+    const insertUnit = async() => {
         try {
             const body = { id, course_id, uName, uW, course_name }
             const response = await fetch(`http://localhost:5000/grade_unit`, {
@@ -206,8 +205,7 @@ function CourseToken(props) {
     }
 
     // insert assignment
-    const insertAssignment = async(e) => {
-        e.preventDefault()
+    const insertAssignment = async() => {
         let unit_id = assignUnit.unit_id
         let unit_name = assignUnit.unit_name
         try {
@@ -220,6 +218,7 @@ function CourseToken(props) {
             setTag("Select Tag")
             setAssignUnit({unit_name: "Select Unit"})
             getCourseAssignments()
+            await updateUnitMark()
         } catch(err) {
             console.error(err.message)
         }
@@ -279,6 +278,7 @@ function CourseToken(props) {
         }
     }
 
+    // update assignment when unit name changes
     const updateAssignmentUnit = async() => {
         try {
             let type = "unit_name"
@@ -296,7 +296,8 @@ function CourseToken(props) {
     // update course
     const updateCourse = async() => {
         try {
-            const body = { id, course_id, courseName, courseCred, newTagList, newTagWList };
+            let type = "all"
+            const body = { id, course_id, type, courseName, courseCred, newTagList, newTagWList };
             const response = await fetch(`http://localhost:5000/grade_course`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -307,6 +308,27 @@ function CourseToken(props) {
             updateAssignment()
         } catch (err) {
             console.log(err.message)
+        }
+    }
+
+    const courseMark = async() => {
+        if (unitList.length != 0) {
+            let mark = 0;
+            console.log(unitList)
+            for (var i = 0; i < Object.keys(unitList).length; i++) {
+                console.log(unitList[i])
+                console.log(unitList[i].mark_weighted)
+                mark += unitList[i].mark_weighted
+            }
+            console.log(mark)
+            let type = "mark"
+            const body = { id, course_id, type, courseName, mark, courseCred, newTagList, newTagWList };
+            const response = await fetch(`http://localhost:5000/grade_course`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+            getCourse()
         }
     }
 
@@ -325,6 +347,51 @@ function CourseToken(props) {
             getCourseUnit()
         } catch (err) {
             console.log(err.message)
+        }
+    }
+
+    useEffect(() => {
+        getCourseUnit()
+        updateUnitMark()
+    }, [assignList])
+
+    // update Unit
+
+    const updateUnitMark = async() => {
+        let type = "mark"
+        let avg = 0
+        let weightedAvg = 0
+        console.log(assignList)
+        if (assignList.length != 0 && unitList.length != 0) {
+            for (var j = 0; j < Object.keys(unitList).length; j++) {
+                let sum = 0
+                let length = 0
+                for (var i = 0; i < Object.keys(assignList).length; i++) {
+                    if (assignList[i].unit_id == unitList[j].unit_id) {
+                        console.log(assignList[i].assign_name + " in " + assignList[i].unit_name + " of this mark: " + assignList[i].assign_mark)
+                        sum += assignList[i].assign_mark 
+                        length++
+                    }
+                }
+                avg = sum / length || 0
+                weightedAvg = avg * (unitList[j].unit_weight / 100) 
+                console.log(unitList[j].unit_name, avg, weightedAvg)
+                let unit_name = unitList[j].unit_name 
+                let unit_id = unitList[j].unit_id
+                try {
+                    const body = { id, type, course_id, unit_id, unit_name, uW, avg, weightedAvg };
+                    const response = await fetch(`http://localhost:5000/grade_unit`,{
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(body)
+                    });
+                    console.log("RES: ", response)
+                    getCourseUnit()
+                    courseMark()
+                } catch (err) {
+                    console.log(err.message)
+                }
+            }
         }
     }
 
@@ -368,14 +435,7 @@ function CourseToken(props) {
     useEffect(() => {
         getCourseUnit()
         getCourseAssignments()
-        console.log(filter)
-        console.log(typeof filter)
     }, [])
-
-    useEffect(() => {
-        console.log("FILTER") 
-        console.log(filter)
-    }, [filter])
 
     return(
         <div>
@@ -386,32 +446,42 @@ function CourseToken(props) {
             <h4 className="newUnit" onClick={() => setNewUnit(true)}> + N E W   U N I T</h4>
             <div className="units">
                 { unitList.map((unit, index) => {
-                    return <h4> <span className="filterUnit" onClick={() => {
-                                    let list = []
-                                    console.log(unit.unit_id)
-                                    for (var i = 0; i < Object.keys(assignList).length; i++) {
-                                        if (assignList[i].unit_id == unit.unit_id) {
-                                            console.log(unit.unit_id)
-                                            console.log(assignList[i])
-                                            list.push(assignList[i])
-                                        }
-                                    }
-                                    setFilter(list)
-                                    setUnitModal(true)            
-                                }}> 
-                                    {unit.unit_name} 
-                                </span> | {unit.unit_weight}% | {unit.unit_mark} 
-                                <span className="unitEdit" onClick={() => {
-                                    setuId(unit.unit_id) 
-                                    setEditUnit(true)
-                                }}>EDIT</span> 
+                    return <h4> <span className="filterUnit"> 
+                                    <div className="CourseFlexRow">
+                                        <h4>{props.name}</h4>
+                                        <div className="CourseFlexRow2">
+                                            <h4 className="filterUnit" onClick={() => {
+                                                let list = []
+                                                console.log(unit.unit_id)
+                                                for (var i = 0; i < Object.keys(assignList).length; i++) {
+                                                    if (assignList[i].unit_id == unit.unit_id) {
+                                                        console.log(unit.unit_id)
+                                                        console.log(assignList[i])
+                                                        list.push(assignList[i])
+                                                    }
+                                                }
+                                                setFilter(list)
+                                                setUnitModal(true)            
+                                            }}>{unit.unit_name} </h4>
+                                            <h4 className="unitThing">{unit.unit_weight}%</h4>
+                                            <h4 className="courseMark">MARK: <strong>{unit.unit_mark}%</strong></h4>
+                                            <h4 className="edit" onClick={() => {
+                                                setuId(unit.unit_id) 
+                                                setUnitModal(false)
+                                                setEditUnit(true)
+                                            }}>EDIT</h4>
+                                        </div>
+                                    </div>
+                                </span>
                             </h4>
                 })}
             </div>
             <h4 className="newUnit" onClick={() => setNewAssign(true)}> + N E W   A S S I G N M E N T</h4>
-            { assignList.map((assign, index) => {
-                return <CourseElement assign={assign} unit={unitList} tag={tags} id={id} refresh={refresh}/>
-            })}
+            <div className="courseElement">
+                { assignList.map((assign, index) => {
+                    return <CourseElement assign={assign} unit={unitList} tag={tags} id={id} refresh={refresh}/>
+                })}
+            </div>
             <Modal isOpen={courseModal} className="styleModal">
                 <div className="modalStyle">
                     <h3 className="modalTitle">COURSE DETAILS</h3>
@@ -524,17 +594,22 @@ function CourseToken(props) {
             <Modal isOpen={unitModal} className="styleModal">
                 <div>
                     <div className="FlexCol">
-                        <h3 className="modalTitle"> {course_id} </h3>
+                        <h3 className="modalTitle"> {courseName} </h3>
                         { filter.map((item, index) => {
-                            console.log(item)
-                            return <h4> { item.assign_name } | { item.tag } | { item.assign_mark} | {item.course_id} </h4>
+                            return (
+                                <div className="courseElementDiv2">
+                                    <h4 className="unitThing"> { item.assign_name } </h4>
+                                    <h4 className="tagName"> { item.tag } </h4>
+                                    <h4 className="unitThing"> { item.assign_mark}% </h4>
+                                </div>
+                            );
                         })}
-                    </div>
-                    <div className="modalRow">
-                        <h4 className="modalButtons" onClick={() => {
-                                setUnitModal(false); 
-                                setFilter([{assign_name: "", tag: "", assign_mark: ""}])
-                            }}>CLOSE</h4>
+                        <div className="buttonRow">
+                            <h4 className="modalButtons" onClick={() => {
+                                    setUnitModal(false); 
+                                    setFilter([{assign_name: "", tag: "", assign_mark: ""}])
+                                }}>CLOSE</h4>
+                        </div>
                     </div>
                 </div>
             </Modal>
@@ -560,7 +635,7 @@ function CourseToken(props) {
                             </Dropdown.Toggle>
                             <Dropdown.Menu id="dropdownmenu">
                                 { unitList.map((u, index) => {
-                                        return  <Dropdown.Item className="item" onClick={() => setAssignUnit(u)} > {u.unit_name} </Dropdown.Item>
+                                        return  <Dropdown.Item className="item" onClick={() => {setAssignUnit(u);}} > {u.unit_name} </Dropdown.Item>
                                 })}
                             </Dropdown.Menu>
                         </Dropdown>

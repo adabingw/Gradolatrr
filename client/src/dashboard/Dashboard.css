@@ -17,7 +17,7 @@
     display: flex; 
     flex-direction: row; 
     width: 80vw;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     align-content: center;
     align-self: center;
@@ -54,7 +54,13 @@
 }
 
 .courseMark {
-    margin-right: 20px;
+    margin-left: 20px;
+    margin-right: 40vw;
+}
+
+.unitMark {
+    margin-left: 20px;
+    margin-right: 55px;
 }
 
 .edit {
@@ -239,7 +245,7 @@
     display: flex;
     justify-content: center;
     width: 60vw;
-    height: 85vh;
+    max-height: 85vh;
     margin-top: 10vh;
     padding-top: 30px;
     padding-bottom: 30px;

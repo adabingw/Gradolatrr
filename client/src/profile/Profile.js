@@ -25,9 +25,6 @@ function Profile(props) {
     const [openUser, setOpenUser] = useState(false)
     const [openPassword, setOpenPassword] = useState(false)
 
-    const [open, setOpen] = useState(false)
-    const [openText, setOpenText] = useState()
-
     const onNameChange = async(e) => {
         e.preventDefault()
         type = "name"
@@ -65,8 +62,8 @@ function Profile(props) {
 
             for (var i = 0; i < Object.keys(jsonRes).length; i++) {
                 if (jsonRes[i].username == username2) {
-                    setOpenText("Username is taken")
-                    setOpen(true)
+                    alert("Username is taken")
+                    // setOpen(true)
                     return;
                 }
             }
@@ -89,8 +86,8 @@ function Profile(props) {
         e.preventDefault()
         type = "password"
         if (String(newPassword).length < 5) {
-            setOpenText("Password must be longer than 5 characters")
-            setOpen(true)
+            alert("Password must be longer than 5 characters")
+            // setOpen(true)
         } else {
             if (password == pswrd) {
                 try {
@@ -110,8 +107,8 @@ function Profile(props) {
                     console.error(err.message)
                 }
             } else {
-                setOpenText("Old password doesn't match")
-                setOpen(true)
+                alert("Old password doesn't match")
+                // setOpen(true)
             }
         }
     }
@@ -139,7 +136,10 @@ function Profile(props) {
                             <input className="textfield" placeholder="new name" onChange={(event) => setName2(event.target.value)}/>
                         </div>
                         <div className="modalRow">
-                            <h4 className="modalButtons" onClick={(e) => {onNameChange(e); setOpenName(false)}}>SAVE</h4>
+                            <h4 className="modalButtons" onClick={(e) => {
+                                if (name2 == name) { 
+                                    alert("Please enter all fields")
+                                 } else {onNameChange(e); setOpenName(false)}}}>SAVE</h4>
                             <h4 className="modalButtons" onClick={() => setOpenName(false)}>CANCEL</h4>
                         </div>
                     </div>
@@ -151,7 +151,10 @@ function Profile(props) {
                             <input className="textfield" placeholder="new username" onChange={(event) => setUsername2(event.target.value)}/>
                         </div>
                         <div className="modalRow">
-                            <h4 className="modalButtons" onClick={(e) => {onUserChange(e); setOpenUser(false)}}>SAVE</h4>
+                            <h4 className="modalButtons" onClick={(e) => {
+                                if (username2 == username) {
+                                    alert("Please enter all fields")
+                                } else {onUserChange(e); setOpenUser(false)}}}>SAVE</h4>
                             <h4 className="modalButtons" onClick={() => setOpenUser(false)}>CANCEL</h4>
                         </div>
                     </div>
@@ -164,19 +167,11 @@ function Profile(props) {
                             <input className="textfield" type="password" placeholder="new password" onChange={(event) => setNewPassword(event.target.value)}/>
                         </div>
                         <div className="modalRow">
-                            <h4 className="modalButtons" onClick={(e) => {onPasswordChange(e); setOpenPassword(false)}}>SAVE</h4>
+                            <h4 className="modalButtons" onClick={(e) => {
+                                if (newPassword == null) {
+                                    alert("Password is empty")
+                                } else {onPasswordChange(e); setOpenPassword(false)}}}>SAVE</h4>
                             <h4 className="modalButtons" onClick={() => setOpenPassword(false)}>CANCEL</h4>
-                        </div>
-                    </div>
-                </Modal>
-                <Modal isOpen={open} className="styleModal">
-                    <div className="modalStyle">
-                        <div className="FlexCol">
-                            <h3 className="modalTitle">Error</h3>
-                            <h4>{openText}</h4>
-                        </div>
-                        <div className="modalRow">
-                            <h4 className="modalButtons" onClick={() => setOpen(false)}>CLOSE</h4>
                         </div>
                     </div>
                 </Modal>

@@ -8,27 +8,22 @@ function Login(props) {
 
     const [username, setUser] = useState()
     const [password, setPassword] = useState()
-    const [err, setErr] = useState(false)
 
     const onLogin = async() => {
         try {
             const res = await fetch("http://localhost:5000/user")
             const jsonRes = await res.json()
-
-            console.log(jsonRes)
-
             for (var i = 0; i < Object.keys(jsonRes).length; i++) {
                 if (jsonRes[i].username == username) {
                     if (jsonRes[i].password == password) {
                         props.authorized(username, jsonRes[i].name, jsonRes[i].id, jsonRes[i].password)
                     } else {
-                        setErr(true)
+                        alert("Username/password incorrect")
                         return
                     }
                 }
             }
-
-            setErr(true)
+            alert("Username/password incorrect")
         } catch(err) {
             console.error(err.message)
         }
@@ -47,16 +42,6 @@ function Login(props) {
             <input className="textfield" placeholder="password" onChange={(e) => setPassword(e.target.value)} type="password" onKeyPress={(e) => keyDown(e)} />
             <h3 className="h3Submit" onClick={() => onLogin()}>L O G I N</h3>
             <h6 className="path">Don't have an account yet? <span className="re" onClick={() => props.signupClick()}>Signup.</span></h6>
-            <Modal isOpen={err} className="styleModal">
-                <div className="modalStyle">
-                    <div className="FlexCol">
-                        <h4>Username/password incorrect</h4>
-                    </div>
-                    <div className="modalRow">
-                        <h4 className="modalButtons" onClick={() => setErr(false)}>CLOSE</h4>
-                    </div>
-                </div>
-            </Modal>
         </div>
     )
 }

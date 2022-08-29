@@ -252,14 +252,21 @@ app.put("/grade_unit", async (req, res) => {
 });
 
 // delete a unit
-app.delete("/grade_unit/:id/:course_id/:unit_id", async (req, res) => {
+app.delete("/grade_unit/:id/:course_id/:unit_id/:type", async (req, res) => {
   try {
     const id = req.params.id; 
     const course_id = req.params.course_id;
-    const unit_id = req.params.unit_id;
-    const deleteUnit = await pool.query("DELETE FROM unit WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3)", 
-      [id, course_id, unit_id]
-    );
+    const type = req.params.type 
+    if (type == "course") {
+      const deleteUnit = await pool.query("DELETE FROM unit WHERE (user_id = $1 AND course_id = $2)", 
+        [id, course_id]
+      );
+    } else {
+      const unit_id = req.params.unit_id;
+      const deleteUnit = await pool.query("DELETE FROM unit WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3)", 
+        [id, course_id, unit_id]
+      );
+    }
     res.json("Unit was deleted!");
   } catch (err) {
     console.log(err.message);
@@ -376,14 +383,25 @@ app.put("/grade_assign", async (req, res) => {
 });
 
 // delete an assignment
-app.delete("/grade_assign/:id/:course_id/:unit_id/:assign_id", async (req, res) => {
+app.delete("/grade_assign/:id/:course_id/:unit_id/:assign_id/:type", async (req, res) => {
   try {
     const id = req.params.id; 
     const course_id = req.params.course_id;
-    const unit_id = req.params.unit_id 
-    const assign_id = req.params.assign_id 
-    const deleteAssignment = await pool.query("DELETE FROM assignment WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3 AND assign_id = $4)", 
-    [id, course_id, unit_id, assign_id]);
+    const type = req.params.type 
+    if (type == "course") {
+      const deleteAssignment = await pool.query("DELETE FROM assignment WHERE (user_id = $1 AND course_id = $2)", 
+        [id, course_id]);
+    } else if (type == "unit") {
+      const unit_id = req.params.unit_id 
+      console.log(id, course_id, type, unit_id)
+      const deleteAssignment = await pool.query("DELETE FROM assignment WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3)", 
+        [id, course_id, unit_id]);
+    } else {
+      const unit_id = req.params.unit_id 
+      const assign_id = req.params.assign_id 
+      const deleteAssignment = await pool.query("DELETE FROM assignment WHERE (user_id = $1 AND course_id = $2 AND unit_id = $3 AND assign_id = $4)", 
+        [id, course_id, unit_id, assign_id]);
+    }
     res.json("Assignment was deleted!");
   } catch (err) {
     console.log(err.message);

@@ -10,48 +10,25 @@ function Signup(props) {
     const [name, setName] = useState()
     const [username, setUser] = useState()
     const [password, setPassword] = useState()
-    const [err, setErr] = useState(false)
 
     const onSignUp = async() => {
-        try {
-            const body = {name, username, password}
-            console.log(body)
-
-            const res = await fetch("http://localhost:5000/user")
-            const jsonRes = await res.json()
-
-            console.log(jsonRes)
-
-            for (var i = 0; i < Object.keys(jsonRes).length; i++) {
-                if (jsonRes[i].username == username) {
-                    setErr(true)
-                    return;
-                }
+        const body = {name, username, password}
+        const res = await fetch("http://localhost:5000/user")
+        const jsonRes = await res.json()
+        for (var i = 0; i < Object.keys(jsonRes).length; i++) {
+            if (jsonRes[i].username == username) {
+                alert("Username taken.")
+                return;
             }
-
-            const response = await fetch(
-                `http://localhost:5000/user`,
-                {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body)
-                }
-            );
-
-            const res1 = await fetch("http://localhost:5000/user")
-            const jsonRes1 = await res1.json()
-
-            for (var i = 0; i < Object.keys(jsonRes1).length; i++) {
-                if (jsonRes1[i]["username"] == username) {
-                    setId(jsonRes1[i].id)
-                }
-            }
-
-            console.log(response)
-            props.authorized(username, name, id, password)
-        } catch(err) {
-            console.error(err.message)
         }
+        const response = await fetch( `http://localhost:5000/user`, {
+            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        const res1 = await fetch("http://localhost:5000/user")
+        const jsonRes1 = await res1.json()
+        for (var i = 0; i < Object.keys(jsonRes1).length; i++) {
+            if (jsonRes1[i]["username"] == username) { setId(jsonRes1[i].id) }
+        }
+        props.authorized(username, name, id, password)
     }
 
     function keyDown(event) {
@@ -71,16 +48,6 @@ function Signup(props) {
                 type="password" onKeyPress={(e) => keyDown(e)}/>
             <h3 className="h3Submit" onClick={() => onSignUp()}>S I G N    U P</h3>
             <h6 className="path">Already have an account? <span className="re" onClick={() => props.loginClick()}>Login.</span></h6>
-            <Modal isOpen={err} className="styleModal">
-                <div className="modalStyle">
-                    <div className="FlexCol">
-                        <h4>This username is taken :(</h4>
-                    </div>
-                    <div className="modalRow">
-                        <h4 className="modalButtons" onClick={() => setErr(false)}>CLOSE</h4>
-                    </div>
-                </div>
-            </Modal>
         </div>
     )
 }

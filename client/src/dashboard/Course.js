@@ -27,18 +27,6 @@ function CourseTile(props) {
     )
 }
 
-function ArchivedCourseTile(props) {
-    return (
-        <div className="CourseFlexRow-Archive">
-            <h4>COURSE NAME</h4>
-            <div className="CourseFlexRow2">
-                <h4 className="courseMark">MARK%</h4>
-                <h4 className="edit" onClick={() => props.editClick()}>EDIT</h4>
-            </div>
-        </div>
-    )
-}
-
 function Course(props) {
     const [courseList, setCourseList] = useState([])
     // modal
@@ -54,13 +42,28 @@ function Course(props) {
 
     let id = props.id
 
+    function keyDown(event, type) {
+        if(event.key === 'Enter'){
+            // eslint-disable-next-line default-case
+            switch(type) {
+                case "insertCourse": 
+                    insertCourse()
+                    setNewCourse(false); 
+                    setNewTag(false)    
+                    break; 
+                case "insetTag": 
+                    insertTag()
+                    setNewTag(false)
+                    break; 
+            }
+        }
+    }
+
     // insert course
     const insertCourse = async(e) => {
-        e.preventDefault()
         try {
             const body = { id, courseName, courseCred, newTagList, newTagWList }
             console.log(body)
-
             const response = await fetch(`http://localhost:5000/grade_course`,{
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -89,33 +92,27 @@ function Course(props) {
 
     // new tag
     const insertTag = async(e) => {
-        e.preventDefault()
         if (newTagItem == null) {
-            // original list
-            console.log("newTagItem null")
+            alert("Tag name cannot be null")
         } else {
             setTagList(newTagList => [...newTagList, newTagItem])
+            setNewTag(false)
         }
-
-        if (newTagW == null) {
-            // original list
-            console.log("newTagW null")
-        } else {
-            setTagWList(newTagWList => [...newTagWList, newTagW])
-        }
+        // if (newTagW == null) {
+        //     console.log("newTagW null")
+        // } else {
+        //     setTagWList(newTagWList => [...newTagWList, newTagW])
+        // }
     }
 
     // delete tag/:newCourse
-    const deleteTag = async(e, tagName) => {
+    const deleteTag = async(tagName) => {
         let weight = newTagWList[newTagList.indexOf(tagName)]
         setTagList(newTagList.filter(item => item !== tagName))
         setTagWList(newTagWList.filter(w => w != weight))
-        e.preventDefault()
     }
 
-    useEffect(() => {
-        getCourse()
-    }, [])
+    useEffect(() => { getCourse() }, [])
 
     return(
         <div>
@@ -126,40 +123,37 @@ function Course(props) {
                     return <CourseTile editClick={props.editClick} name={course.course_name} mark={course.course_mark} course={course}/>
                 })}
             </div>
-            {/* <div className="archived">
-                <ArchivedCourseTile editClick={props.editClick}/>
-            </div> */}
             <Modal isOpen={newCourse} className="styleModal">
                 <div className="modalStyle">
                     <div className="FlexCol">
                         <h3 className="modalTitle">NEW COURSE</h3>
                         <input className="textfield" placeholder="course name" onChange={(e) => setCourseName(e.target.value)}/>
-                        <input className="textfield" placeholder="course credits" onChange={(e) => setCourseCred(e.target.value)}/>
+                        <input className="textfield" placeholder="course credits" 
+                            onChange={(e) => setCourseCred(e.target.value)} onKeyPress={(e) => keyDown(e, "insertCourse")} />
                         <div className="tagDiv">
-                            { newTagList.map((tag, index) => {
-                                return (
-                                    <div className="tagLine">
-                                        <h4 className="tagName">{tag}</h4> 
-                                        <input type="number" className="textfield_w" placeholder="weight" 
-                                            onChange={(e) => {
-                                                let newArr = [...newTagWList]; // copying the old datas array
-                                                newArr[index] = e.target.value; // replace e.target.value with whatever you want to change it to
-                                                setTagWList(newArr);
-                                            }}/>
-                                        <h4 className="delete" onClick={(e) => deleteTag(e, tag)}>×</h4>
-                                    </div>
-                                )
-                            })}
+                            { newTagList.map((tag, index) => { return (
+                                <div className="tagLine">
+                                    <h4 className="tagName">{tag}</h4> 
+                                    {/* <input type="number" className="textfield_w" placeholder="weight" 
+                                        onChange={(e) => {
+                                            let newArr = [...newTagWList]; // copying the old datas array
+                                            newArr[index] = e.target.value; // replace e.target.value with whatever you want to change it to
+                                            setTagWList(newArr);
+                                        }}/> */}
+                                    <h4 className="delete" onClick={() => deleteTag(tag)}>×</h4>
+                                </div> )})}
                         </div>
                         <div>
                             <h4 className="newTag" onClick={() => setNewTag(true)}>+ N E W T A G</h4>
                         </div>
                     </div>
                     <div className="modalRow">
-                        <h4 className="modalButtons" onClick={(e) => {
-                            insertCourse(e)
-                            setNewCourse(false); 
-                            setNewTag(false)    
+                        <h4 className="modalButtons" onClick={(e) => { 
+                            if (courseName == null || courseCred == null) {
+                                alert("Please enter all fields")
+                            } else {
+                                insertCourse(e); setNewCourse(false); setNewTag(false) 
+                            }
                         }}>SAVE</h4>
                         <h4 className="modalButtons" onClick={() => setNewCourse(false)}>CANCEL</h4>
                     </div>
@@ -169,14 +163,15 @@ function Course(props) {
                 <div className="modalStyle">
                     <div className="FlexCol">
                         <h3 className="modalTitle">NEW TAG</h3>
-                        <input className="textfield" placeholder="tag name" onWheel={(e) => e.target.blur()} onChange={(event) => setNewTagItem(event.target.value)}/>
-                        <input className="textfield" placeholder="tag weight" onWheel={(e) => e.target.blur()}  onChange={(event) => setTagW(event.target.value)}/>
+                        <input className="textfield" placeholder="tag name" 
+                            onWheel={(e) => e.target.blur()} 
+                            onChange={(event) => setNewTagItem(event.target.value)}
+                            onKeyPress={(e) => keyDown(e, "insertTag")}
+                            />
+                        {/* <input className="textfield" placeholder="tag weight" onWheel={(e) => e.target.blur()}  onChange={(event) => setTagW(event.target.value)}/> */}
                     </div>
                     <div className="modalRow">
-                        <h4 className="modalButtons" onClick={(e) => {
-                            insertTag(e)
-                            setNewTag(false)
-                        }}>SAVE</h4>
+                        <h4 className="modalButtons" onClick={(e) => { insertTag(e); }}>SAVE</h4>
                         <h4 className="modalButtons" onClick={() => {setNewCourse(true); setNewTag(false)}}>CANCEL</h4>
                     </div>
                 </div>

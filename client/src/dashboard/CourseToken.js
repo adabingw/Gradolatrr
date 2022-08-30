@@ -284,6 +284,7 @@ function CourseToken(props) {
     const courseMark = async() => {
         if (unitList.length != 0) {
             let mark = 0;
+            console.log("unitList: ", unitList)
             for (var i = 0; i < Object.keys(unitList).length; i++) { mark += unitList[i].mark_weighted; }
             let type = "mark"
             const body = { id, course_id, type, courseName, mark, courseCred, newTagList, newTagWList };
@@ -304,9 +305,15 @@ function CourseToken(props) {
 
     useEffect(() => { 
         console.log("UPDATE ASSIGNLIST"); 
+        console.log(assignList)
         getCourseUnit(); 
         updateUnitMark();
     }, [assignList])
+
+    useEffect(() => {
+        console.log(unitList) 
+        courseMark()
+    }, [unitList])
 
     useEffect(() => { 
         getCourseUnit(); 
@@ -336,7 +343,6 @@ function CourseToken(props) {
                 const response = await fetch(`http://localhost:5000/grade_unit`,{
                     method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
                 getCourseUnit()
-                courseMark()
             }
         }
     }

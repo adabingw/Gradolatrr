@@ -23,7 +23,7 @@ function Login(props) {
                     }
                 }
             }
-            alert("Username/password incorrect")
+            
         } catch(err) {
             console.error(err.message)
         }

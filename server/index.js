@@ -112,9 +112,10 @@ app.put("/grade_course", async (req, res) => {
     const id = req.body.id;
     const type = req.body.type; 
     const course_id = req.body.course_id
-    console.log(req.body)
+    console.log("update course: ", req.body)
     if (type == "mark") {
       const mark = req.body.mark 
+      console.log("update course: ", id, mark, type, course_id)
       const updateTag = await pool.query(
         "UPDATE course SET course_mark = $1 WHERE (user_id = $2 AND course_id = $3)",
         [mark, id, course_id]
@@ -211,7 +212,7 @@ app.put("/grade_unit", async (req, res) => {
   try {
     const id = req.body.id;
     const type = req.body.type;
-    console.log(req.body)
+    console.log("update unit: ", req.body)
     const course_id = req.body.course_id
     if (type == "all") {
       const unit_id = req.body.uId
@@ -235,7 +236,7 @@ app.put("/grade_unit", async (req, res) => {
       const mark = req.body.avg 
       const mark_w = req.body.weightedAvg 
       const unit_id = req.body.unit_id
-      console.log(mark, mark_w, unit_id)
+      console.log("update unit: ", mark, mark_w, unit_id)
       const updateMark = await pool.query(
         "UPDATE unit SET unit_mark = $1 WHERE (user_id = $2 AND course_id = $3 AND unit_id = $4)", 
           [mark, id, course_id, unit_id]

@@ -1,10 +1,5 @@
-    - delete unit and assignments when course deleted
     - calculations 
         - tags
-
-    - check input
-    - warning for delete 
-        * warn deleted unit / tag 
 
     - grades analytics
     - import excel

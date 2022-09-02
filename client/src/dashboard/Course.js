@@ -127,9 +127,9 @@ function Course(props) {
                 <div className="modalStyle">
                     <div className="FlexCol">
                         <h3 className="modalTitle">NEW COURSE</h3>
-                        <input className="textfield" placeholder="course name" onChange={(e) => setCourseName(e.target.value)}/>
+                        <input className="textfield" placeholder="course name" onChange={(e) => setCourseName(e.target.value)} maxlength="20"/>
                         <input className="textfield" placeholder="course credits" 
-                            onChange={(e) => setCourseCred(e.target.value)} onKeyPress={(e) => keyDown(e, "insertCourse")} />
+                            onChange={(e) => setCourseCred(e.target.value)} onKeyPress={(e) => keyDown(e, "insertCourse")} maxlength="20"/>
                         <div className="tagDiv">
                             { newTagList.map((tag, index) => { return (
                                 <div className="tagLine">
@@ -167,6 +167,7 @@ function Course(props) {
                             onWheel={(e) => e.target.blur()} 
                             onChange={(event) => setNewTagItem(event.target.value)}
                             onKeyPress={(e) => keyDown(e, "insertTag")}
+                            maxlength="20"
                             />
                         {/* <input className="textfield" placeholder="tag weight" onWheel={(e) => e.target.blur()}  onChange={(event) => setTagW(event.target.value)}/> */}
                     </div>

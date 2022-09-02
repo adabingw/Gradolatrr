@@ -77,8 +77,8 @@ function CourseElement(props) {
             <Modal isOpen={assignModal} className="styleModal">
                 <div className="FlexCol">
                     <h3 className="modalTitle">EDIT ASSIGNMENT</h3>
-                    <input className="textfield" placeholder="Name" onChange={(e) => setAssignName(e.target.value)}/>
-                    <input className="textfield" placeholder="Mark" onChange={(e) => setAssignMark(e.target.value)} onKeyPress={(e) => keyDown(e, "updateCourse")}/>
+                    <input className="textfield" placeholder="Name" onChange={(e) => setAssignName(e.target.value)} maxlength="20"/>
+                    <input className="textfield" placeholder="Mark" onChange={(e) => setAssignMark(e.target.value)} onKeyPress={(e) => keyDown(e, "updateCourse")} maxlength="20"/>
                     <Dropdown>
                         <Dropdown.Toggle variant="success" id="dropdown-basic">
                             <span id="dropdown" defaultValue="Select Tag"> {tag} </span>
@@ -146,6 +146,9 @@ function CourseToken(props) {
     // edit course
     const [courseName, setCourseName] = useState(props.course.course_name) 
     const [courseCred, setCourseCred] = useState(props.course.course_credits)
+    // 
+    const [del, setDel] = useState(false) 
+    const [del1, setDel1] = useState(false)
 
     function setModal(status) {
         setModal(status)
@@ -420,7 +423,7 @@ function CourseToken(props) {
                 <div className="modalRow">
                     <h4 className="modalButtons" onClick={() => setUpdateC(true)}>EDIT</h4>
                     <h4 className="modalButtons">ARCHIVE</h4>
-                    <h4 className="modalButtons" onClick={() => deleteCourse()}>DELETE</h4>
+                    <h4 className="modalButtons" onClick={() => setDel1(true)}>DELETE</h4>
                     <h4 className="modalButtons" onClick={() => setCourseModal(false)}>CLOSE</h4>
                 </div>
             </div>
@@ -428,14 +431,20 @@ function CourseToken(props) {
         <Modal isOpen={updateC} className="styleModal">
             <div className="modalStyle"> <div className="FlexCol">
                 <h3 className="modalTitle">UPDATE COURSE</h3>
-                <input className="textfield" placeholder="course name" onChange={(e) => setCourseName(e.target.value)}/>
-                <input className="textfield" placeholder="course credits" onChange={(e) => setCourseCred(e.target.value)}/>
+                <input className="textfield" placeholder="course name" onChange={(e) => setCourseName(e.target.value)} maxlength="20"/>
+                <input className="textfield" placeholder="course credits" onChange={(e) => setCourseCred(e.target.value)} maxlength="20"
+                    onKeyDown={(e) => {
+                        if(e.key === 'Enter'){
+                            updateCourse(); setCourseModal(false); setUpdateC(false);
+                        }
+                    }}
+                />
                 <div className="tagDiv"> { newTagList.map((tag, index) => { return (
                     <div className="tagLine">
                         <h4 className="tagName">{tag}</h4> 
                         <input type="number" className="textfield_w" placeholder="weight" onChange={(e) => {
                                 let newArr = [...newTagWList]; newArr[index] = e.target.value;
-                                setTagWList(newArr); }}/>
+                                setTagWList(newArr); }} maxlength="20" />
                         <h4 className="delete" onClick={() => deleteTag(tag)}>×</h4>
                     </div> )})} </div>
                 <div> <h4 className="newTag" onClick={() => setNewTag(true)}>+ N E W T A G</h4> </div>
@@ -447,8 +456,14 @@ function CourseToken(props) {
             <div className="modalStyle">
                 <div className="FlexCol">
                     <h3 className="modalTitle">NEW TAG</h3>
-                    <input className="textfield" placeholder="tag name" onWheel={(e) => e.target.blur()} onChange={(event) => setNewTagItem(event.target.value)}/>
-                    <input className="textfield" placeholder="tag weight" onWheel={(e) => e.target.blur()}  onChange={(event) => setTagW(event.target.value)}/> </div>
+                    <input className="textfield" placeholder="tag name" onWheel={(e) => e.target.blur()} onChange={(event) => setNewTagItem(event.target.value)} maxlength="20"/>
+                    <input className="textfield" placeholder="tag weight" onWheel={(e) => e.target.blur()}  onChange={(event) => setTagW(event.target.value)} maxlength="20"
+                        onKeyDown={(e) => {
+                            if(e.key === 'Enter'){
+                                if (uName == null || uW == null) { alert("Please enter all fields")
+                                } else {insertTag(); setNewTag(false)} }    
+                        }}
+                    /> </div>
                 <div className="modalRow">
                     <h4 className="modalButtons" onClick={(e) => { 
                         if (uName == null || uW == null) { alert("Please enter all fields")
@@ -459,8 +474,14 @@ function CourseToken(props) {
         <Modal isOpen={newUnit} className="styleModal"> <div>
             <div className="FlexCol">
                 <h3 className="modalTitle">NEW UNIT</h3>
-                <input className="textfield" placeholder="unit name" onChange={(e) => setuName(e.target.value)}/>
-                <input className="textfield" placeholder="unit weight" onChange={(e) => setuW(e.target.value)}/> </div>
+                <input className="textfield" placeholder="unit name" onChange={(e) => setuName(e.target.value)} maxlength="20"/>
+                <input className="textfield" placeholder="unit weight" onChange={(e) => setuW(e.target.value)} maxlength="20"
+                        onKeyDown={(e) => {
+                            if(e.key === 'Enter'){
+                                if (uName == 0 || uW == 0) { alert("Please enter all fields")
+                                } else {insertUnit(); setNewUnit(false)}    }
+                            }}
+                /> </div>
             <div className="modalRow">
                 <h4 className="modalButtons" onClick={() => {
                     console.log("UNAME: ", uW)
@@ -472,13 +493,19 @@ function CourseToken(props) {
             <div>
                 <div className="FlexCol">
                     <h3 className="modalTitle">EDIT UNIT</h3>
-                    <input className="textfield" placeholder="unit name"  onChange={(e) => setuName(e.target.value)}/>
-                    <input className="textfield" placeholder="unit weight"  onChange={(e) => setuW(e.target.value)}/> </div>
+                    <input className="textfield" placeholder="unit name"  onChange={(e) => setuName(e.target.value)} maxlength="20"/>
+                    <input className="textfield" placeholder="unit weight"  onChange={(e) => setuW(e.target.value)} maxlength="20"
+                        onKeyDown={(e) => {
+                            if(e.key === 'Enter'){
+                                if (uName == null || uW == null) { alert("Please enter all fields")
+                                } else { updateUnit(); setEditUnit(false)}
+                            }}}
+                    /> </div>
                 <div className="modalRow">
                     <h4 className="modalButtons" onClick={() => {
                         if (uName == null || uW == null) { alert("Please enter all fields")
                         } else { updateUnit(); setEditUnit(false)}}}>SAVE</h4>
-                    <h4 className="modalButtons" onClick={() => {deleteUnit(); setEditUnit(false)}}>DELETE</h4>
+                    <h4 className="modalButtons" onClick={() => {setDel(true); setEditUnit(false)}}>DELETE</h4>
                     <h4 className="modalButtons" onClick={() =>  {setEditUnit(false)}}>CANCEL</h4>
                 </div>
             </div>
@@ -498,8 +525,14 @@ function CourseToken(props) {
         <Modal isOpen={newAssign} className="styleModal"> <div>
             <div className="FlexCol">
                 <h3 className="modalTitle">NEW ASSIGNMENT</h3>
-                <input className="textfield" placeholder="assignment name" onChange={(event) => setAssignName(event.target.value)}/>
-                <input className="textfield" placeholder="assignment mark" onChange={(event) => setAssignMark(event.target.value)}/>
+                <input className="textfield" placeholder="assignment name" onChange={(event) => setAssignName(event.target.value)} maxlength="20"/>
+                <input className="textfield" placeholder="assignment mark" onChange={(event) => setAssignMark(event.target.value)} maxlength="20"
+                            onKeyDown={(e) => {
+                            if(e.key === 'Enter'){
+                                if (assignName == 0 || assignMark == 0 || tag == "Select Tag" || assignUnit["unit_name"] == "Select Unit") { alert("Please enter all fields") }
+                                else { insertAssignment(); setNewAssign(false) }
+                            }}}
+                />
                 <Dropdown>
                     <Dropdown.Toggle variant="success" id="dropdown-basic"> <span id="dropdown" defaultValue="Select Tag"> {tag} </span> </Dropdown.Toggle>
                     <Dropdown.Menu id="dropdownmenu">
@@ -518,6 +551,24 @@ function CourseToken(props) {
                 if (assignName == 0 || assignMark == 0 || tag == "Select Tag" || assignUnit["unit_name"] == "Select Unit") { alert("Please enter all fields") }
                 else { insertAssignment(); setNewAssign(false) }}}>SAVE</h4>
             <h4 className="modalButtons" onClick={() => setNewAssign(false)}>CANCEL</h4> </div> </div>
+        </Modal>
+        <Modal isOpen={del} className="styleModal">
+            <div>
+                <h4 className="modalTitle">CONFIRM DELETE UNIT?</h4>
+                <div className="modalRow">
+                    <h4 className="modalButtons" onClick={() => {deleteUnit(); setDel(false); setUnitModal(false)}}>CONFIRM</h4>
+                    <h4 className="modalButtons" onClick={() => {setUnitModal(false); setDel(false)}}>CANCEL</h4>
+                </div>
+            </div>
+        </Modal>
+        <Modal isOpen={del1} className="styleModal">
+            <div>
+                <h4 className="modalTitle">CONFIRM DELETE COURSE?</h4>
+                <div className="modalRow">
+                    <h4 className="modalButtons" onClick={() => {deleteCourse(); setDel1(false); setCourseModal(false)}}>CONFIRM</h4>
+                    <h4 className="modalButtons" onClick={() => {setCourseModal(false); setDel1(false)}}>CANCEL</h4>
+                </div>
+            </div>
         </Modal>
         </div>
     )

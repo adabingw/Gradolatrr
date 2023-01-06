@@ -1,5 +1,3 @@
-![alt text](https://i.imgur.com/9kWv8Ke.png)
-
 Rewritten from my old project <a href="https://github.com/adabingw/CalculatingGrade">CalculatingGrade</a> that which Java Swing, Java AWT and MySQL.
 
 Technologies used:

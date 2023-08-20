@@ -1,0 +1,78 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-weight: 400;
+}
+
+a {
+  font-weight: 500;
+  color: black;
+  text-decoration: none;
+}
+
+a:hover {
+  color: black;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  height: 100%;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.flex-row {
+  display: flex;
+  flex: row;
+}
+
+.sidebar {
+  padding-top: 25px;
+  max-width: 15vw;
+  margin-left: 25px;
+  padding-right: 25px;
+  border-right: 1px solid black;
+  height: 100vh;
+}
+
+.homepage {
+  margin-left: 50px;
+  margin-top: 20px;
+}
+
+.new {
+  margin-left: 8px;
+  margin-top: 20px;
+  height: 2px;
+}
+
+.term {
+  height: 2px;
+  margin-top: 8px;
+  margin-bottom: 25px;
+  width: 100%;
+  font-weight: bold;
+}
+
+.term:hover {
+  cursor: pointer;
+}
+
+.course {
+  margin-left: 8px;
+  margin-top: 20px;
+  height: 2px;
+  width: 100%;
+}
+
+.course:hover {
+  cursor: pointer;
+}
+
+
+.content {
+  margin-top: 40px;
+}

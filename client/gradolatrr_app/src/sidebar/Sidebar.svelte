@@ -3,6 +3,10 @@
 
     import Button from "../utils/Button.svelte";
     import NewButton from "../utils/NewButton.svelte";
+    import Edit from "../assets/edit_icon.png";
+
+    import { Link } from "svelte-navigator";
+
     export let info;
     let expand = {};
     
@@ -25,9 +29,12 @@
         {#if info != undefined}
             {#each Object.keys(info) as i}
                 {#if info[i]["id"] != undefined} 
-                    <p on:click={() => termClick(i)}>
-                        <Button id={info[i]["id"]} type={info[i]["type"]} name={i}/>
-                    </p>
+                    <div class="term-row">
+                        <p on:click={() => termClick(i)}>
+                            <Button id={info[i]["id"]} type={info[i]["type"]} name={i}/>
+                        </p>
+                        <Link to={`/term/${info[i]["id"]}/${i}`}><img  src={Edit} alt="edit"/> </Link>
+                    </div>
                 {/if}
                 {#if info[i]["course"] != undefined && expand[i]}
                     {#each Object.keys(info[i]["course"]) as j}

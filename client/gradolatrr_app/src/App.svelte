@@ -9,6 +9,8 @@
     import Dashboard from "./dashboard/Dashboard.svelte";
     import Term from "./term/Term.svelte";
     import Course from "./course/Course.svelte";
+    import CourseInfo from "./course/CourseInfo.svelte";
+    import Assign from "./assign/Assign.svelte";
 
     onMount(async () => {
         // get info for user
@@ -54,6 +56,12 @@
             </Route>
             <Route path="term/:id/:name" let:params>
                 <Term id={params.id} name={params.name} />
+            </Route>
+            <Route path="course/edit/:id/:name" let:params>
+                <CourseInfo id={params.id} name={params.name} />
+            </Route>
+            <Route path="assign/edit/:id/:name" let:params>
+                <Assign id={params.id} name={params.name} />
             </Route>
           </div>
       </div>

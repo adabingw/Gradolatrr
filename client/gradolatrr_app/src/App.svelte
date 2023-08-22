@@ -11,6 +11,8 @@
     import Course from "./course/Course.svelte";
     import CourseInfo from "./course/CourseInfo.svelte";
     import Assign from "./assign/Assign.svelte";
+    import NewTerm from "./term/NewTerm.svelte";
+    import NewCourse from "./course/NewCourse.svelte";
 
     onMount(async () => {
         // get info for user
@@ -42,14 +44,11 @@
             <Route path="/*">
                 <Dashboard text="dashboard"/>
             </Route>
-            <Route path="/new_term">
-                <Dashboard text="new term"/>
+            <Route path="new_course/:id/:name" let:params>
+                <NewCourse term_id={params.id} term_name={params.name} />
             </Route>
-            <Route path="/new_course">
-                <Dashboard text="new course"/>
-            </Route>
-            <Route path="/new_term">
-                <Dashboard text="new term"/>
+            <Route path="new_term">
+                <NewTerm />
             </Route>
             <Route path="course/:id/:name" let:params>
                 <Course id={params.id} name={params.name} />
@@ -67,3 +66,17 @@
       </div>
   </Router>
 </div>  
+
+// https://svelte.dev/repl/6fb90919e24942b2b47d9ad154386b0c?version=3.49.0 -- context menu
+// https://svelte.dev/repl/3bf15c868aa94743b5f1487369378cf3?version=3.21.0
+// https://stackoverflow.com/questions/50702662/passing-parent-method-to-child-in-svelte
+
+<style>
+.homepage {
+  margin-left: 50px;
+  margin-top: 20px;
+  overflow: scroll;
+  height: 100vh;
+  width: 83vw;
+}    
+</style>

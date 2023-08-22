@@ -38,7 +38,7 @@
         <Table>
             <TableBody>
                 {#each Object.keys(info) as i}
-                <TableBodyRow>
+                <TableBodyRow class="TableBodyRow">
                     <TableBodyCell>{i}</TableBodyCell>
                     <TableBodyCell>{info[i]} - make into a textfield </TableBodyCell>
                 </TableBodyRow>

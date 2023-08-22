@@ -38,49 +38,12 @@ h3 {
   flex: row;
 }
 
-.sidebar {
-  padding-top: 25px;
-  max-width: 15vw;
-  margin-left: 25px;
-  padding-right: 25px;
-  border-right: 1px solid black;
-  height: 100vh;
-}
-
-.homepage {
-  margin-left: 50px;
-  margin-top: 20px;
-  overflow: scroll;
-  height: 100vh;
-  width: 83vw;
-}
-
 .new {
   margin-left: 8px;
   margin-top: 20px;
   height: 2px;
 }
 
-.term {
-  height: 2px;
-  margin-top: 8px;
-  margin-bottom: 25px;
-  font-weight: bold;
-}
-
-.term:hover {
-  cursor: pointer;
-}
-
-.term-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-  align-items: center;
-  align-self: center;
-  height: 5px;
-}
 
 .term-header {
   margin-top: 40px;
@@ -90,20 +53,6 @@ h3 {
 .term-block {
   display: flex;
   flex-direction: row;
-}
-
-.course {
-  margin-left: 8px;
-  margin-top: 20px;
-  height: 2px;
-}
-
-.course:hover {
-  cursor: pointer;
-}
-
-.content {
-  margin-top: 40px;
 }
 
 img {
@@ -190,14 +139,6 @@ table {
   text-align: center;
 }
 
-.edit {
-   color: teal;
-}
-
-.edit:hover {
-  cursor: pointer;
-}
-
 .coursetable {
   text-align: left;
   display: flex;
@@ -207,4 +148,8 @@ table {
 
 .tablecol {
   width: 30vw;
+}
+
+.TableBodyRow {
+  border-top: 1px solid grey;
 }

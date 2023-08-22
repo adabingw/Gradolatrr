@@ -14,3 +14,26 @@
 {:else if type == "term"}
   <p class={type}>{name}</p>
 {/if}
+
+<style>
+.term {
+  height: 2px;
+  margin-top: 8px;
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+
+.term:hover {
+  cursor: pointer;
+}
+
+.course {
+  margin-left: 8px;
+  margin-top: 20px;
+  height: 2px;
+}
+
+.course:hover {
+  cursor: pointer;
+}
+</style>

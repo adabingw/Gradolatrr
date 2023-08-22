@@ -14,6 +14,8 @@
             metadata: {
                 type: "course",
                 id: "abcde",
+                term_id: "abcde",
+                term_name: "ECON101",
             },
             description: {
                 type: "textbox",
@@ -29,21 +31,30 @@
             },
             content_info: {
                 type: "desc",
+                "name": {
+                    checked: true, 
+                    type: "number", 
+                    required: true,
+                },
                 "mark": {
                     checked: true, 
-                    type: "number" 
+                    type: "number", 
+                    required: false,
                 },
                 "weight": {
                     checked: true, 
-                    type: "number" 
+                    type: "number",
+                    required: false,
                 },
                 "tags": {
                     checked: true, 
-                    type: "tags" 
+                    type: "tags",
+                    required: false,
                 },
                 "description": {
                     checked: false, 
-                    type: "number" 
+                    type: "textarea",
+                    required: false,
                 }
             }
         }
@@ -94,6 +105,7 @@
         {#each Object.keys(info) as i}
             <TableBodyRow>
             {#if i != "metadata"}
+            <div class="TableBodyRow">
                 <TableBodyCell class="term-header tablecol">{i}</TableBodyCell>
                 <TableBodyCell>
                 {#each Object.keys(info[i]) as j}
@@ -124,19 +136,26 @@
                             <div class="type-block">
                                 <div class="type-block2" >
                                     <p class="tag-check">
+                                    {#if !info[i][item]["required"]}
                                         <input type="checkbox"
                                         bind:checked={info[i][item]["checked"]} 
-                                        on:change={() => {changeCheck(item)}}/> {item}
+                                        on:change={() => {changeCheck(item)}}/>
+                                    {:else}
+                                        &nbsp; &nbsp;
+                                    {/if} {item}
                                     </p>
                                     <p>{info[i][item]["type"]}</p>
                                 </div>
+                                {#if !info[i][item]["required"]}
                                 <img src={Close} class="close" on:click={() => deleteType(item)}/>
+                                {/if}
                             </div>
                         {/if}
                     {/each}
-                    <p class="save-changes">+ add tag</p>
+                    <p class="save-changes">+ add course info</p>
                 {/if}
                 </TableBodyCell>
+            </div>
             {/if}
             </TableBodyRow>
         {/each}

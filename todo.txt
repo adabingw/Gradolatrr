@@ -1,7 +1,26 @@
-    - calculations 
-        - tags
+-----FRONTEND-----
 
-    - grades analytics
-    - import excel
+TABLE
+- drag and drop 
+- search 
+- sort by
 
-    bugs: 
+MODULARIZE
+- textarea 
+- save and cancel 
+- table
+
+FUNCTIONALITIES  
+- context menu
+- add tag
+- add property 
+- edit property
+- calculate grade for course
+- graphs
+
+MODULES
+- new assignment
+- new bundle
+- dashboard
+
+-----BACKEND-----

@@ -15,6 +15,8 @@
                 metadata: {
                     type: "course",
                     id: "abcde",
+                    term_id: "abcde",
+                    term_name: "ECON101",
                 },
                 content: {
                     "assignment 1": {
@@ -148,7 +150,7 @@
             </TableHead>
             <TableBody class="divide-y">
                 {#each Object.keys(content) as i}
-                <TableBodyRow>
+                <TableBodyRow class="TableBodyRow">
                     {#each Object.keys(content[i]["content"]) as j}
                         {#if content_info[j]["checked"]}
                         <TableBodyCell>{content[i]["content"][j]}</TableBodyCell>
@@ -164,3 +166,12 @@
         <p class="save-changes" on:click={addAssignment}>+ add bundle</p>
     </div>
     
+<style>
+.edit {
+   color: teal;
+}
+
+.edit:hover {
+  cursor: pointer;
+}
+</style>

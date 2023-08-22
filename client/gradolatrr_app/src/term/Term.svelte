@@ -9,6 +9,7 @@
     let term_info = {
         "2A": {
             metadata: {
+                name: "2A",
                 type: "term",
                 id: "1234567890",
                 archived: false,
@@ -61,11 +62,12 @@
         <input type="checkbox" bind:checked={checked} /> select as current term.
     </label>
     {#if info != undefined}
-    <Table class="coursetable">
+    <Table class="coursetable" noborder={false}>
         <TableBody>
         {#each Object.keys(info) as i}
-            <TableBodyRow>
+            <TableBodyRow class="TableBodyRow">
             {#if i != "metadata"}
+            <div class="TableBodyRow">
                 {#if info[i].constructor != Object}
                     <TableBodyCell class="term-header tablecol">{i}</TableBodyCell>
                     <TableBodyCell>{info[i]}</TableBodyCell>
@@ -87,6 +89,7 @@
                     {/each}
                     </TableBodyCell>
                 {/if}
+            </div>
             {/if}
             </TableBodyRow>
         {/each}

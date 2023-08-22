@@ -2,8 +2,12 @@
     export let id;
     export let name;
 
-    import { Link } from "svelte-navigator";
     import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte';
+    
+    import TextArea from "../utils/TextArea.svelte";
+    import CancelOrSave from "../utils/CancelOrSave.svelte";
+    import Button from "../utils/Button.svelte";
+    import { sortOrder, dragover, dragstart } from '../utils/utils.svelte';
 
     // get info from id
     let term_info = {
@@ -17,6 +21,7 @@
             },
             course: {
                 type: "dict",
+                order: 1,
                 "ECON101": {
                     type: "course",
                     id: "abcde"
@@ -28,7 +33,8 @@
             },
             description: {
                 type: "textbox",
-                content: "hello"
+                content: "hello",
+                order: 0,
             }, 
         }
     }
@@ -52,6 +58,44 @@
         console.log("save changes")
     }
 
+    let content_array = []
+
+    for (const key in info) {
+        if (key == "metadata" || key == "content_info") continue; 
+        content_array.push([ key, info[key] ])
+    }
+
+    content_array = sortOrder(content_array);
+
+    function drop (ev, key2, index2) {
+        ev.preventDefault();
+        var key = ev.dataTransfer.getData("key");
+        if (key2 == key) return;
+
+        var index = ev.dataTransfer.getData("index");
+        var order = content_array[index][1]["order"];
+        var order2 = content_array[index2][1]["order"];
+        order = order2 + 1;
+        
+        let orders = [order];
+        for (const [i, value] of Object.entries(info)) {
+            if (i == "metadata" || i == "content_info") continue;
+            if (i == key) continue;
+            console.log(i)
+            const o = info[i]["order"]
+            if (orders.includes(o)) {
+                orders.push(o + 1);
+                info[i]["order"]++;
+            } else {
+                orders.push(o);
+            }
+        }
+        content_array[index][1]["order"] = order;
+        info[key]["order"] = order;
+        term_info[name] = info;
+        content_array = sortOrder(content_array);
+    }
+
 </script>
 
 <div>
@@ -61,29 +105,31 @@
     <label>
         <input type="checkbox" bind:checked={checked} /> select as current term.
     </label>
-    {#if info != undefined}
+    {#if content_array != undefined}
     <Table class="coursetable" noborder={false}>
         <TableBody>
-        {#each Object.keys(info) as i}
+        {#each Object.keys(content_array) as i}
             <TableBodyRow class="TableBodyRow">
             {#if i != "metadata"}
-            <div class="TableBodyRow">
-                {#if info[i].constructor != Object}
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div class="TableBodyRow" draggable={true} 
+            on:dragstart={event => dragstart(event, content_array[i][0] , i)}
+            on:drop={event => drop(event, content_array[i][0], i)} on:dragover={dragover}>
+                {#if content_array[i][1].constructor != Object}
                     <TableBodyCell class="term-header tablecol">{i}</TableBodyCell>
-                    <TableBodyCell>{info[i]}</TableBodyCell>
+                    <TableBodyCell>{content_array[i][1]}</TableBodyCell>
                 {:else}
-                    <TableBodyCell class="term-header tablecol">{i}</TableBodyCell>
+                    <TableBodyCell class="term-header tablecol">{content_array[i][0]}</TableBodyCell>
                     <TableBodyCell>
-                    {#each Object.keys(info[i]) as j}
+                    {#each Object.keys(content_array[i][1]) as j}
                         {#if j == "type"}
                             <p></p>
                         {:else if j == "content"}
-                            {#if info[i]["type"] == "textbox"}
-                                <textarea bind:value={info[i][j]} 
-                                            on:change={() => changed = true }
-                                            on:input={() => changed = true }/>
+                            {#if content_array[i][1]["type"] == "textbox"}
+                                <TextArea bind:inputText={content_array[i][1][j]} 
+                                          bind:changed={changed} />
                             {/if}
-                        {:else if info[i][j].constructor == Object}
+                        {:else if content_array[i][1][j].constructor == Object}
                             <p class="course">{j}</p>
                         {/if}
                     {/each}
@@ -96,19 +142,10 @@
         </TableBody>
     </Table>
     {/if} 
-    <p class="term-changes" on:click={addProperty}>+ add property</p>
+    <Button text="+ add property" on:click={addProperty} />
     <div class="term-op">
-        <p class="term-changes" on:click={archiveClick}>
-            {#if info["metadata"]["archived"]}
-                <p>unarchive this course</p>
-            {:else}
-                <p>archive this course</p>
-            {/if}
-        </p>
-        <p class="term-changes">delete this course</p>
+        <Button text={`${info["metadata"]["archived"] ? "un" : ""}archive this course`} on:click={archiveClick} />
+        <Button text="delete this course" />
     </div>
-    <div style=" display:flex; flex-direction:row; ">
-        <Link to={`/`}><p class="cancel-and-save">cancel</p></Link>
-        <p class="cancel-and-save">save</p>
-    </div>
+    <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>

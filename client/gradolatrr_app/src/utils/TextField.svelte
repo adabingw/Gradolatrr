@@ -1,9 +1,15 @@
 <script>
     export let text;
+    export let inputText;
+    export let type;
 </script>
 
 <div class="input-row">
-    <input type="text" class="input-text" placeholder={text}/>
+    {#if type == "text"}
+      <input type="text" class="input-text" placeholder={text} bind:value={inputText}/>
+    {:else if type == "number"}
+      <input type="number" class="input-text" placeholder={text} bind:value={inputText}/>
+    {/if}
 </div>
 
 <style>

@@ -1,14 +1,15 @@
 -----FRONTEND-----
 
 TABLE
-- drag and drop 
+- drag and drop DONE
 - search 
-- sort by
+- sort by DONE
 
 MODULARIZE
-- textarea 
-- save and cancel 
+- textarea DONE
+- save and cancel DONE
 - table
+- course info DONE
 
 FUNCTIONALITIES  
 - context menu
@@ -17,10 +18,9 @@ FUNCTIONALITIES
 - edit property
 - calculate grade for course
 - graphs
+- save
 
 MODULES
-- new assignment
-- new bundle
 - dashboard
 
 -----BACKEND-----

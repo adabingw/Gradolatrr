@@ -1,7 +1,7 @@
 <script lang="js">
 // @ts-nocheck
 
-    import Button from "../utils/Button.svelte";
+    import SidebarButton from "../utils/SidebarButton.svelte";
     import NewButton from "../utils/NewButton.svelte";
     import Edit from "../assets/edit_icon.png";
     import Add from "../assets/add_icon.png";
@@ -23,7 +23,7 @@
 </script>
 
 <div class="sidebar">
-    <h3>GRADOLATRR</h3>
+    <h3>G</h3>
     <NewButton type="new_term" name="+ new term" />
     <!-- <NewButton type="new_course" name="+ new course" /> -->
     <div class="content">
@@ -31,9 +31,9 @@
             {#each Object.keys(info) as i}
                 {#if info[i]["id"] != undefined} 
                     <div class="term-row">
-                        <p on:click={() => termClick(i)}>
-                            <Button id={info[i]["id"]} type={info[i]["type"]} name={i}/>
-                        </p>
+                        <div on:click={() => termClick(i)}>
+                            <p class="term">{i}</p>
+                        </div>
                         <div>
                             <Link to={`/new_course/${info[i]["id"]}/${i}`}><img  src={Add} alt="add"/> </Link>
                             <Link to={`/term/${info[i]["id"]}/${i}`}><img  src={Edit} alt="edit"/> </Link>
@@ -42,7 +42,13 @@
                 {/if}
                 {#if info[i]["course"] != undefined && expand[i]}
                     {#each Object.keys(info[i]["course"]) as j}
-                        <Button id={info[i]["course"][j]["id"]} type={info[i]["course"][j]["type"]} name={j}/>
+                        <SidebarButton 
+                            id={info[i]["course"][j]["id"]} 
+                            type={info[i]["course"][j]["type"]} 
+                            name={j}
+                            term_name={i}
+                            term_id={info[i]["id"]}
+                        />
                     {/each}
                 {/if}
             {/each}

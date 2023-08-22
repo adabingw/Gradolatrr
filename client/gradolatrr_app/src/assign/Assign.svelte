@@ -4,7 +4,7 @@
 
     import { Link } from "svelte-navigator";
     import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte';
-        
+    import CancelOrSave from "../utils/CancelOrSave.svelte";
 
     // get info from id
     let assign_info = {
@@ -47,8 +47,5 @@
         </Table>
     {/if}
 
-    <div style=" display:flex; flex-direction:row; ">
-        <Link to={`/`}><p class="cancel-and-save">cancel</p></Link>
-        <p class="cancel-and-save">save</p>
-    </div>
+    <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>

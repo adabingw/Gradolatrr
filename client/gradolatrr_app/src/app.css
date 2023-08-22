@@ -46,7 +46,7 @@ h3 {
 
 
 .term-header {
-  margin-top: 40px;
+  /* margin-top: 40px; */
   font-weight: bold;
 }
 
@@ -64,65 +64,11 @@ img:hover {
   cursor: pointer;
 }
 
-.term-changes:hover {
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.cancel-and-save {
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 50px;
-}
-
-.cancel-and-save:hover {
-  font-weight: bold;
-  cursor: pointer;
-}
-
 .term-op {
   position: absolute;
   right: 30px;
   top: 20px;
   text-align: right;
-}
-
-.save-changes {
-  margin-top: 35px;
-}
-
-.save-changes:hover {
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.type-block {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: left;
-  line-height: 35px;  
-  height: fit-content;
-}
-
-.type-block2 {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: left;
-  width: 250px;
-  line-height: 2px;
-  height: 25px;
-}
-
-.tag-check {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: left;
-  width: 250px;
-  line-height: 5px;
-  height: 5px;
 }
 
 .close {
@@ -153,3 +99,17 @@ table {
 .TableBodyRow {
   border-top: 1px solid grey;
 }
+
+.s-2C2OUQxm3wgq:hover {
+  cursor: pointer;
+}
+
+.context {
+  width: 50px;
+  height: 50px;
+}
+
+.context:hover {
+  cursor: pointer;
+}
+

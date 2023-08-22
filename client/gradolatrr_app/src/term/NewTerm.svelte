@@ -1,19 +1,21 @@
 <script>
     let id = 1129;
     let checked;
+    let name;
 
     import { Link } from "svelte-navigator";
-    import TextField from "../utils/TextField.svelte";
 
-    let def = {
-        "2A": {
-            metadata: {
-                name: "2A",
-                type: "term",
-                id: id,
-                archived: false,
-                current: false,    
-            }, 
+    import CancelOrSave from "../utils/CancelOrSave.svelte";
+    import TextField from "../utils/TextField.svelte";
+    import Button from "../utils/Button.svelte";
+
+    let properties = {
+        metadata: {
+            name: "2A",
+            type: "term",
+            id: id,
+            archived: false,
+            current: false,    
         }
     }
 
@@ -21,19 +23,19 @@
         console.log("add property")
     }
 
+    function saveChanges() {
+        console.log("save changes")
+    }
 
 </script>
 
 <div>
     <p>Create new term</p>
-    <TextField text="term name"/>
+    <TextField type="text" text="term name" bind:inputText={name}/>
     <label>
         <input type="checkbox" bind:checked={checked} /> select as current term.
         <!-- CHECK IF HAS CURRENT TERM FOR OTHER TERM. IF YES, RAISE ERROR -->
     </label>
-    <p class="term-changes" on:click={addProperty}>+ add property</p>
-    <div style=" display:flex; flex-direction:row; ">
-        <Link to={`/`}><p class="cancel-and-save">cancel</p></Link>
-        <p class="cancel-and-save">save</p>
-    </div>
+    <Button text="+ add property" on:click={addProperty} />
+    <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>

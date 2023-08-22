@@ -13,6 +13,8 @@
     import Assign from "./assign/Assign.svelte";
     import NewTerm from "./term/NewTerm.svelte";
     import NewCourse from "./course/NewCourse.svelte";
+    import NewAssign from "./assign/NewAssign.svelte";
+    import NewAssignBundle from "./assign/NewAssignBundle.svelte";
 
     onMount(async () => {
         // get info for user
@@ -44,22 +46,30 @@
             <Route path="/*">
                 <Dashboard text="dashboard"/>
             </Route>
-            <Route path="new_course/:id/:name" let:params>
+            <Route path="/new_course/:id/:name" let:params>
                 <NewCourse term_id={params.id} term_name={params.name} />
             </Route>
-            <Route path="new_term">
+            <Route path="/new_assign/:term_id/:term_name/:course_id/:course_name" let:params>
+                <NewAssign term_id={params.term_id} term_name={params.term_name} 
+                            course_id={params.course_id} course_name={params.course_name}/>
+            </Route>
+            <Route path="/new_assignbundle/:term_id/:term_name/:course_id/:course_name" let:params>
+                <NewAssignBundle term_id={params.term_id} term_name={params.term_name} 
+                            course_id={params.course_id} course_name={params.course_name}/>
+            </Route>
+            <Route path="/new_term">
                 <NewTerm />
             </Route>
-            <Route path="course/:id/:name" let:params>
-                <Course id={params.id} name={params.name} />
+            <Route path="/course/:term_id/:term_name/:id/:name" let:params>
+                <Course id={params.id} name={params.name} term_id={params.term_id} term_name={params.term_name} />
             </Route>
-            <Route path="term/:id/:name" let:params>
+            <Route path="/term/:id/:name" let:params>
                 <Term id={params.id} name={params.name} />
             </Route>
-            <Route path="course/edit/:id/:name" let:params>
+            <Route path="/course/edit/:id/:name" let:params>
                 <CourseInfo id={params.id} name={params.name} />
             </Route>
-            <Route path="assign/edit/:id/:name" let:params>
+            <Route path="/assign/edit/:id/:name" let:params>
                 <Assign id={params.id} name={params.name} />
             </Route>
           </div>

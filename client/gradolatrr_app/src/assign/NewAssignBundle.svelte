@@ -9,65 +9,28 @@
     let num;
     let foo = true;
     let suffix;
+    let date = new Date()
+    let dates = []
 
     import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte';
-
     import { DateInput } from 'date-picker-svelte'
-    let date = new Date()
-
-    let dates = []
     
     import TextField from '../utils/TextField.svelte';
     import CancelOrSave from '../utils/CancelOrSave.svelte';
     import TextArea from '../utils/TextArea.svelte';
     import Button from '../utils/Button.svelte';
+    import course_info from "../data/course_info.json";
+    import new_assign from "../data/new_assign.json";
 
-    let course_content = {
-        type: "desc",
-        "name": {
-            checked: true, 
-            type: "number", 
-            required: true,
-        },
-        "mark": {
-            checked: true, 
-            type: "number", 
-            required: false,
-        },
-        "weighting": {
-            checked: true, 
-            type: "number", 
-            required: false,
-        },
-        "tags": {
-            checked: true, 
-            type: "tags",
-            required: false,
-        },
-        "description": {
-            checked: false, 
-            type: "textarea",
-            required: false,
-        }
-    }
-    let properties = {
-        metadata: {
-            name: name,
-            type: "item",
-            id: id,
-            course_id: course_id,
-            course_name: course_name,
-            term_id: term_id,
-            term_name: term_name
-        },
-        content: {
-
-        },
-    }
+    let course_content = course_info["content_info"];
+    new_assign["course_id"] = course_id;
+    new_assign["course_name"] = course_name;
+    new_assign["term_id"] = term_id;
+    new_assign["term_name"] = term_name;
 
     for (let i of Object.keys(course_content)) {
         if (i == "type") continue;
-        properties["content"][i] = "";
+        new_assign["content"][i] = "";
     }
 
     function saveChanges() {
@@ -105,11 +68,11 @@
                 <TableBodyCell class="term-header tablecol">{i}</TableBodyCell>
                 <TableBodyCell>
                 {#if course_content[i]["type"] == "textarea"}
-                    <TextArea bind:inputText={properties["content"][i]} bind:changed={foo} />
+                    <TextArea bind:inputText={new_assign["content"][i]} bind:changed={foo} />
                 {:else if course_content[i]["type"] == "text"}
-                    <TextField type="text" text="" bind:inputText={properties["content"][i]}/>
+                    <TextField type="text" text="" bind:inputText={new_assign["content"][i]}/>
                 {:else if course_content[i]["type"] == "number"}
-                    <TextField type="number" text="" bind:inputText={properties["content"][i]}/>
+                    <TextField type="number" text="" bind:inputText={new_assign["content"][i]}/>
                 {/if}
                 </TableBodyCell>
             </div>

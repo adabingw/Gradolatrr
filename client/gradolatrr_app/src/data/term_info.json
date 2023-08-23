@@ -1,0 +1,28 @@
+{
+    "2A": {
+        "metadata": {
+            "name": "2A",
+            "type": "term",
+            "id": "1234567890",
+            "archived": false,
+            "current": true  
+        },
+        "course": {
+            "type": "dict",
+            "order": 1,
+            "ECON101": {
+                "type": "course",
+                "id": "abcde"
+            },
+            "PSYCH101": {
+                "type": "course",
+                "id": "fgjijk"
+            }
+        },
+        "description": {
+            "type": "textbox",
+            "content": "hello",
+            "order": 0
+        }
+    }
+}

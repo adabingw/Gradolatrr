@@ -13,74 +13,28 @@
     import Properties from '../utils/Properties.svelte';
     import TagBlock from '../utils/TagBlock.svelte';
     import Button from '../utils/Button.svelte';
-    import ContextMenu from '../utils/ContextMenu.svelte';
     import { sortOrder, dragover, dragstart } from '../utils/utils.svelte';
+    import course_info from "../data/course_info.json";
     
     // get info from id
-    let term_info = {
-        "ECON101": {
-            metadata: {
-                type: "course",
-                id: "abcde",
-                term_id: "abcde",
-                term_name: "ECON101",
-            },
-            description: {
-                type: "textbox",
-                content: "hello", 
-                order: 5
-            }, 
-            resource: {
-                type: "textbox",
-                content: "resource",
-                order: 1
-            },
-            tags: {
-                type: "tags",
-                content: ['assignment', 'final', 'midterm'],
-                order: 2
-            },
-            content_info: {
-                type: "desc",
-                "name": {
-                    checked: true, 
-                    type: "number", 
-                    required: true,
-                    order: 0
-                },
-                "mark": {
-                    checked: true, 
-                    type: "number", 
-                    required: false,
-                    order: 1
-                },
-                "weight": {
-                    checked: true, 
-                    type: "number",
-                    required: false,
-                    order: 2
-                },
-                "tags": {
-                    checked: true, 
-                    type: "tags",
-                    required: false,
-                    order: 3
-                },
-                "description": {
-                    checked: false, 
-                    type: "textarea",
-                    required: false,
-                    order: 4
-                }
-            }
-        }
-    }
 
-    let info = term_info[name]
+    let info = course_info[name]
     let changed;
     let showMenu = false;
-    let clickx = 0;
-    let clicky = 0;
+    let content_array = []
+    let menu = { h: 0, w: 0 }
+    let browser = { h: 0, w: 0 }
+    let menuItems;
+    let pos = { x: 0, y: 0 }
+    let x;
+    let y;
+
+    for (const key in info) {
+        if (key == "metadata" || key == "content_info") continue; 
+        content_array.push([ key, info[key] ])
+    }
+
+    content_array = sortOrder(content_array);
 
     function addProperty() {
         console.log("add properties")
@@ -102,15 +56,6 @@
         }
         term_info[name] = info;
     }
-
-    let content_array = []
-
-    for (const key in info) {
-        if (key == "metadata" || key == "content_info") continue; 
-        content_array.push([ key, info[key] ])
-    }
-
-    content_array = sortOrder(content_array);
 
 	function drop (ev, key2, index2) {
 		ev.preventDefault();
@@ -140,15 +85,8 @@
         term_info[name] = info;
         content_array = sortOrder(content_array);
 	}
-
-    let menu = { h: 0, w: 0 }
-    let browser = { h: 0, w: 0 }
-    export let menuItems;
-    export let pos = { x: 0, y: 0 }
-    export let x;
-    export let y;
     
-    export function openMenu(e) {
+    function openMenu(e) {
         if (showMenu) {
             showMenu = false;
             return;
@@ -166,9 +104,7 @@
         if (browser.h -  pos.y < menu.h)
             pos.y = pos.y - menu.h
         if (browser.w -  pos.x < menu.w)
-            pos.x = pos.x - menu.w
-        console.log("opening menu")
-        
+            pos.x = pos.x - menu.w        
     }
     
     function getContextMenuDimension(node){
@@ -205,9 +141,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 </div>
 <div>
-    <p>
-        {name}
-    </p>
+    <p>{name}</p>
     <Table class="coursetable">
     {#if content_array != undefined}
         <TableBody>
@@ -332,5 +266,4 @@ hr{
 }
 </style>
 
-<svelte:window on:contextmenu|preventDefault
-on:click={onPageClick} />
+<svelte:window on:contextmenu|preventDefault on:click={onPageClick} />

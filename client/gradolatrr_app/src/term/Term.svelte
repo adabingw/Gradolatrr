@@ -8,40 +8,21 @@
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import Button from "../utils/Button.svelte";
     import { sortOrder, dragover, dragstart } from '../utils/utils.svelte';
+    import term_info from "../data/term_info.json";
 
     // get info from id
-    let term_info = {
-        "2A": {
-            metadata: {
-                name: "2A",
-                type: "term",
-                id: "1234567890",
-                archived: false,
-                current: true,    
-            },
-            course: {
-                type: "dict",
-                order: 1,
-                "ECON101": {
-                    type: "course",
-                    id: "abcde"
-                },
-                "PSYCH101": {
-                    type: "course",
-                    id: "fgjijk"
-                }
-            },
-            description: {
-                type: "textbox",
-                content: "hello",
-                order: 0,
-            }, 
-        }
-    }
-
     let info = term_info[name]
     let checked = info["metadata"]["current"];
     let changed;
+
+    let content_array = []
+
+    for (const key in info) {
+        if (key == "metadata" || key == "content_info") continue; 
+        content_array.push([ key, info[key] ])
+    }
+
+    content_array = sortOrder(content_array);
 
     function addProperty() {
         console.log("add properties")
@@ -58,15 +39,6 @@
         console.log("save changes")
     }
 
-    let content_array = []
-
-    for (const key in info) {
-        if (key == "metadata" || key == "content_info") continue; 
-        content_array.push([ key, info[key] ])
-    }
-
-    content_array = sortOrder(content_array);
-
     function drop (ev, key2, index2) {
         ev.preventDefault();
         var key = ev.dataTransfer.getData("key");
@@ -81,7 +53,6 @@
         for (const [i, value] of Object.entries(info)) {
             if (i == "metadata" || i == "content_info") continue;
             if (i == key) continue;
-            console.log(i)
             const o = info[i]["order"]
             if (orders.includes(o)) {
                 orders.push(o + 1);
@@ -99,9 +70,7 @@
 </script>
 
 <div>
-    <p>
-        {name}
-    </p>    
+    <p>{name}</p>    
     <label>
         <input type="checkbox" bind:checked={checked} /> select as current term.
     </label>

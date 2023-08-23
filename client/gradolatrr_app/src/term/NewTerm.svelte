@@ -3,21 +3,10 @@
     let checked;
     let name;
 
-    import { Link } from "svelte-navigator";
-
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import TextField from "../utils/TextField.svelte";
     import Button from "../utils/Button.svelte";
-
-    let properties = {
-        metadata: {
-            name: "2A",
-            type: "term",
-            id: id,
-            archived: false,
-            current: false,    
-        }
-    }
+    import new_term from "../data/new_term.json";
 
     function addProperty() {
         console.log("add property")

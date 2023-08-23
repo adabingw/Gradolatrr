@@ -2,27 +2,12 @@
     export let id;
     export let name;
 
-    import { Link } from "svelte-navigator";
     import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte';
+    
     import CancelOrSave from "../utils/CancelOrSave.svelte";
-
+    import assign_info from "../data/assign_info.json";
+    
     // get info from id
-    let assign_info = {
-        "assignment 1": {
-            type: "course_mat",
-            id: "aaa",
-            course_id: "abcde",
-            course_name: "ECON101",
-            content: {
-                "name": "assignment 1",
-                "mark": 100,
-                "weight": 2,
-                "tags": ['assignment'], 
-                "description": ""
-            } 
-        }
-    }
-
     let info = assign_info[name]["content"]
     let changed;
 

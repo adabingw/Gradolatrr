@@ -1,15 +1,7 @@
 -----FRONTEND-----
 
-TABLE
-- drag and drop DONE
-- search 
-- sort by DONE
-
 MODULARIZE
-- textarea DONE
-- save and cancel DONE
 - table
-- course info DONE
 
 FUNCTIONALITIES  
 - context menu

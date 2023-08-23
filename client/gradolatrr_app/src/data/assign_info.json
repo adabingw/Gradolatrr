@@ -1,0 +1,15 @@
+{
+    "assignment 1": {
+        "type": "course_mat",
+        "id": "aaa",
+        "course_id": "abcde",
+        "course_name": "ECON101",
+        "content": {
+            "name": "assignment 1",
+            "mark": 100,
+            "weight": 2,
+            "tags": ["assignment"], 
+            "description": ""
+        } 
+    }
+}

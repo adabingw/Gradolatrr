@@ -23,7 +23,7 @@
 </script>
 
 <div class="sidebar">
-    <h3>G</h3>
+    <h3>GRADROLATRR</h3>
     <NewButton type="new_term" name="+ new term" />
     <!-- <NewButton type="new_course" name="+ new course" /> -->
     <div class="content">

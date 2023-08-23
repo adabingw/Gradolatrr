@@ -16,45 +16,20 @@
     import TagBlock from '../utils/TagBlock.svelte';
     import Button from '../utils/Button.svelte';
     import { sortOrder, dragover, dragstart } from "../utils/utils.svelte";
+    import new_course from "../data/new_course.json";
 
     let info;
-    let properties = {
-        metadata: {
-            name: name,
-            type: "course",
-            id: "abcde",
-            term_id: term_id,
-            term_name: term_name
-        },
-        content_info: {
-            type: "desc",
-            "name": {
-                checked: true, 
-                type: "number", 
-                required: true,
-            },
-            "mark": {
-                checked: true, 
-                type: "number", 
-                required: false,
-            },
-            "weighting": {
-                checked: true, 
-                type: "number", 
-                required: false,
-            },
-            "tags": {
-                checked: true, 
-                type: "tags",
-                required: false,
-            },
-            "description": {
-                checked: false, 
-                type: "textarea",
-                required: false,
-            }
-        }
+    new_course["term_id"] = term_id; 
+    new_course["term_name"] = term_name;
+
+    let content_array = []
+
+    for (const key in info) {
+        if (key == "metadata" || key == "content_info") continue; 
+        content_array.push([ key, info[key] ])
     }
+
+    content_array = sortOrder(content_array);
 
     function addProperty() {
         console.log("add property")
@@ -77,15 +52,6 @@
         term_info[name] = info;
     }
 
-    let content_array = []
-
-    for (const key in info) {
-        if (key == "metadata" || key == "content_info") continue; 
-        content_array.push([ key, info[key] ])
-    }
-
-    content_array = sortOrder(content_array);
-
     function drop (ev, key2, index2) {
         ev.preventDefault();
         var key = ev.dataTransfer.getData("key");
@@ -100,7 +66,6 @@
         for (const [i, value] of Object.entries(info)) {
             if (i == "metadata" || i == "content_info") continue;
             if (i == key) continue;
-            console.log(i)
             const o = info[i]["order"]
             if (orders.includes(o)) {
                 orders.push(o + 1);
@@ -125,6 +90,7 @@
         {#each Object.keys(content_array) as i}
             <TableBodyRow>
             {#if content_array[i] != "metadata"}
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div class="TableBodyRow" draggable={true} 
             on:dragstart={event => dragstart(event, content_array[i][0] , i)}
             on:drop={event => drop(event, content_array[i][0], i)} on:dragover={dragover}>>
@@ -135,10 +101,10 @@
                         <p></p>
                     {:else if j == "content"}
                         <!-- svelte-ignore empty-block -->
-                        {#if properties[i]["type"] == "textbox"}
+                        {#if new_course[i]["type"] == "textbox"}
                             <TextArea bind:inputText={content_array[i][1][j]} 
                                       bind:changed={changed} />
-                        {:else if properties[i]["type"] == "tags"}
+                        {:else if new_course[i]["type"] == "tags"}
                             <!-- ADD MESSAGE HANDLER TO HANDLE DISPATCH WHEN TAG ADDED -->
                             <TagBlock bind:properties={content_array[i][1][j]} />
                         {/if}

@@ -1,7 +1,7 @@
 Rewritten from my old project <a href="https://github.com/adabingw/CalculatingGrade">CalculatingGrade</a> that which Java Swing, Java AWT and MySQL.
 
-First Rewrite: August 2022 (deprecated)
-Second Rewrite: August 2023
+First migration: August 2022 (deprecated) <br />
+Second migration: August 2023
 
 Deprecated stack:
 <ul>

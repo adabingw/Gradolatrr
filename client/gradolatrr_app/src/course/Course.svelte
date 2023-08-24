@@ -14,8 +14,8 @@
 
     // get info from id
 
-    let content = course_info[name]["content"]
-    let content_info = course_info[name]["content_info"]
+    let content = course_info["content"]
+    let content_info = course_info["content_info"]
     let sortKey = 'name'; // default sort key
     let sortDirection = 1; // default sort direction (ascending)
     let content_array = []

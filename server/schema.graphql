@@ -1,0 +1,50 @@
+schema {
+    query: Query 
+}
+
+type Assignment {
+    id: ID!,
+    type: String!, 
+    name: String!, 
+    courseId: ID!, 
+    courseName: ID!, 
+    termId: ID!, 
+    termName: ID!, 
+    data: [Data]
+}
+
+type Course {
+    id: ID!,
+    type: String!, 
+    name: String!, 
+    termId: ID!, 
+    termName: ID!, 
+    data: [Data], 
+    contentInfo: [ContentInfo]
+}
+
+type Term {
+    id: ID!, 
+    name: String!, 
+    type: String!, 
+    archived: Boolean!, 
+    current: Boolean!, 
+    data: [Data]
+}
+
+type ContentInfo {
+    name: String!,
+    checked: Boolean!, 
+    type: String!, 
+    required: Boolean!, 
+    order: Int!
+}
+
+type Data {
+    name: String!, 
+    type: String!, 
+    content: DynamicType, 
+    order: Int
+}
+
+union DynamicType = Int | String | [[String, String]]

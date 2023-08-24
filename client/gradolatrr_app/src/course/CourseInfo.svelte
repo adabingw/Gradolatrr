@@ -12,7 +12,7 @@
     
     // get info from id
 
-    let info = course_info[name]
+    let info = course_info;
 
     function saveChanges() {
         console.log("save changes")

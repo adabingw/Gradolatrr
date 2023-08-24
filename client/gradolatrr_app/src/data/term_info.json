@@ -1,28 +1,24 @@
 {
-    "2A": {
-        "metadata": {
-            "name": "2A",
-            "type": "term",
-            "id": "1234567890",
-            "archived": false,
-            "current": true  
+    "id": "1234567890",
+    "name": "2A",
+    "type": "term",
+    "archived": false,
+    "current": true,
+    "content": {
+        "ECON101": {
+            "type": "course",
+            "id": "abcde"
         },
-        "content": {
-            "ECON101": {
-                "type": "course",
-                "id": "abcde"
-            },
-            "PSYCH101": {
-                "type": "course",
-                "id": "fgjijk"
-            }
-        },
-        "data": {
-            "description": {
-                "type": "textarea",
-                "content": "hello",
-                "order": 0
-            }
+        "PSYCH101": {
+            "type": "course",
+            "id": "fgjijk"
+        }
+    },
+    "data": {
+        "description": {
+            "type": "textarea",
+            "content": "hello",
+            "order": 0
         }
     }
 }

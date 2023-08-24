@@ -1,67 +1,64 @@
 {
-    "assignment 1": {
-        "metadata": {
-            "type": "item",
-            "id": "aaa",
-            "course_id": "abcde",
-            "course_name": "ECON101",
-            "term_name": "2A",
-            "term_id": "1234567890"
+    "id": "aaa",
+    "type": "item",
+    "name": "assignment 1",
+    "course_id": "abcde",
+    "course_name": "ECON101",
+    "term_name": "2A",
+    "term_id": "1234567890",
+    "data": {
+        "name": {
+            "content": "assignment 1",
+            "type": "text"
         },
-        "data": {
-            "name": {
-                "content": "assignment 1",
-                "type": "text"
-            },
-            "mark": {
-                "content": 100,
-                "type": "number"
-            },
-            "weight": {
-                "content": 2, 
-                "type": "number"
-            },
-            "tags": {
-                "content": ["assignment", 0],
-                "type": "tags", 
-                "addition": [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]]
-            }, 
-            "description": {
-                "content": "", 
-                "type": "textarea"
-            }
+        "mark": {
+            "content": 100,
+            "type": "number"
         },
-        "content_info": {
-            "name": {
-                "checked": true, 
-                "type": "text", 
-                "required": true,
-                "order": 0
-            },
-            "mark": {
-                "checked": true, 
-                "type": "number", 
-                "required": false,
-                "order": 1
-            },
-            "weight": {
-                "checked": true, 
-                "type": "number",
-                "required": false,
-                "order": 2
-            },
-            "tags": {
-                "checked": true, 
-                "type": "tags",
-                "required": false,
-                "order": 3
-            },
-            "description": {
-                "checked": false, 
-                "type": "textarea",
-                "required": false,
-                "order": 4
-            }
+        "weight": {
+            "content": 2, 
+            "type": "number"
+        },
+        "tags": {
+            "content": ["assignment", 0],
+            "type": "tags", 
+            "addition": [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]]
+        }, 
+        "description": {
+            "content": "", 
+            "type": "textarea"
+        }
+    },
+    "content_info": {
+        "name": {
+            "checked": true, 
+            "type": "text", 
+            "required": true,
+            "order": 0
+        },
+        "mark": {
+            "checked": true, 
+            "type": "number", 
+            "required": false,
+            "order": 1
+        },
+        "weight": {
+            "checked": true, 
+            "type": "number",
+            "required": false,
+            "order": 2
+        },
+        "tags": {
+            "checked": true, 
+            "type": "tags",
+            "required": false,
+            "order": 3
+        },
+        "description": {
+            "checked": false, 
+            "type": "textarea",
+            "required": false,
+            "order": 4
         }
     }
 }

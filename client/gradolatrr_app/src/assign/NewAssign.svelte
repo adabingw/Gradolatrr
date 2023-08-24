@@ -13,11 +13,11 @@
     let id;
     let name;
 
-    new_assign["metadata"]["course_id"] = course_id;
-    new_assign["metadata"]["course_name"] = course_name;
-    new_assign["metadata"]["term_id"] = term_id;
-    new_assign["metadata"]["term_name"] = term_name;
-    new_assign["content_info"] = course_info[course_name]["content_info"]
+    new_assign["course_id"] = course_id;
+    new_assign["course_name"] = course_name;
+    new_assign["term_id"] = term_id;
+    new_assign["term_name"] = term_name;
+    new_assign["content_info"] = course_info["content_info"]
 
     let info = new_assign;
 
@@ -38,7 +38,7 @@
             new_assign["data"][i] = {
                 "content": [["", 0]], 
                 "type": value["type"], 
-                "addition": course_info[course_name]["data"][i]["content"]
+                "addition": course_info[course_id]["data"][i]["content"]
             }
         }
     }

@@ -1,116 +1,118 @@
 {
-    "ECON101": {
-        "metadata": {
-            "type": "course",
-            "id": "abcde",
-            "term_id": "abcde",
-            "term_name": "ECON101"
-        },
-        "content": {
-            "assignment 1": {
-                "type": "course_mat", 
-                "id": "aaa",
-                "content": {
-                    "name": "assignment 1",
-                    "mark": 100,
-                    "weight": 2,
-                    "tags": ["assignment"], 
-                    "description": ""
-                }
-            }, 
-            "assignment 2": {
-                "type": "course_mat", 
-                "id": "aab",
-                "content": {
-                    "name": "assignment 2",
-                    "mark": 85,
-                    "weight": 5,
-                    "tags": ["assignment"], 
-                    "description": ""
-                }
-            }, 
-            "midterm": {
-                "type": "course_mat", 
-                "id": "aac",
-                "content": {
-                    "name": "midterm",
-                    "mark": 100,
-                    "weight": 2,
-                    "tags": ["midterm"], 
-                    "description": "covers module 1 - 3"
-                }
-            }, 
-            "lab 2": {
-                "type": "course_mat", 
-                "id": "aad",
-                "content": {
-                    "name": "lab 2",
-                    "mark": 59,
-                    "weight": 3,
-                    "tags": ["lab"], 
-                    "description": "covers acids and bases"
-                }
-            }, 
-            "final": {
-                "type": "course_mat", 
-                "id": "aae",
-                "content": {
-                    "name": "final",
-                    "mark": 88,
-                    "weight": 30,
-                    "tags": ["final"], 
-                    "description": "must pass in order to pass course"
-                }
-            }
-        },
-        "content_info": {
-            "name": {
-                "checked": true, 
-                "type": "text", 
-                "required": true,
-                "order": 0
-            },
-            "mark": {
-                "checked": true, 
-                "type": "number", 
-                "required": false,
-                "order": 1
-            },
-            "weight": {
-                "checked": true, 
-                "type": "number",
-                "required": false,
-                "order": 2
-            },
-            "tags": {
-                "checked": true, 
-                "type": "tags",
-                "required": false,
-                "order": 3
-            },
-            "description": {
-                "checked": false, 
-                "type": "textarea",
-                "required": false,
-                "order": 4
+    "id": "abcde",
+    "type": "course",
+    "name": "ECON101",
+    "term_id": "1234567890",
+    "term_name": "ECON101",
+    "content": {
+        "aaa": {
+            "type": "course_mat", 
+            "name": "assignment 1",
+            "id": "aaa",
+            "content": {
+                "name": "assignment 1",
+                "mark": 100,
+                "weight": 2,
+                "tags": ["assignment"], 
+                "description": ""
             }
         }, 
-        "data": {
-            "description": {
-                "type": "textarea",
-                "content": "hello", 
-                "order": 5
-            }, 
-            "resource": {
-                "type": "textarea",
-                "content": "resource",
-                "order": 1
-            },
-            "tags": {
-                "type": "tags",
-                "content": [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]],
-                "order": 2
+        "aab": {
+            "type": "course_mat", 
+            "name": "assignment 2",
+            "id": "aab",
+            "content": {
+                "name": "assignment 2",
+                "mark": 85,
+                "weight": 5,
+                "tags": ["assignment"], 
+                "description": ""
             }
+        }, 
+        "aac": {
+            "type": "course_mat", 
+            "name": "midterm",
+            "id": "aac",
+            "content": {
+                "name": "midterm",
+                "mark": 100,
+                "weight": 2,
+                "tags": ["midterm"], 
+                "description": "covers module 1 - 3"
+            }
+        }, 
+        "aad": {
+            "type": "course_mat", 
+            "name": "lab 2",
+            "id": "aad",
+            "content": {
+                "name": "lab 2",
+                "mark": 59,
+                "weight": 3,
+                "tags": ["lab"], 
+                "description": "covers acids and bases"
+            }
+        }, 
+        "aae": {
+            "type": "course_mat", 
+            "name": "final",
+            "id": "aae",
+            "content": {
+                "name": "final",
+                "mark": 88,
+                "weight": 30,
+                "tags": ["final"], 
+                "description": "must pass in order to pass course"
+            }
+        }
+    },
+    "content_info": {
+        "name": {
+            "checked": true, 
+            "type": "text", 
+            "required": true,
+            "order": 0
+        },
+        "mark": {
+            "checked": true, 
+            "type": "number", 
+            "required": false,
+            "order": 1
+        },
+        "weight": {
+            "checked": true, 
+            "type": "number",
+            "required": false,
+            "order": 2
+        },
+        "tags": {
+            "checked": true, 
+            "type": "tags",
+            "required": false,
+            "order": 3
+        },
+        "description": {
+            "checked": false, 
+            "type": "textarea",
+            "required": false,
+            "order": 4
+        }
+    }, 
+    "data": {
+        "description": {
+            "type": "textarea",
+            "content": "hello", 
+            "order": 5
+        }, 
+        "resource": {
+            "type": "textarea",
+            "content": "resource",
+            "order": 1
+        },
+        "tags": {
+            "type": "tags",
+            "content": [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]],
+            "order": 2
         }
     }
 }

@@ -1,11 +1,9 @@
 {
-    "metadata": {
-        "name": "",
-        "type": "course",
-        "id": -1,
-        "term_id": -1,
-        "term_name": -1
-    },
+    "name": "",
+    "type": "course",
+    "id": -1,
+    "term_id": -1,
+    "term_name": -1,
     "content_info": {
         "name": {
             "checked": true, 

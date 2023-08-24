@@ -8,12 +8,12 @@
     export let name;
 
     // get info from id
-    let info = term_info[name]
-    let checked = info["metadata"]["current"];
+    let info = term_info
+    let checked = info["current"];
 
     function archiveClick() {
-        term_info[name]["metadata"]["archived"] = !term_info[name]["metadata"]["archived"];
-        info = term_info[name];
+        term_info["archived"] = !term_info["archived"];
+        info = term_info;
         console.log("archiving course")
     }
 

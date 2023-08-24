@@ -5,7 +5,7 @@
 
     export let id;
     export let name;
-    let info = assign_info[name]
+    let info = assign_info;
 
     function saveChanges() {
         console.log("save changes")

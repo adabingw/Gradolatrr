@@ -7,9 +7,7 @@
             "archived": false,
             "current": true  
         },
-        "course": {
-            "type": "dict",
-            "order": 1,
+        "content": {
             "ECON101": {
                 "type": "course",
                 "id": "abcde"
@@ -19,10 +17,12 @@
                 "id": "fgjijk"
             }
         },
-        "description": {
-            "type": "textbox",
-            "content": "hello",
-            "order": 0
+        "data": {
+            "description": {
+                "type": "textarea",
+                "content": "hello",
+                "order": 0
+            }
         }
     }
 }

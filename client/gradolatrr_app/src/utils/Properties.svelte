@@ -1,38 +1,61 @@
 <script>
-    export let courseinfo;
-    const dispatch = createEventDispatcher();
-
     import { createEventDispatcher } from 'svelte';
 
     import Close from "../assets/delete_icon.png";
     import Button from './Button.svelte';
+    import TextField from './TextField.svelte';
+    import Dropdown from './Dropdown.svelte';
+
+    export let courseinfo;
+
+    let add = false;
+    let info_name;
+    let info_type;
+    let types = [["text", 0], ["number", 0], ["tags", 0], ["textarea", 0]];
+
+    const dispatch = createEventDispatcher();
 
     /**
    * @param {string | number} name
    */
-    function checkTag(name) {
-        courseinfo[name]["checked"] = !courseinfo[name]["checked"];
-        dispatch('message', {
-            text: 'checked'
-        });
+    function checkInfo(name) {
+        dispatch('info', {
+            info: 'checked'
+        })
     }
 
-    function addTag() {
+    function addInfo() {
         console.log("add tag")
-        dispatch('message', {
-            text: 'add'
-        });
+        add = true;
     }
 
-    /**
-   * @param {string | number} name
-   */
-    function deleteTag(name) {
-        console.log("deleting type")
-        delete courseinfo[name]["content_info"][name]
-        dispatch('message', {
-            text: 'delete'
+    function saveInfo() {
+        let new_info = {
+            "checked": true, 
+            "type": info_type, 
+            "required": false,
+            "order": 0
+        }
+        courseinfo[info_name] = new_info;
+        dispatch('info', {
+            info: 'saved'
         });
+        add = false;
+        info_name = "";
+    }
+
+    function cancelInfo() {
+        add = false;
+    }
+
+    function deleteTag(name) {
+        // delete courseinfo[name]
+        dispatch('info', {
+            info: 'delete',
+            data: name
+        })
+
+        info_name = "";
     }
 </script>
 
@@ -46,7 +69,7 @@
                     {#if !courseinfo[item]["required"]}
                         <input type="checkbox"
                         bind:checked={courseinfo[item]["checked"]} 
-                        on:change={() => {checkTag(item)}}/>
+                        on:change={() => {checkInfo(item)}}/>
                     {:else}
                         &nbsp; &nbsp;
                     {/if} {item}
@@ -59,7 +82,14 @@
             </div>
         {/if}
     {/each}
-    <Button text="+ add course info" on:click={() => addTag()} />
+    {#if add}
+        <TextField bind:inputText={info_name} type="text" text=""/>
+        <Dropdown info={types} bind:selected={info_type}/>
+        <Button text="save" on:message={saveInfo} />
+        <Button text="cancel" on:message={cancelInfo} />
+    {:else}
+        <Button text="+ add course info" on:click={() => addInfo()} on:message={addInfo} />
+    {/if}
 </div>
 
 <style>

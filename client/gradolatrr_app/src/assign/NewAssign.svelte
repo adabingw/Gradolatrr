@@ -1,35 +1,53 @@
-<script>
-    let id;
-    let name;
+<script>    
+    import TextField from '../utils/TextField.svelte';
+    import CancelOrSave from '../utils/CancelOrSave.svelte';
+    import course_info from "../data/course_info.json";
+    import new_assign from "../data/new_assign.json";
+    import InfoTable from '../utils/InfoTable.svelte';
+
     export let course_id;
     export let course_name;
     export let term_id;
     export let term_name;
 
-    let foo = true;
+    let id;
+    let name;
 
-    import { Table, TableBody, TableBodyCell, TableBodyRow } from 'flowbite-svelte';
+    new_assign["metadata"]["course_id"] = course_id;
+    new_assign["metadata"]["course_name"] = course_name;
+    new_assign["metadata"]["term_id"] = term_id;
+    new_assign["metadata"]["term_name"] = term_name;
+    new_assign["content_info"] = course_info[course_name]["content_info"]
 
-    import TextField from '../utils/TextField.svelte';
-    import Dropdown from '../utils/Dropdown.svelte';
-    import CancelOrSave from '../utils/CancelOrSave.svelte';
-    import TextArea from '../utils/TextArea.svelte';
-    import course_info from "../data/course_info.json";
-    import new_assign from "../data/new_assign.json";
+    let info = new_assign;
 
-    let course_content = course_info[course_name]["content_info"]
-    new_assign["course_id"] = course_id;
-    new_assign["course_name"] = course_name;
-    new_assign["term_id"] = term_id;
-    new_assign["term_name"] = term_name;
-
-    for (let i of Object.keys(course_content)) {
-        if (i == "type") continue;
-        new_assign["content"][i] = "";
+    for (let i of Object.keys(new_assign["content_info"])) {
+        console.log(i)
+        let value = new_assign["content_info"][i];
+        if (value["type"] == "text" || value["type"] == "textarea") 
+            new_assign["data"][i] = {
+                "content": "", 
+                "type": value["type"]
+            };
+        else if (value["type"] == "number") 
+            new_assign["data"][i] = {
+                "content": 0, 
+                "type": value["type"]
+            };
+        else if (value["type"] == "tags") {
+            new_assign["data"][i] = {
+                "content": [["", 0]], 
+                "type": value["type"], 
+                "addition": course_info[course_name]["data"][i]["content"]
+            }
+        }
     }
 
     function saveChanges() {
         console.log("save changes")
+        console.log(new_assign)
+        // ADD COURSE CONTENT
+        // DONE
     }
 
 </script>
@@ -37,31 +55,7 @@
 <div>
     <p>Create new item   {term_name}/{course_name}</p>
     <TextField type="text" text="item name" bind:inputText={name}/>
-    <Table>
-        <TableBody>
-        {#each Object.keys(course_content) as i}
-            <TableBodyRow>
-            {#if i != "type"}
-            <div>
-                <TableBodyCell class="term-header tablecol">{i}</TableBodyCell>
-                <TableBodyCell>
-                {#if course_content[i]["type"] == "textarea"}
-                    <TextArea bind:inputText={new_assign["content"][i]} bind:changed={foo} />
-                {:else if course_content[i]["type"] == "text"}
-                    <TextField type="text" text="" bind:inputText={new_assign["content"][i]}/>
-                {:else if course_content[i]["type"] == "number"}
-                    <TextField type="number" text="" bind:inputText={new_assign["content"][i]}/>
-                {:else if course_content[i]["type"] == "tags"}
-                    <!-- ADD BINDING -->
-                    <Dropdown info={course_info[course_name]["tags"]["content"]} />
-                {/if}
-                </TableBodyCell>
-            </div>
-            {/if}
-            </TableBodyRow>
-        {/each}
-        </TableBody>
-    </Table>
+    <InfoTable cmd="assign" bind:info={info} />
     <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} />
 </div>
 

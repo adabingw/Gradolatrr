@@ -16,7 +16,6 @@
     });
 
     function termClick(k) {
-        console.log("lalala")
         expand[k] = !expand[k];
     }
 

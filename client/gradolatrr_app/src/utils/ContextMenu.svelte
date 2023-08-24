@@ -1,17 +1,30 @@
-<script context="module">
-    let menu = { h: 0, w: 0 }
-    let browser = { h: 0, w: 0 }
-    export let menuItems;
+<script>
+    import { createEventDispatcher } from 'svelte';
+
     export let showMenu = false;
-    export let pos = { x: 0, y: 0 }
     export let x;
     export let y;
+    export let index;
+
+    let menu = { h: 0, w: 0 }
+    let browser = { h: 0, w: 0 }
+    let pos = { x: 0, y: 0 }
+    let menuItems = [
+        {
+            'name': 'trash',
+            'onClick': menuClick,
+            'displayText': "Trash",
+            'class': 'fa-solid fa-trash-can'
+        }
+    ]
+    const dispatch = createEventDispatcher();
     
-    export function openMenu() {
+    function openMenu() {
+        showMenu = true;
         pos = {
             x: x, y: y
         }
-        // showMenu = true;
+
         browser = {
             w: window.innerWidth,
             h: window.innerHeight
@@ -20,8 +33,7 @@
         if (browser.h -  pos.y < menu.h)
             pos.y = pos.y - menu.h
         if (browser.w -  pos.x < menu.w)
-            pos.x = pos.x - menu.w
-        console.log("opening menu")
+            pos.x = pos.x - menu.w        
     }
     
     function getContextMenuDimension(node){
@@ -34,60 +46,24 @@
     }
 
     function menuClick() {
-        console.log("yeah")
+        showMenu = false; 
+        dispatch('context', {
+            context: "delete",
+            index: index
+        })
     }
 
-    menuItems = [
-        {
-            'name': 'addItem',
-            'onClick': menuClick,
-            'displayText': "Add Item",
-            'class': 'fa-solid fa-plus'
-        },
-        {
-            'name': 'emptyicons',
-            'onClick': menuClick,
-            'displayText': "Empty Icon",
-            'class': 'fa-solid fa-square'
-        },
-        {
-            'name': 'zoom',
-            'onClick': menuClick,
-            'displayText': "Zoom",
-            'class': 'fa-solid fa-magnifying-glass'
-        },
-        {
-            'name': 'printMenu',
-            'onClick': menuClick,
-            'displayText': "Print",
-            'class': 'fa-solid fa-print'
-        },
-        {
-            'name': 'hr',
-        },
-        {
-            'name': 'settings',
-            'onClick': menuClick,
-            'displayText': "Settings",
-            'class': 'fa-solid fa-gear'
-        },
-        {
-            'name': 'hr',
-        },
-        {
-            'name': 'trash',
-            'onClick': menuClick,
-            'displayText': "Trash",
-            'class': 'fa-solid fa-trash-can'
-        },
-    ]
-
+    function onPageClick() {
+        showMenu = false;
+    }
 </script>
+
 <div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
         integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 </div>
+
 <style>
 * {
     padding: 0;
@@ -163,5 +139,5 @@ hr{
 </nav>
 {/if}
 
-<!-- <svelte:window on:click={onPageClick} /> -->
+<svelte:window on:click={onPageClick} />
 

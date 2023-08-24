@@ -6,21 +6,6 @@
             "term_id": "abcde",
             "term_name": "ECON101"
         },
-        "description": {
-            "type": "textbox",
-            "content": "hello", 
-            "order": 5
-        }, 
-        "resource": {
-            "type": "textbox",
-            "content": "resource",
-            "order": 1
-        },
-        "tags": {
-            "type": "tags",
-            "content": [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]],
-            "order": 2
-        },
         "content": {
             "assignment 1": {
                 "type": "course_mat", 
@@ -79,10 +64,9 @@
             }
         },
         "content_info": {
-            "type": "desc",
             "name": {
                 "checked": true, 
-                "type": "number", 
+                "type": "text", 
                 "required": true,
                 "order": 0
             },
@@ -109,6 +93,23 @@
                 "type": "textarea",
                 "required": false,
                 "order": 4
+            }
+        }, 
+        "data": {
+            "description": {
+                "type": "textarea",
+                "content": "hello", 
+                "order": 5
+            }, 
+            "resource": {
+                "type": "textarea",
+                "content": "resource",
+                "order": 1
+            },
+            "tags": {
+                "type": "tags",
+                "content": [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]],
+                "order": 2
             }
         }
     }

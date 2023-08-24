@@ -6,9 +6,9 @@
 
 <div class="input-row">
     {#if type == "text"}
-      <input type="text" class="input-text" placeholder={text} bind:value={inputText}/>
+      <input type="text" class="input-text" autofocus placeholder={text} bind:value={inputText}/>
     {:else if type == "number"}
-      <input type="number" class="input-text" placeholder={text} bind:value={inputText}/>
+      <input type="number" class="input-text" autofocus placeholder={text} bind:value={inputText}/>
     {/if}
 </div>
 

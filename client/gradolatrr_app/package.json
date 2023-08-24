@@ -24,6 +24,7 @@
     "date-picker-svelte": "^2.6.0",
     "flowbite-svelte": "^0.44.4",
     "flowbite-svelte-icons": "^0.3.6",
+    "just-omit": "^2.2.0",
     "svelte-navigator": "^3.2.2"
   }
 }

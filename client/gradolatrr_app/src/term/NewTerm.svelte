@@ -1,21 +1,19 @@
 <script>
+    import CancelOrSave from "../utils/CancelOrSave.svelte";
+    import TextField from "../utils/TextField.svelte";
+    import InfoTable from "../utils/InfoTable.svelte";
+    import new_term from "../data/new_term.json";
+
     let id = 1129;
     let checked;
     let name;
 
-    import CancelOrSave from "../utils/CancelOrSave.svelte";
-    import TextField from "../utils/TextField.svelte";
-    import Button from "../utils/Button.svelte";
-    import new_term from "../data/new_term.json";
-
-    function addProperty() {
-        console.log("add property")
-    }
+    let info = new_term;
 
     function saveChanges() {
         console.log("save changes")
+        console.log(info)
     }
-
 </script>
 
 <div>
@@ -25,6 +23,6 @@
         <input type="checkbox" bind:checked={checked} /> select as current term.
         <!-- CHECK IF HAS CURRENT TERM FOR OTHER TERM. IF YES, RAISE ERROR -->
     </label>
-    <Button text="+ add property" on:click={addProperty} />
+    <InfoTable cmd="course" bind:info={info} />
     <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>

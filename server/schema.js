@@ -59,7 +59,7 @@ const RootQuery = new GraphQLObjectType({
         },
         all_assignments: {
             type: new GraphQLList(Assignment), 
-            description: 'all the courses', 
+            description: 'all the assignments', 
             resolve: () => {
 
             }

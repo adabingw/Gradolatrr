@@ -1,5 +1,72 @@
+type Query {
+    term(id: ID!): Term, 
+    terms: [Term], 
+    all_courses: [Course], 
+    courses(term_id: ID!): [Course], 
+    course(course_id: ID!): Course, 
+    all_assignments: [Assignment], 
+    assignments(course_id: ID!): [Assignment], 
+    assignment(assignment_id: ID!): Assignment, 
+}
+
+type Mutation {
+    add_term(
+        id: ID!, 
+        name: String!, 
+        archived: Boolean!, 
+        current: Boolean!, 
+        data: [Data]
+    ): ID, 
+    add_course(
+        id: ID!,
+        name: String!, 
+        termId: ID!, 
+        termName: ID!, 
+        data: [Data], 
+        contentInfo: [ContentInfo]
+    ): String, 
+    add_assignments(
+        id: ID!,
+        num: Int!,
+        suffix: String!, 
+        courseId: ID!, 
+        courseName: ID!, 
+        termId: ID!, 
+        termName: ID!, 
+        data: [Data]
+    ): String, 
+    add_assignment(
+        id: ID!,
+        name: String!, 
+        courseId: ID!, 
+        courseName: ID!, 
+        termId: ID!, 
+        termName: ID!, 
+        data: [Data]
+    ): String, 
+
+    update_assignment(
+        id: ID!,
+        data: [Data]
+    ): String, 
+    update_course(
+        id: ID!, 
+        data: [Data], 
+        contentInfo: [ContentInfo]
+    ): String, 
+    update_term(
+        id: ID!, 
+        data: [Data]
+    ): String, 
+
+    delete_assignment(id: ID!): String, 
+    delete_course(id: ID!): String, 
+    delete_term(id: ID!): String
+}
+
 schema {
-    query: Query 
+    query: Query, 
+    mutation: Mutation
 }
 
 type Assignment {
@@ -10,7 +77,9 @@ type Assignment {
     courseName: ID!, 
     termId: ID!, 
     termName: ID!, 
-    data: [Data]
+    data: [Data], 
+    course(course_id: ID!): Course, 
+    term(term_id: ID!): Term
 }
 
 type Course {
@@ -21,6 +90,8 @@ type Course {
     termName: ID!, 
     data: [Data], 
     contentInfo: [ContentInfo]
+    assignments(course_id: ID!): [Assignment], 
+    term(term_id: ID!): Term
 }
 
 type Term {
@@ -29,7 +100,8 @@ type Term {
     type: String!, 
     archived: Boolean!, 
     current: Boolean!, 
-    data: [Data]
+    data: [Data], 
+    courses(term_id: ID!): [Course]
 }
 
 type ContentInfo {

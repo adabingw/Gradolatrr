@@ -4,6 +4,8 @@
     import { onMount } from "svelte";
     import axios from "axios";
     import { Router, Route } from "svelte-navigator";
+    import { ApolloClient, InMemoryCache } from "@apollo/client/core";
+    import { setClient } from "svelte-apollo";
 
     import Sidebar from "./sidebar/Sidebar.svelte";
     import Dashboard from "./dashboard/Dashboard.svelte";
@@ -36,6 +38,13 @@
             }
         }
     }
+
+    const client = new ApolloClient({
+        uri: '',
+        cache: new InMemoryCache(),
+    });
+
+    setClient(client);
 </script>
 
 <div>

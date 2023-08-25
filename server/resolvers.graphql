@@ -1,0 +1,50 @@
+Query : {
+    term(obj, args, context, info) {
+        
+    },
+    terms(obj, args, context, info) {
+
+    }, 
+    all_courses(obj, args, context, info) {
+
+    },
+    courses(obj, args, context, info) {
+
+    }, 
+    course(obj, args, context, info) {
+
+    },
+    all_assignments(obj, args, context, info) {
+
+    }, 
+    assignments(obj, args, context, info) {
+
+    }, 
+    assignment(obj, args, context, info) {
+
+    }
+}
+
+Assignment: {
+    course(obj, args, context, info) {
+
+    },
+    term(obj, args, context, info) {
+
+    }
+}
+
+Course: {
+    assignments(obj, args, context, info) {
+
+    }, 
+    term(obj, args, context, info) {
+
+    }
+}
+
+Term: {
+    courses(obj, args, context, info) {
+        
+    }
+}

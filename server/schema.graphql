@@ -15,15 +15,15 @@ type Mutation {
         name: String!, 
         archived: Boolean!, 
         current: Boolean!, 
-        data: [Data]
+        data: [DataInput]
     ): ID, 
     add_course(
         id: ID!,
         name: String!, 
         termId: ID!, 
         termName: ID!, 
-        data: [Data], 
-        contentInfo: [ContentInfo]
+        data: [DataInput], 
+        contentInfo: [ContentInfoInput]
     ): String, 
     add_assignments(
         id: ID!,
@@ -33,7 +33,7 @@ type Mutation {
         courseName: ID!, 
         termId: ID!, 
         termName: ID!, 
-        data: [Data]
+        data: [DataInput]
     ): String, 
     add_assignment(
         id: ID!,
@@ -42,21 +42,21 @@ type Mutation {
         courseName: ID!, 
         termId: ID!, 
         termName: ID!, 
-        data: [Data]
+        data: [DataInput]
     ): String, 
 
     update_assignment(
         id: ID!,
-        data: [Data]
+        data: [DataInput]
     ): String, 
     update_course(
         id: ID!, 
-        data: [Data], 
-        contentInfo: [ContentInfo]
+        data: [DataInput], 
+        contentInfo: [ContentInfoInput]
     ): String, 
     update_term(
         id: ID!, 
-        data: [Data]
+        data: [DataInput]
     ): String, 
 
     delete_assignment(id: ID!): String, 
@@ -119,4 +119,17 @@ type Data {
     order: Int
 }
 
-union DynamicType = Int | String | [[String, String]]
+input DataInput {
+    name: String!, 
+    type: String!, 
+    content: DynamicType, 
+    order: Int
+}
+
+input ContentInfoInput {
+    name: String!,
+    checked: Boolean!, 
+    type: String!, 
+    required: Boolean!, 
+    order: Int!
+}

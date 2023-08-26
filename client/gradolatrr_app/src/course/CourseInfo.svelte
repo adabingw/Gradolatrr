@@ -8,7 +8,7 @@
     import Button from '../utils/Button.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
 
-    import course_info from "../data/course_info.json";
+    import course_info from "../constants/course_info.json";
     
     // get info from id
 

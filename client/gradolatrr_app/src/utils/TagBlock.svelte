@@ -7,7 +7,7 @@
 
     import Button from "./Button.svelte";
     import TextField from "./TextField.svelte";
-    import colours from "../data/colours.json";
+    import colours from "../constants/colours.json";
 
     const dispatch = createEventDispatcher();
 

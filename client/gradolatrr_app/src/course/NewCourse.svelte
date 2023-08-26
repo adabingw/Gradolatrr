@@ -4,7 +4,7 @@
     import TextField from "../utils/TextField.svelte";
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
-    import new_course from "../data/new_course.json";
+    import new_course from "../constants/new_course.json";
 
     export let term_id;
     export let term_name;

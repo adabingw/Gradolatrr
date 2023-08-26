@@ -4,8 +4,8 @@
     import TextField from '../utils/TextField.svelte';
     import CancelOrSave from '../utils/CancelOrSave.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
-    import course_info from "../data/course_info.json";
-    import new_assign from "../data/new_assign.json";
+    import course_info from "../constants/course_info.json";
+    import new_assign from "../constants/new_assign.json";
 
     export let course_id;
     export let course_name;

@@ -1,7 +1,7 @@
 <script>    
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import Button from "../utils/Button.svelte";
-    import term_info from "../data/term_info.json";
+    import term_info from "../constants/term_info.json";
     import InfoTable from '../utils/InfoTable.svelte';
 
     export let id;

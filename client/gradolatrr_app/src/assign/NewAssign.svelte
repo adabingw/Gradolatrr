@@ -1,8 +1,8 @@
 <script>    
     import TextField from '../utils/TextField.svelte';
     import CancelOrSave from '../utils/CancelOrSave.svelte';
-    import course_info from "../data/course_info.json";
-    import new_assign from "../data/new_assign.json";
+    import course_info from "../constants/course_info.json";
+    import new_assign from "../constants/new_assign.json";
     import InfoTable from '../utils/InfoTable.svelte';
 
     export let course_id;

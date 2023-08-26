@@ -2,7 +2,7 @@
     // @ts-nocheck
     import Edit from '../assets/edit_icon.png'
     import Button from '../utils/Button.svelte';
-    import course_info from "../data/course_info.json";
+    import course_info from "../constants/course_info.json";
 
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     import { Link } from 'svelte-navigator';

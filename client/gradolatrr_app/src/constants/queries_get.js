@@ -68,3 +68,11 @@ const ASSIGN_INFO = gql`
         }
     }
 `;
+
+export {
+    ALL_COURSES, 
+    TERM_INFO, 
+    COURSE_INFO, 
+    COURSE_CONTENT, 
+    ASSIGN_INFO
+}

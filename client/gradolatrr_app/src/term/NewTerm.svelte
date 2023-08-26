@@ -2,7 +2,7 @@
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import TextField from "../utils/TextField.svelte";
     import InfoTable from "../utils/InfoTable.svelte";
-    import new_term from "../data/new_term.json";
+    import new_term from "../constants/new_term.json";
 
     let id = 1129;
     let checked;

@@ -11,6 +11,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.2",
     "autoprefixer": "^10.4.14",
+    "dotenv": "^16.3.1",
     "postcss": "^8.4.24",
     "postcss-load-config": "^4.0.1",
     "svelte": "^4.0.5",
@@ -20,13 +21,17 @@
   },
   "dependencies": {
     "@apollo/client": "^3.8.1",
+    "aws-appsync-auth-link": "^3.0.7",
+    "aws-appsync-subscription-link": "^3.1.2",
     "aws-sdk": "^2.1444.0",
     "axios": "^1.4.0",
     "carbon-components-svelte": "^0.79.0",
     "date-picker-svelte": "^2.6.0",
     "flowbite-svelte": "^0.44.4",
     "flowbite-svelte-icons": "^0.3.6",
+    "graphql": "^16.8.0",
     "just-omit": "^2.2.0",
+    "react": "^18.2.0",
     "svelte-apollo": "^0.5.0",
     "svelte-navigator": "^3.2.2"
   }

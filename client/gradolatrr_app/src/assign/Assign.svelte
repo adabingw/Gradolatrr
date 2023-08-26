@@ -1,6 +1,6 @@
 <script>
     import CancelOrSave from "../utils/CancelOrSave.svelte";
-    import assign_info from "../data/assign_info.json";
+    import assign_info from "../constants/assign_info.json";
     import InfoTable from '../utils/InfoTable.svelte';
 
     export let id;

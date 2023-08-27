@@ -12,40 +12,27 @@
     import { ALL_COURSES } from "../constants/queries_get";
 
     const info = query(ALL_COURSES);
-
-    // let info = {
-    //     "2A": {
-    //         type: "term",
-    //         id: "1234567890",
-    //         course: {
-    //             "ECON101": {
-    //                 type: "course",
-    //                 id: "abcde"
-    //             },
-    //             "PSYCH101": {
-    //                 type: "course",
-    //                 id: "fgjijk"
-    //             }
-    //         }
-    //     }
-    // }
     let expand = {};
-    
-    Object.entries(info).forEach(([key, value]) => {
-        expand[key] = true;
-    });
 
     function termClick(k) {
         expand[k] = !expand[k];
     }
 
-    $: console.log($info.data)
+    $: {
+        console.log($info.data)
+        if ($info.data != undefined) {
+            for (const term of $info["data"]["allTerm"]["items"]) {
+                expand[term["id"]] = true;
+            }
+        }
+        console.log(expand)
+    }
 
 </script>
 
 <div class="sidebar">
     <h3>GRADROLATRR</h3>
-    <!-- <NewButton type="new_term" name="+ new term" /> -->
+    <NewButton type="new_term" name="+ new term" />
     <!-- <NewButton type="new_course" name="+ new course" /> -->
     <div class="content">
         {#if $info.loading}
@@ -53,31 +40,32 @@
         {:else if $info.error}
             <li>ERROR: {$info.error.message}</li>
         {:else}
-            {#each Object.keys($info.data) as i}
-                {i}
-                {#if $info.data[i] != undefined} 
-
+            {#each Object.keys($info.data.allTerm["items"]) as i}
+                {#if $info.data.allTerm["items"][i] != undefined} 
                     <div class="term-row">
-                        <div on:click={() => termClick(i)}>
-                            <p class="term">{i}</p>
+                        <div on:click={() => termClick($info.data.allTerm["items"][i]["id"])}>
+                            <p class="term">{$info.data.allTerm["items"][i]["name"]}</p>
                         </div>
                         <div>
-                            <Link to={`/new_course/${info[i]["id"]}/${i}`}><img  src={Add} alt="add"/> </Link>
-                            <Link to={`/term/${info[i]["id"]}/${i}`}><img  src={Edit} alt="edit"/> </Link>
+                            <Link to={`/new_course/${$info.data.allTerm["items"][i]["name"]}/${$info.data.allTerm["items"][i]["id"]}`}>
+                                <img  src={Add} alt="add"/> 
+                            </Link>
+                            <Link to={`/term/${$info.data.allTerm["items"][i]["name"]}/${$info.data.allTerm["items"][i]["id"]}`}><img  src={Edit} alt="edit"/> </Link>
                         </div>
                     </div>
                 {/if}
-                 <!-- {#if info[i]["course"] != undefined && expand[i]}
-                    {#each Object.keys(info[i]["course"]) as j}
+                 {#if $info.data.allTerm["items"][i]["courses"] != undefined && 
+                        expand[$info.data.allTerm["items"][i]["id"]]}
+                    {#each Object.keys($info.data.allTerm["items"][i]["courses"]) as j}
                         <SidebarButton 
-                            id={info[i]["course"][j]["id"]} 
-                            type={info[i]["course"][j]["type"]} 
-                            name={j}
-                            term_name={i}
-                            term_id={info[i]["id"]}
+                            id={$info.data.allTerm["items"][i]["courses"][j]["id"]} 
+                            type={$info.data.allTerm["items"][i]["courses"][j]["type"]} 
+                            name={$info.data.allTerm["items"][i]["courses"][j]["name"]}
+                            term_name={$info.data.allTerm["items"][i]["name"]}
+                            term_id={$info.data.allTerm["items"][i]["id"]}
                         />
                     {/each}
-                {/if}  -->
+                {/if} 
             {/each}
         {/if} 
     </div>
@@ -101,6 +89,10 @@
   align-items: center;
   align-self: center;
   height: 5px;
+}
+
+.term:hover {
+    cursor: pointer;
 }
 
 .content {

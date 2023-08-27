@@ -38,7 +38,9 @@
         }
         courseinfo[info_name] = new_info;
         dispatch('info', {
-            info: 'saved'
+            info: 'saved',
+            new_info: new_info, 
+            info_name: info_name
         });
         add = false;
         info_name = "";

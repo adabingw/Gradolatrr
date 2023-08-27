@@ -8,6 +8,7 @@
     export let term_id;
     export let term_name;
     let url = `/${type}/${term_id}/${term_name}/${id}/${name}`
+
 </script>
 
 {#if type == "course"}

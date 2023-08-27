@@ -3,5 +3,12 @@
     "type": "term",
     "id": -1,
     "archived": false,
-    "current": false
+    "current": false, 
+    "data": {
+        "description": {
+            "type": "textarea",
+            "content": "hello",
+            "order": 0
+        }
+    }
 }

@@ -16,8 +16,14 @@
     export let info;
 
     let data = info["data"];
+    data = JSON.parse(data);
+        
     let content_info;
-    if (cmd == "course") content_info = info["content_info"];
+    console.log(cmd)
+    if (cmd == "course") {
+        content_info = JSON.parse(info["content_info"]);
+        console.log(content_info);
+    }
 
     let data_array = [];
     for (const key in data) {
@@ -40,9 +46,12 @@
 
     function infoController(event) {
         if (event.detail.info == "delete") {
-            delete info["content_info"][event.detail.data];
+            delete content_info[event.detail.data]
+        } else if (event.detail.info == "saved") {
+            content_info[event.detail.info_name] = event.detail.new_info;
         }
-        content_info = info["content_info"];
+        info["content_info"] = JSON.stringify(content_info);
+        content_info = content_info;
     }
 
     function addedProperty(event) {
@@ -59,8 +68,18 @@
         else if (new_type == "tags") new_property["content"] = [["", 0]];
 
         data_array.push([new_name, new_property]);
-        info["data"][new_name] = new_property;
+        data[new_name] = new_property;
+        info["data"] = JSON.stringify(data);
         data_array = data_array;
+    }
+
+    function dataChange() {
+        console.log("data changed");
+        console.log(data_array);
+        for (const key of data_array) {
+            data[key[0]] = key[1];
+        }
+        info["data"] = JSON.stringify(data);
     }
 
     // only for content_info / courses
@@ -78,7 +97,8 @@
                 break;
             }
         }
-        info["data"][attribute_name]["content"].push([tag, `#${colour}`])
+        data[attribute_name]["content"].push([tag, `#${colour}`])
+        info["data"] = JSON.stringify(data);
     }
 
     function openMenu(e, index) {
@@ -90,6 +110,7 @@
     function contextController(e) {
         const context = e.detail.context; 
         const index = e.detail.index;
+        // lol need to do this
         console.log("context is: ", context)
         console.log("index is: ", index);
     }
@@ -118,15 +139,15 @@
                 <TableBodyCell class="term-header tablecol">{data[0]}</TableBodyCell>
                 <TableBodyCell>
                     {#if data[1]["type"] == "textarea"}
-                        <TextArea bind:inputText={data[1]["content"]} />
+                        <TextArea bind:inputText={data[1]["content"]} on:message={dataChange}/>
                     {:else if data[1]["type"] == "tags" && cmd == "course"}
                         <TagBlock bind:properties={data[1]["content"]} on:message={(event) => addedTag(event, data[0])}/>
-                    {:else if data[1]["type"] == "text"}
-                        <TextField bind:inputText={data[1]["content"]} text={data[1]["content"]} type="text" />
-                    {:else if data[1]["type"] == "number"}
-                        <TextField bind:inputText={data[1]["content"]} text={data[1]["content"]} type="number" />
+                    {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
+                        <TextField bind:inputText={data[1]["content"]} text={data[1]["content"]} type={data[1]["type"]} on:message={dataChange}/>
                     {:else if data[1]["type"] == "tags" && (cmd == "assign" || cmd == "bundle")}
-                        <Dropdown bind:info={data[1]["addition"]} bind:selected={data[1]["content"][0]} />
+                        {data[1]["addition"]}
+                        <!-- <Dropdown bind:info={data[1]["addition"]} 
+                            bind:selected={data[1]["content"][0]} /> -->
                     {/if}
                 </TableBodyCell>
 

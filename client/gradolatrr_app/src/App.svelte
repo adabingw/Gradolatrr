@@ -51,11 +51,11 @@
   <Router>
       <div class="flex-row">
           <Sidebar class="sidebar" />
-          <!-- <div class="homepage">
+          <div class="homepage">
             <Route path="/*">
                 <Dashboard text="dashboard"/>
-            </Route> -->
-            <!-- <Route path="/new_course/:id/:name" let:params>
+            </Route>
+            <Route path="/new_course/:id/:name" let:params>
                 <NewCourse term_id={params.id} term_name={params.name} />
             </Route>
             <Route path="/new_assign/:term_id/:term_name/:course_id/:course_name" let:params>
@@ -72,23 +72,19 @@
             <Route path="/course/:term_id/:term_name/:id/:name" let:params>
                 <Course id={params.id} name={params.name} term_id={params.term_id} term_name={params.term_name} />
             </Route>
-            <Route path="/term/:id/:name" let:params>
+            <Route path="/term/:name/:id" let:params>
                 <Term id={params.id} name={params.name} />
             </Route>
             <Route path="/course/edit/:id/:name" let:params>
                 <CourseInfo id={params.id} name={params.name} />
             </Route>
-            <Route path="/assign/edit/:id/:name" let:params>
+            <!-- <Route path="/assign/edit/:id/:name" let:params>
                 <Assign id={params.id} name={params.name} />
             </Route> -->
-          <!-- </div> -->
+          </div>
       </div>
   </Router>
 </div>  
-
-// https://svelte.dev/repl/6fb90919e24942b2b47d9ad154386b0c?version=3.49.0 -- context menu
-// https://svelte.dev/repl/3bf15c868aa94743b5f1487369378cf3?version=3.21.0
-// https://stackoverflow.com/questions/50702662/passing-parent-method-to-child-in-svelte
 
 <style>
 .homepage {

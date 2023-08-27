@@ -10,5 +10,12 @@
             "type": "text", 
             "required": true
         }
+    },
+    "data": {
+        "description": {
+            "type": "textarea",
+            "content": "hello",
+            "order": 0
+        }
     }
 }

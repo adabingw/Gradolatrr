@@ -4,26 +4,29 @@ import { gql } from "@apollo/client";
 
 const ALL_COURSES = gql`
     query {
-        terms {
-            id, 
-            name, 
-            courses {
-                id,
+        allTerm {
+            items {
+                id
                 name
+                courses {
+                    id
+                    name
+                    type
+                }
             }
         }
-    }
+    }  
 `;
 
 const TERM_INFO = gql`
-    query {
-        term(id: $id) {
+    query Terms($id: ID!) {
+        getTerm(id: $id) {
             id, 
             name,
             archived,
             current, 
             data,
-            courses(term_id: $id) { 
+            courses { 
                 id,
                 name
             }
@@ -32,8 +35,8 @@ const TERM_INFO = gql`
 `;
 
 const COURSE_INFO = gql`
-    query {
-        course(course_id: $id) {
+    query Courses($id: ID!) {
+        getCourse(id: $id) {
             id, 
             name, 
             data, 
@@ -42,12 +45,23 @@ const COURSE_INFO = gql`
     }
 `;
 
+const GET_CONTENT_INFO = gql`
+    query ContentInfo($id: ID!) {
+        getCourse(id: $id) {
+            id,
+            data,
+            content_info
+        }
+    }
+`;
+
 const COURSE_CONTENT = gql`
-    query {
-        course(course_id: $id) {
+    query CourseContent($id: ID!){
+        getCourse(id: $id) {
             id, 
             name,
-            assignments(course_id: $id) {
+            content_info,
+            assignments {
                 id, 
                 name,
                 data
@@ -74,5 +88,6 @@ export {
     TERM_INFO, 
     COURSE_INFO, 
     COURSE_CONTENT, 
+    GET_CONTENT_INFO,
     ASSIGN_INFO
 }

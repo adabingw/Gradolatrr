@@ -1,18 +1,13 @@
 -----FRONTEND-----
 
-MODULARIZE
-- table
+- tags logic doesn't work yet...figure that out
 
 FUNCTIONALITIES  
 - context menu
-- add tag
-- add property 
-- edit property
 - calculate grade for course
 - graphs
 - save
+- delete
 
 MODULES
 - dashboard
-
------BACKEND-----

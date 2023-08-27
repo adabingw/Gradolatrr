@@ -16,6 +16,8 @@
     new_course["term_name"] = term_name;
 
     let info = new_course;
+    info["data"] = JSON.stringify(info["data"]);
+    info["content_info"] = JSON.stringify(info["content_info"]);
 
     function saveChanges() {
         console.log("save changes")

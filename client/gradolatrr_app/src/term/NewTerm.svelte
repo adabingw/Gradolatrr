@@ -1,19 +1,25 @@
 <script>
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import TextField from "../utils/TextField.svelte";
+    // @ts-ignore
     import InfoTable from "../utils/InfoTable.svelte";
     import new_term from "../constants/new_term.json";
 
+    // @ts-ignore
     let id = 1129;
     let checked;
     let name;
 
     let info = new_term;
+    // @ts-ignore
+    info["data"] = JSON.stringify(info["data"]);
 
     function saveChanges() {
         console.log("save changes")
         console.log(info)
     }
+
+    console.log(info);
 </script>
 
 <div>
@@ -23,6 +29,8 @@
         <input type="checkbox" bind:checked={checked} /> select as current term.
         <!-- CHECK IF HAS CURRENT TERM FOR OTHER TERM. IF YES, RAISE ERROR -->
     </label>
-    <InfoTable cmd="course" bind:info={info} />
+    {#if info["data"] != undefined}
+        <InfoTable cmd="term" bind:info={info} />
+    {/if} 
     <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>

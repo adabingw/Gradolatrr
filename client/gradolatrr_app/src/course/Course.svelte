@@ -2,36 +2,32 @@
     // @ts-nocheck
     import Edit from '../assets/edit_icon.png'
     import Button from '../utils/Button.svelte';
-    import course_info from "../constants/course_info.json";
+    import { COURSE_CONTENT } from "../constants/queries_get";
 
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     import { Link } from 'svelte-navigator';
+    import { query } from 'svelte-apollo';
     
     export let term_id;
     export let term_name;
     export let id;
     export let name;
 
-    // get info from id
+    let query_result = query(COURSE_CONTENT, {
+        variables: { id }
+    });
+    let info;
+    let last_info;
 
-    let content = course_info["content"]
-    let content_info = course_info["content_info"]
+    let content;
+    let content_info;
     let sortKey = 'name'; // default sort key
     let sortDirection = 1; // default sort direction (ascending)
-    let content_array = []
-
-    for (const key in content) {
-        content_array.push([ key, content[key] ])
-    }
 
     function deleteAssignment(item) {
         console.log("deleting type")
         // delete term_info[name]["content_info"][item]
         // info = term_info[name]
-    }
-
-    function saveChanges() {
-        console.log("save changes")
     }
 
     function sortTable(key) {
@@ -40,22 +36,40 @@
             sortKey = key;
             sortDirection = 1;
         }
-        const sorted = content_array.sort((a, b) => {
-            const aVal = a[1]["content"][key];
-            const bVal = b[1]["content"][key];
+        const sorted = content.sort((a, b) => {
+            const aVal = a[key];
+            const bVal = b[key];
             if (aVal < bVal) return -sortDirection;
             else if (aVal > bVal) return sortDirection;
             return 0;
         });
-        content_array = sorted;
+        content = sorted;
     };
+
+    $: {
+        console.log($query_result)
+        if ($query_result.data != undefined && (last_info == info)) {
+            info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
+            last_info = JSON.parse(JSON.stringify(info));
+
+            content = JSON.parse(JSON.stringify($query_result["data"]["getCourse"]["assignments"]))
+            content_info = JSON.parse($query_result["data"]["getCourse"]["content_info"])
+        }
+    }
+
+    $: {
+        console.log(id)
+        query_result.refetch({ id });
+        last_info = info;
+    }
     
 </script>
 
 <div>
     <p>{name} <Link to={`/course/edit/${id}/${name}`}><img  src={Edit} alt="edit"/> </Link></p>    
-    {#if content_array != undefined || content_array != null}
+    {#if content != undefined || content != null}
     <Table>
+        {#if content_info != undefined || content_info != null}
         <TableHead>
             {#each Object.keys(content_info) as i}
             {#if i != "type" && content_info[i]["checked"]}
@@ -66,15 +80,20 @@
             {/each}
             <TableHeadCell> </TableHeadCell>
         </TableHead>
+        {/if}
         <TableBody class="divide-y">
-            {#each Object.keys(content_array) as i}
+            {#each Object.keys(content) as i}
             <TableBodyRow class="TableBodyRow">
-                {#each Object.keys(content_array[i][1]["content"]) as j}
+                {#each Object.keys(JSON.parse(content[i]["data"])) as j}
                     {#if content_info[j]["checked"]}
-                    <TableBodyCell>{content_array[i][1]["content"][j]}</TableBodyCell>
+                        {#if content_info[j]["type"] == "tags"}
+                            <TableBodyCell>{JSON.parse(content[i]["data"])[j]["content"][0]}</TableBodyCell>
+                        {:else}
+                            <TableBodyCell>{JSON.parse(content[i]["data"])[j]["content"]}</TableBodyCell>
+                        {/if}
                     {/if}
                 {/each}
-                <Link to={`/assign/edit/${content_array[i][1]["id"]}/${content_array[i][1]["content"]["name"]}`}>
+                <Link to={`/assign/edit/${content[i]["id"]}/${content[i]["name"]}`}>
                     <TableBodyCell class="edit">edit</TableBodyCell>
                 </Link>
                 <TableBodyCell class="edit">delete</TableBodyCell>

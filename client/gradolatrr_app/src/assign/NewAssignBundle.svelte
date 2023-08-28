@@ -54,7 +54,6 @@
     }
 
     $: {
-        console.log($query_result)
         if ($query_result.data != undefined) {
             new_assign["content_info"] = $query_result["data"]["getCourse"]["content_info"]
             let content_info = JSON.parse(new_assign["content_info"])
@@ -72,7 +71,6 @@
                     };
                 } 
                 // else if (value["type"] == "tags") {
-                //     console.log(content_info[i]["content"])
                 //     new_assign["data"][i] = {
                 //         "content": [["", 0]], 
                 //         "type": value["type"], 

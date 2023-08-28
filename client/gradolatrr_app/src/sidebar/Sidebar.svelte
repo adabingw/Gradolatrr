@@ -25,7 +25,6 @@
                 expand[term["id"]] = true;
             }
         }
-        console.log(expand)
     }
 
 </script>
@@ -47,10 +46,10 @@
                             <p class="term">{$info.data.allTerm["items"][i]["name"]}</p>
                         </div>
                         <div>
-                            <Link to={`/new_course/${$info.data.allTerm["items"][i]["name"]}/${$info.data.allTerm["items"][i]["id"]}`}>
+                            <Link to={`/new_course/${$info.data.allTerm["items"][i]["id"]}/${$info.data.allTerm["items"][i]["name"]}`}>
                                 <img  src={Add} alt="add"/> 
                             </Link>
-                            <Link to={`/term/${$info.data.allTerm["items"][i]["name"]}/${$info.data.allTerm["items"][i]["id"]}`}><img  src={Edit} alt="edit"/> </Link>
+                            <Link to={`/term/${$info.data.allTerm["items"][i]["id"]}/${$info.data.allTerm["items"][i]["name"]}`}><img  src={Edit} alt="edit"/> </Link>
                         </div>
                     </div>
                 {/if}
@@ -89,6 +88,7 @@
   align-items: center;
   align-self: center;
   height: 5px;
+  margin-top: 45px;
 }
 
 .term:hover {

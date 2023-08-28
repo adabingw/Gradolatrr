@@ -33,6 +33,7 @@
     "just-omit": "^2.2.0",
     "react": "^18.2.0",
     "svelte-apollo": "^0.5.0",
-    "svelte-navigator": "^3.2.2"
+    "svelte-navigator": "^3.2.2",
+    "uuid": "^9.0.0"
   }
 }

@@ -1,25 +1,54 @@
 <script>
+    import { mutation } from "svelte-apollo";
+    import { v4 as uuidv4 } from 'uuid';
+
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import TextField from "../utils/TextField.svelte";
-    // @ts-ignore
     import InfoTable from "../utils/InfoTable.svelte";
     import new_term from "../constants/new_term.json";
+    import { ADD_TERM } from "../constants/queries_post";
 
     // @ts-ignore
-    let id = 1129;
+    let id = uuidv4();
     let checked;
     let name;
+    let archived = false;
+    let add_term = mutation(ADD_TERM);
 
-    let info = new_term;
-    // @ts-ignore
+    let info = JSON.parse(JSON.stringify(new_term));
     info["data"] = JSON.stringify(info["data"]);
 
-    function saveChanges() {
+    async function saveChanges() {
         console.log("save changes")
         console.log(info)
+        if (name == "" || name == undefined) {
+            alert("name is required");
+            return;
+        }
+
+        if (id == -1) {
+            console.log("id is -1");
+            return;
+        }
+
+        try {
+            await add_term({ 
+                    variables: { 
+                        input: {
+                            id: id, 
+                            name: name, 
+                            type: "term",
+                            archived: archived, 
+                            current: checked, 
+                            data: info["data"] 
+                        }
+                    } 
+                });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    console.log(info);
 </script>
 
 <div>

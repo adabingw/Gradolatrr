@@ -1,24 +1,22 @@
 <script>
 // @ts-nocheck
 
-    export let id;
-    export let name;
+    import { query } from 'svelte-apollo';
 
     import CancelOrSave from '../utils/CancelOrSave.svelte';
     import Button from '../utils/Button.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
 
-    import course_info from "../constants/course_info.json";
     import { COURSE_INFO } from "../constants/queries_get";
-
-    import { query } from 'svelte-apollo';
     
+    export let id;
+    export let name;
+
     let query_result = query(COURSE_INFO, {
         variables: { id }
     });
     let info;
     let last_info;
-    let content;
 
     function saveChanges() {
         console.log("save changes")
@@ -28,7 +26,6 @@
     $: {
         console.log($query_result)
         if ($query_result.data != undefined && (last_info == info)) {
-            console.log("a fuck")
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
 

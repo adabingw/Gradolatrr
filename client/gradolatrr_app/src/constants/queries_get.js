@@ -71,12 +71,12 @@ const COURSE_CONTENT = gql`
 `;
 
 const ASSIGN_INFO = gql`
-    query {
-        assignment(assignment_id: $id) {
+    query Assignment($id: ID!) {
+        getAssignment(id: $id) {
             id, 
             name, 
             data, 
-            course(course_id: $course_id) {
+            course {
                 content_info
             }
         }

@@ -72,15 +72,15 @@
             <Route path="/course/:term_id/:term_name/:id/:name" let:params>
                 <Course id={params.id} name={params.name} term_id={params.term_id} term_name={params.term_name} />
             </Route>
-            <Route path="/term/:name/:id" let:params>
+            <Route path="/term/:id/:name" let:params>
                 <Term id={params.id} name={params.name} />
             </Route>
             <Route path="/course/edit/:id/:name" let:params>
                 <CourseInfo id={params.id} name={params.name} />
             </Route>
-            <!-- <Route path="/assign/edit/:id/:name" let:params>
+            <Route path="/assign/edit/:id/:name" let:params>
                 <Assign id={params.id} name={params.name} />
-            </Route> -->
+            </Route>
           </div>
       </div>
   </Router>

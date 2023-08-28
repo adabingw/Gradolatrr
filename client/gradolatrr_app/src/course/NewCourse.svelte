@@ -1,27 +1,60 @@
 <script>
 // @ts-nocheck
+    import { v4 as uuidv4 } from 'uuid';
+    import { mutation } from 'svelte-apollo';
     
     import TextField from "../utils/TextField.svelte";
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
     import new_course from "../constants/new_course.json";
+    import { ADD_COURSE } from '../constants/queries_post';
 
     export let term_id;
     export let term_name;
 
-    let id = "naoya";
+    let id = uuidv4();
     let name;
+    let add_course = mutation(ADD_COURSE);
 
     new_course["term_id"] = term_id; 
     new_course["term_name"] = term_name;
 
-    let info = new_course;
+    let info = JSON.parse(JSON.stringify(new_course));
+
     info["data"] = JSON.stringify(info["data"]);
     info["content_info"] = JSON.stringify(info["content_info"]);
 
-    function saveChanges() {
+    async function saveChanges() {
         console.log("save changes")
         console.log(info)
+
+        if (name == "" || name == undefined) {
+            alert("name is required");
+            return;
+        }
+
+        if (id == -1) {
+            console.log("id is -1");
+            return;
+        }
+
+        try {
+            await add_course({ 
+                    variables: { 
+                        input: {
+                            id: id, 
+                            term_id: term_id, 
+                            term_name: term_name,
+                            name: name, 
+                            type: "course", 
+                            data: info["data"],
+                            content_info: info["content_info"]
+                        }
+                    } 
+                });
+        } catch (error) {
+            console.log(error);
+        }
     }
     
 </script>

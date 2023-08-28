@@ -8,6 +8,7 @@ FUNCTIONALITIES
 - graphs
 - save
 - delete
+- use local storage to store expand
 
 MODULES
 - dashboard

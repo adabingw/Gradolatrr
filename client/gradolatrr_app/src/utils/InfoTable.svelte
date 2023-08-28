@@ -144,8 +144,8 @@
                         <TagBlock bind:properties={data[1]["content"]} on:message={(event) => addedTag(event, data[0])}/>
                     {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
                         <TextField bind:inputText={data[1]["content"]} text={data[1]["content"]} type={data[1]["type"]} on:message={dataChange}/>
-                    {:else if data[1]["type"] == "tags" && (cmd == "assign" || cmd == "bundle")}
-                        {data[1]["addition"]}
+                    <!-- {:else if data[1]["type"] == "tags" && (cmd == "assign" || cmd == "bundle")}
+                        {data[1]["addition"]} -->
                         <!-- <Dropdown bind:info={data[1]["addition"]} 
                             bind:selected={data[1]["content"][0]} /> -->
                     {/if}

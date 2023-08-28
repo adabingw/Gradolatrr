@@ -23,22 +23,13 @@
     let id = uuidv4();
     let name;
     let add_assign = mutation(ADD_ASSIGNMENT);
-
     let query_result = query(GET_CONTENT_INFO, {
         variables: { id: course_id }
     });
-
-    new_assign["course_id"] = course_id;
-    new_assign["course_name"] = course_name;
-    new_assign["term_id"] = term_id;
-    new_assign["term_name"] = term_name;
-
+    let last_assign = JSON.parse(JSON.stringify(new_assign));
     let info;
 
     async function saveChanges() {
-        console.log("save changes")
-        console.log(new_assign)
-        
         if (name == "" || name == undefined) {
             alert("name is required");
             return;
@@ -48,6 +39,11 @@
             console.log("id is -1");
             return;
         }
+
+        new_assign["data"]["name"]["content"] = name;
+
+        info = JSON.parse(JSON.stringify(new_assign));
+        info["data"] = JSON.stringify(new_assign["data"]);
 
         try {
             await add_assign({ 
@@ -65,14 +61,12 @@
                     } 
                 });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }
 
-   // @ts-ignore
-   // @ts-ignore
-     $: {
-        if ($query_result.data != undefined) {
+    $: {
+        if ($query_result.data != undefined && ( JSON.stringify(last_assign) === JSON.stringify(new_assign))) {
             new_assign["content_info"] = $query_result["data"]["getCourse"]["content_info"]
             let content_info = JSON.parse(new_assign["content_info"])
             for (let i of Object.keys(content_info)) {
@@ -84,10 +78,10 @@
                     };
                 } else if (value["type"] == "number") {
                     new_assign["data"][i] = {
-                        "content": 0, 
+                        "content": -1, 
                         "type": value["type"]
                     };
-                } 
+                }
                 // else if (value["type"] == "tags") {
                 //     new_assign["data"][i] = {
                 //         "content": [["", 0]], 
@@ -98,7 +92,15 @@
             }
             info = JSON.parse(JSON.stringify(new_assign));
             info["data"] = JSON.stringify(new_assign["data"]);
+            last_assign = JSON.parse(JSON.stringify(new_assign));
         }
+    }
+
+    function dataChange(event) {
+        last_assign = undefined;
+        let thing = JSON.parse(event.detail.data);
+        new_assign["data"] = undefined;
+        new_assign["data"] = JSON.parse(JSON.stringify(thing));
     }
 
 </script>
@@ -107,7 +109,7 @@
     <p>Create new item   {term_name}/{course_name}</p>
     <TextField type="text" text="item name" bind:inputText={name}/>
     {#if info != undefined}
-        <InfoTable cmd="assign" bind:info={info} />
+        <InfoTable cmd="assign" bind:info={info} on:message={dataChange}/>
     {/if}
     <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} />
 </div>

@@ -15,9 +15,11 @@
 
 <div class="input-row">
     {#if type == "text"}
-      <input type="text" class="input-text" autofocus placeholder={text} bind:value={inputText} on:change={dataChange}/>
+      <input type="text" class="input-text" autofocus placeholder={text} 
+          bind:value={inputText} on:input={dataChange} />
     {:else if type == "number"}
-      <input type="number" class="input-text" autofocus placeholder={text} bind:value={inputText} on:change={dataChange}/>
+      <input type="number" class="input-text" autofocus placeholder={text} 
+          bind:value={inputText} on:input={dataChange} />
     {/if}
 </div>
 

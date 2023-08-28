@@ -3,10 +3,11 @@
     import Edit from '../assets/edit_icon.png'
     import Button from '../utils/Button.svelte';
     import { COURSE_CONTENT } from "../constants/queries_get";
+    import { DELETE_ASSIGN } from '../constants/queries_delete';
 
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     import { Link } from 'svelte-navigator';
-    import { query } from 'svelte-apollo';
+    import { query, mutation } from 'svelte-apollo';
     
     export let term_id;
     export let term_name;
@@ -16,18 +17,28 @@
     let query_result = query(COURSE_CONTENT, {
         variables: { id }
     });
-    let info;
-    let last_info;
+    let info;                   // query_results.data (query_results is read only)
+    let last_info;              // prevent rerendering and refetching
+    let content;                // the assignments of a course
+    let content_info;           // the headers
+    let sortKey = 'name';       // default sort key
+    let sortDirection = 1;      // default sort direction (ascending)
+    let delete_assign = mutation(DELETE_ASSIGN);
 
-    let content;
-    let content_info;
-    let sortKey = 'name'; // default sort key
-    let sortDirection = 1; // default sort direction (ascending)
-
-    function deleteAssignment(item) {
-        console.log("deleting type")
-        // delete term_info[name]["content_info"][item]
-        // info = term_info[name]
+    async function deleteAssignment(assign_id) {
+        try {
+            await delete_assign({ 
+                variables: { 
+                    input: {
+                        id: assign_id, 
+                        type: "item"
+                    }
+                } 
+            });
+        } catch (error) {
+            console.error(error);
+        }
+        query_result.refetch({ id }); 
     }
 
     function sortTable(key) {
@@ -51,7 +62,6 @@
         if ($query_result.data != undefined && (last_info == info)) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
-
             content = JSON.parse(JSON.stringify($query_result["data"]["getCourse"]["assignments"]))
             content_info = JSON.parse($query_result["data"]["getCourse"]["content_info"])
         }
@@ -96,7 +106,8 @@
                 <Link to={`/assign/edit/${content[i]["id"]}/${content[i]["name"]}`}>
                     <TableBodyCell class="edit">edit</TableBodyCell>
                 </Link>
-                <TableBodyCell class="edit">delete</TableBodyCell>
+                <TableBodyCell class="edit" 
+                        on:click={() => deleteAssignment(content[i]["id"])}>delete</TableBodyCell>
             </TableBodyRow>
             {/each}
         </TableBody>

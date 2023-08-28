@@ -8,7 +8,6 @@
     import new_term from "../constants/new_term.json";
     import { ADD_TERM } from "../constants/queries_post";
 
-    // @ts-ignore
     let id = uuidv4();
     let checked;
     let name;
@@ -19,33 +18,32 @@
     info["data"] = JSON.stringify(info["data"]);
 
     async function saveChanges() {
-        console.log("save changes")
-        console.log(info)
         if (name == "" || name == undefined) {
             alert("name is required");
             return;
         }
 
         if (id == -1) {
+            alert("something went wrong. please try again.")
             console.log("id is -1");
             return;
         }
 
         try {
             await add_term({ 
-                    variables: { 
-                        input: {
-                            id: id, 
-                            name: name, 
-                            type: "term",
-                            archived: archived, 
-                            current: checked, 
-                            data: info["data"] 
-                        }
-                    } 
-                });
+                variables: { 
+                    input: {
+                        id: id, 
+                        name: name, 
+                        type: "term",
+                        archived: archived, 
+                        current: checked, 
+                        data: info["data"] 
+                    }
+                } 
+            });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }
 

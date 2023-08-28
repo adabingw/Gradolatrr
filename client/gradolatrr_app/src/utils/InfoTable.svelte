@@ -1,5 +1,6 @@
 <script>
     import { Table, TableBody, TableBodyRow, TableBodyCell } from "flowbite-svelte";
+    import { createEventDispatcher } from "svelte";
 
     import { sortOrder, dragstart, dragover, drop, maxOrder } from "./utils.svelte";
     import TextArea from "./TextArea.svelte";
@@ -33,6 +34,8 @@
 
     let showMenu = false;
     let context_bundle = [ 0, 0, 0 ];
+
+    const dispatch = createEventDispatcher();
 
     function dropEvent(ev, key2, index2) {
         var key = ev.dataTransfer.getData("key");
@@ -80,6 +83,13 @@
             data[key[0]] = key[1];
         }
         info["data"] = JSON.stringify(data);
+
+        console.log(info);
+
+        dispatch('message', {
+            data: info["data"]
+        });
+        
     }
 
     // only for content_info / courses
@@ -126,6 +136,7 @@
     {#if data_array.length > 0 && data_array != undefined}
         <TableBody>
         {#each data_array as data, i}
+        {#if data[0] != "name"}
             <TableBodyRow>
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div class="TableBodyRow" draggable={(cmd == "assign" || cmd == "bundle") ? false : true}
@@ -150,9 +161,9 @@
                             bind:selected={data[1]["content"][0]} /> -->
                     {/if}
                 </TableBodyCell>
-
             </div>
             </TableBodyRow>
+        {/if} 
         {/each}
         {#if cmd == "course" && content_info != undefined && content_info.length != 0}
             <TableBodyRow>

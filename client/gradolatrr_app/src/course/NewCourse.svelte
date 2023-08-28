@@ -25,15 +25,13 @@
     info["content_info"] = JSON.stringify(info["content_info"]);
 
     async function saveChanges() {
-        console.log("save changes")
-        console.log(info)
-
         if (name == "" || name == undefined) {
             alert("name is required");
             return;
         }
 
         if (id == -1) {
+            alert("something went wrong. please try again.")
             console.log("id is -1");
             return;
         }
@@ -53,7 +51,7 @@
                     } 
                 });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }
     

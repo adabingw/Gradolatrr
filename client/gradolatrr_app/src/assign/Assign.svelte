@@ -24,7 +24,6 @@
         if ($query_result.data != undefined && (last_info == info)) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
-            console.log(info);
         }
     }
 

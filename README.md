@@ -15,5 +15,8 @@ Deprecated stack:
 
 New stack:
 <ul>
-  <li>:D</li>
+  <li>Svelte</li>
+  <li>DynamoDB</li>
+  <li>AppSync</li>
+  <li>GraphQL</li>
 </ul>

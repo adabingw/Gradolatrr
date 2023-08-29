@@ -51,15 +51,14 @@
                         input: {
                             id: id, 
                             term_id: term_id, 
-                            term_name: term_name,
                             course_id: course_id, 
-                            course_name: course_name,
                             name: name, 
                             type: "item", 
                             data: info["data"],
                         }
                     } 
                 });
+                navigate(`/assign/edit/${term_id}/${term_name}/${course_id}/${course_name}/${id}/${name}`);
         } catch (error) {
             console.error(error);
         }

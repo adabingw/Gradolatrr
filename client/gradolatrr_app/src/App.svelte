@@ -72,11 +72,13 @@
             <Route path="/term/:id/:name" let:params>
                 <Term id={params.id} name={params.name}  on:message={triggerReload} />
             </Route>
-            <Route path="/course/edit/:id/:name" let:params>
-                <CourseInfo id={params.id} name={params.name}  on:message={triggerReload}/>
+            <Route path="/course/edit/:term_id/:term_name/:id/:name" let:params>
+                <CourseInfo id={params.id} name={params.name} term_id={params.term_id} term_name={params.term_name}
+                            on:message={triggerReload}/>
             </Route>
-            <Route path="/assign/edit/:id/:name" let:params>
-                <Assign id={params.id} name={params.name} />
+            <Route path="/assign/edit/:term_id/:term_name/:course_id/:course_name/:id/:name" let:params>
+                <Assign id={params.id} name={params.name} course_id={params.course_id} course_name={params.course_name}
+                        term_id={params.term_id} term_name={params.term_name} />
             </Route>
           </div>
       </div>

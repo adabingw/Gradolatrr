@@ -3,11 +3,8 @@
 - tags logic doesn't work yet...figure that out
 
 FUNCTIONALITIES  
-- context menu
 - calculate grade for course
 - graphs
-- save
-- delete
 - use local storage to store expand
 
 MODULES

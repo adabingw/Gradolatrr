@@ -19,9 +19,6 @@
     let name;
     let add_course = mutation(ADD_COURSE);
 
-    new_course["term_id"] = term_id; 
-    new_course["term_name"] = term_name;
-
     let info = JSON.parse(JSON.stringify(new_course));
 
     info["data"] = JSON.stringify(info["data"]);
@@ -45,7 +42,6 @@
                     input: {
                         id: id, 
                         term_id: term_id, 
-                        term_name: term_name,
                         name: name, 
                         type: "course", 
                         data: info["data"],
@@ -56,6 +52,7 @@
             dispatch('message', {
                 text: "reload"
             });
+            navigate(`/course/edit/${term_id}/${term_name}/${id}/${name}`);
         } catch (error) {
             console.error(error);
         }

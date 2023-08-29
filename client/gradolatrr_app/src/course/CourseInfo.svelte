@@ -8,11 +8,15 @@
     import CancelOrSave from '../utils/CancelOrSave.svelte';
     import Button from '../utils/Button.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
+    import TextField from '../utils/TextField.svelte';
     import { COURSE_INFO } from "../constants/queries_get";
     import { DELETE_COURSE } from '../constants/queries_delete';
+    import { UPDATE_COURSE } from '../constants/queries_put';
     
     export let id;
     export let name;
+    export let term_id; 
+    export let term_name;
 
     const dispatch = createEventDispatcher();
 
@@ -22,10 +26,31 @@
     let info;
     let last_info;
     let delete_course = mutation(DELETE_COURSE);
+    let update_course = mutation(UPDATE_COURSE);
 
-    function saveChanges() {
-        console.log("save changes")
-        console.log(info)
+    async function saveChanges() {
+        console.log("save changes");
+        console.log(info);
+        try {
+            await update_course({
+                variables: {
+                    input: {
+                        id: id, 
+                        type: "course",
+                        term_id: term_id, 
+                        name: name, 
+                        data: info["getCourse"]["data"],
+                        content_info: info["getCourse"]["content_info"]
+                    }
+                }
+            });
+            navigate(`/course/edit/${term_id}/${term_name}/${id}/${name}`);
+            dispatch('message', {
+                text: "reload"
+            });
+        } catch(error) {
+            console.error(error);
+        }
     }
 
     async function deleteCourse() {
@@ -41,10 +66,10 @@
             dispatch('message', {
                 text: "reload"
             });
+            navigate("/");
         } catch (error) {
             console.error(error);
         }
-        navigate("/"); // -1
     }
 
     $: {
@@ -69,12 +94,12 @@
 </script>
 
 <div>
-    <p>{name}</p>
+    <TextField bind:inputText={name} type="text" text="" />
     {#if info != undefined}
         <InfoTable cmd="course" bind:info={info.getCourse} />
     {/if}
     <div class="term-op" on:click={() => deleteCourse()}>
         <Button text="delete this course" />
     </div>
-    <CancelOrSave url={`/`} on:message={saveChanges} />
+    <CancelOrSave url={`/course/${term_id}/${term_name}/${id}/${name}`} on:message={saveChanges} />
 </div>

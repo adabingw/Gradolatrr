@@ -76,7 +76,9 @@
 </script>
 
 <div>
-    <p>{name} <Link to={`/course/edit/${id}/${name}`}><img  src={Edit} alt="edit"/> </Link></p>    
+    <p>{name} <Link to={`/course/edit/${term_id}/${term_name}/${id}/${name}`}>
+        <img  src={Edit} alt="edit"/> 
+    </Link></p>    
     {#if content != undefined || content != null}
     <Table>
         {#if content_info != undefined || content_info != null}
@@ -103,7 +105,7 @@
                         {/if}
                     {/if}
                 {/each}
-                <Link to={`/assign/edit/${content[i]["id"]}/${content[i]["name"]}`}>
+                <Link to={`/assign/edit/${term_id}/${term_name}/${id}/${name}/${content[i]["id"]}/${content[i]["name"]}`}>
                     <TableBodyCell class="edit">edit</TableBodyCell>
                 </Link>
                 <TableBodyCell class="edit" 

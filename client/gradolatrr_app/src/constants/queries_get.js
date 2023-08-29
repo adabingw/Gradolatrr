@@ -42,7 +42,6 @@ const COURSE_INFO = gql`
             data, 
             content_info,
             term_id, 
-            term_name
         }
     }
 `;

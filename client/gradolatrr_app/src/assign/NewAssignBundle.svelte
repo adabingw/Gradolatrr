@@ -27,11 +27,6 @@
         variables: { id: course_id }
     });
 
-    new_assign["course_id"] = course_id;
-    new_assign["course_name"] = course_name;
-    new_assign["term_id"] = term_id;
-    new_assign["term_name"] = term_name;
-
     let info;
 
     function saveChanges() {

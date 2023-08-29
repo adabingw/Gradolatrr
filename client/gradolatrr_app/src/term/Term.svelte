@@ -7,6 +7,7 @@
     import Button from "../utils/Button.svelte";
     import term_info from "../constants/term_info.json";
     import InfoTable from '../utils/InfoTable.svelte';
+    import TextField from "../utils/TextField.svelte";
     import { TERM_INFO } from "../constants/queries_get";
     import { DELETE_TERM } from "../constants/queries_delete";
     import { UPDATE_TERM } from "../constants/queries_put";
@@ -53,8 +54,6 @@
     async function saveChanges() {
         console.log("save changes")
         console.log(info);
-        console.log(id);
-        console.log(name);
         try {
             await update_term({
                 variables: {
@@ -62,13 +61,16 @@
                         id: id, 
                         type: "term", 
                         name: name, 
-                        current: info["current"], 
-                        archive: info["archive"], 
-                        data: info["data"]
+                        current: info["getTerm"]["current"], 
+                        archive: info["getTerm"]["archive"], 
+                        data: info["getTerm"]["data"]
                     }
                 }
             });
-            console.log("??")
+            navigate(`/term/${id}/${name}`);
+            dispatch('message', {
+                text: "reload"
+            });
         } catch(error) {
             console.error(error);
         }
@@ -84,7 +86,7 @@
 </script>
 
 <div>
-    <p>{name}</p>    
+    <TextField bind:inputText={name} type="text" text="" />
     <label>
         <input type="checkbox" bind:checked={checked} /> select as current term.
     </label>

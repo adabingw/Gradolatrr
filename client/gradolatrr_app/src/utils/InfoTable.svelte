@@ -76,19 +76,13 @@
     }
 
     function dataChange() {
-        console.log("data changed");
-        console.log(data_array);
         for (const key of data_array) {
             data[key[0]] = key[1];
         }
         info["data"] = JSON.stringify(data);
-
-        console.log(info);
-
         dispatch('message', {
             data: info["data"]
         });
-
     }
 
     // only for content_info / courses

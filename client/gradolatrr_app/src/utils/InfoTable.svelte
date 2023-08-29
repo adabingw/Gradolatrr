@@ -11,7 +11,6 @@
     import NewProperty from "./NewProperty.svelte";
     import ContextMenu from "./ContextMenu.svelte";
     import Context from "../assets/context_menu_icon.jpg";
-    import Close from "../assets/delete_icon.png";
 
     export let cmd;
     export let info;
@@ -89,7 +88,7 @@
         dispatch('message', {
             data: info["data"]
         });
-        
+
     }
 
     // only for content_info / courses
@@ -111,18 +110,25 @@
         info["data"] = JSON.stringify(data);
     }
 
-    function openMenu(e, index) {
+    function openMenu(e, index, item) {
         e.preventDefault();
-        context_bundle = [e.clientX, e.clientY, index]
+        context_bundle = [e.clientX, e.clientY, index, item];
         showMenu = true;
     }
 
     function contextController(e) {
         const context = e.detail.context; 
         const index = e.detail.index;
+        const item = e.detail.item;
         // lol need to do this
-        console.log("context is: ", context)
+        console.log("context is: ", context);
         console.log("index is: ", index);
+        console.log("key is ", item);
+
+        data_array.splice(index, 1);
+        delete data[item];
+        info["data"] = JSON.stringify(data);
+        data_array = data_array;
     }
 
 </script>
@@ -131,6 +137,7 @@
         bind:x={context_bundle[0]} 
         bind:y={context_bundle[1]} 
         bind:index={context_bundle[2]}
+        bind:item={context_bundle[3]}
         on:context={contextController}/>
 <Table>
     {#if data_array.length > 0 && data_array != undefined}
@@ -144,7 +151,8 @@
                 on:drop={event => dropEvent(event, data[0], i)} on:dragover={dragover}>
                 {#if cmd != "assign" && cmd != "bundle"}
                     <TableBodyCell>
-                        <img src={Context} on:contextmenu={(e) => openMenu(e, i)} alt="context menu"/>
+                        <img src={Context} on:contextmenu={(e) => openMenu(e, i, data[0])} 
+                            alt="context menu" class="context_menu" />
                     </TableBodyCell>
                 {/if}
                 <TableBodyCell class="term-header tablecol">{data[0]}</TableBodyCell>
@@ -172,9 +180,6 @@
                 <TableBodyCell>
                     <Properties bind:courseinfo={content_info} on:info={infoController}/>
                 </TableBodyCell>
-                <TableBodyCell>
-                    <img src={Close} class="close" alt="close"/>
-                </TableBodyCell>
                 </div>
             </TableBodyRow>
         {/if}
@@ -184,3 +189,10 @@
 {#if cmd != "assign" && cmd != "bundle"}
     <NewProperty on:message={addedProperty} />
 {/if}
+
+<style>
+.context_menu {
+    width: 40px;
+    height: 40px;
+}
+</style>

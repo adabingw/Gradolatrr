@@ -11,11 +11,18 @@
 
     import { ALL_COURSES } from "../constants/queries_get";
 
+    export let reload;
+
     const info = query(ALL_COURSES);
     let expand = {};
 
     function termClick(k) {
         expand[k] = !expand[k];
+    }
+
+    $: {
+        console.log(reload);
+        info.refetch();
     }
 
     $: {
@@ -47,9 +54,11 @@
                         </div>
                         <div>
                             <Link to={`/new_course/${$info.data.allTerm["items"][i]["id"]}/${$info.data.allTerm["items"][i]["name"]}`}>
-                                <img  src={Add} alt="add"/> 
+                                <img  src={Add} alt="add" class="sidebarimg"/> 
                             </Link>
-                            <Link to={`/term/${$info.data.allTerm["items"][i]["id"]}/${$info.data.allTerm["items"][i]["name"]}`}><img  src={Edit} alt="edit"/> </Link>
+                            <Link to={`/term/${$info.data.allTerm["items"][i]["id"]}/${$info.data.allTerm["items"][i]["name"]}`} class="sidebarimg">
+                                <img  src={Edit} alt="edit"/> 
+                            </Link>
                         </div>
                     </div>
                 {/if}
@@ -98,4 +107,5 @@
 .content {
   margin-top: 40px;
 }
+
 </style>

@@ -2,6 +2,7 @@
 // @ts-nocheck
     import { v4 as uuidv4 } from 'uuid';
     import { mutation } from 'svelte-apollo';
+    import { createEventDispatcher } from 'svelte';
     
     import TextField from "../utils/TextField.svelte";
     import CancelOrSave from "../utils/CancelOrSave.svelte";
@@ -11,6 +12,8 @@
 
     export let term_id;
     export let term_name;
+
+    const dispatch = createEventDispatcher();
 
     let id = uuidv4();
     let name;
@@ -38,18 +41,21 @@
 
         try {
             await add_course({ 
-                    variables: { 
-                        input: {
-                            id: id, 
-                            term_id: term_id, 
-                            term_name: term_name,
-                            name: name, 
-                            type: "course", 
-                            data: info["data"],
-                            content_info: info["content_info"]
-                        }
-                    } 
-                });
+                variables: { 
+                    input: {
+                        id: id, 
+                        term_id: term_id, 
+                        term_name: term_name,
+                        name: name, 
+                        type: "course", 
+                        data: info["data"],
+                        content_info: info["content_info"]
+                    }
+                } 
+            });
+            dispatch('message', {
+                text: "reload"
+            });
         } catch (error) {
             console.error(error);
         }

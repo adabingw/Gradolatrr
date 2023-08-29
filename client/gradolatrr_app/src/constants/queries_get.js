@@ -40,7 +40,9 @@ const COURSE_INFO = gql`
             id, 
             name, 
             data, 
-            content_info
+            content_info,
+            term_id, 
+            term_name
         }
     }
 `;

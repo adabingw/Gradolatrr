@@ -2,6 +2,8 @@
 // @ts-nocheck
 
     import { query, mutation } from 'svelte-apollo';
+    import { navigate } from 'svelte-navigator';
+    import { createEventDispatcher } from 'svelte';
 
     import CancelOrSave from '../utils/CancelOrSave.svelte';
     import Button from '../utils/Button.svelte';
@@ -11,6 +13,8 @@
     
     export let id;
     export let name;
+
+    const dispatch = createEventDispatcher();
 
     let query_result = query(COURSE_INFO, {
         variables: { id }
@@ -24,20 +28,23 @@
         console.log(info)
     }
 
-    async function deleteCourse(course_id) {
+    async function deleteCourse() {
         try {
             await delete_course({ 
                 variables: { 
                     input: {
-                        id: course_id, 
+                        id: id, 
                         type: "course"
                     }
                 } 
             });
+            dispatch('message', {
+                text: "reload"
+            });
         } catch (error) {
             console.error(error);
         }
-        query_result.refetch({ id }); 
+        navigate("/"); // -1
     }
 
     $: {
@@ -66,8 +73,8 @@
     {#if info != undefined}
         <InfoTable cmd="course" bind:info={info.getCourse} />
     {/if}
-    <div class="term-op">
-        <Button text="delete this course" on:click={deleteCourse}/>
+    <div class="term-op" on:click={() => deleteCourse()}>
+        <Button text="delete this course" />
     </div>
     <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>

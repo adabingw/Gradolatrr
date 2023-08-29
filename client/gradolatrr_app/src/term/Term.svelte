@@ -1,11 +1,17 @@
 <script>    
-    import { query } from "svelte-apollo";
+    import { query, mutation } from "svelte-apollo";
+    import { navigate } from "svelte-navigator";
+    import { createEventDispatcher } from "svelte";
 
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import Button from "../utils/Button.svelte";
     import term_info from "../constants/term_info.json";
     import InfoTable from '../utils/InfoTable.svelte';
     import { TERM_INFO } from "../constants/queries_get";
+    import { DELETE_TERM } from "../constants/queries_delete";
+    import { UPDATE_TERM } from "../constants/queries_put";
+
+    const dispatch = createEventDispatcher();
 
     export let id;
     export let name;
@@ -16,6 +22,8 @@
     let info;
     let last_info;
     let checked = query_result["current"];
+    let delete_term = mutation(DELETE_TERM);
+    let update_term = mutation(UPDATE_TERM);
 
     function archiveClick() {
         term_info["archived"] = !term_info["archived"];
@@ -23,9 +31,47 @@
         console.log("archiving course")
     }
 
-    function saveChanges() {
+    async function deleteTerm() {
+        try {
+            await delete_term({ 
+                variables: { 
+                    input: {
+                        id: id, 
+                        type: "term"
+                    }
+                } 
+            });
+            dispatch('message', {
+                text: "reload"
+            });
+        } catch (error) {
+            console.error(error);
+        }
+        navigate("/"); // -1
+    }
+
+    async function saveChanges() {
         console.log("save changes")
-        console.log(info)
+        console.log(info);
+        console.log(id);
+        console.log(name);
+        try {
+            await update_term({
+                variables: {
+                    input: {
+                        id: id, 
+                        type: "term", 
+                        name: name, 
+                        current: info["current"], 
+                        archive: info["archive"], 
+                        data: info["data"]
+                    }
+                }
+            });
+            console.log("??")
+        } catch(error) {
+            console.error(error);
+        }
     }
 
     $: {
@@ -45,8 +91,7 @@
     {#if info != undefined} 
         <InfoTable cmd="term" bind:info={info["getTerm"]} />
     {/if}
-    <div class="term-op">
-        <!-- <Button text={`${info["metadata"]["archived"] ? "un" : ""}archive this course`} on:click={archiveClick} /> -->
+    <div class="term-op" on:click={deleteTerm}>
         <Button text="delete this term" />
     </div>
     <CancelOrSave url={`/`} on:message={saveChanges} />

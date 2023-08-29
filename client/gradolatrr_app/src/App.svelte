@@ -1,7 +1,5 @@
 <script>
 // @ts-nocheck
-
-    import { onMount } from "svelte";
     import { Router, Route } from "svelte-navigator";
     import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from "@apollo/client/core";
     import { setClient } from "svelte-apollo";
@@ -20,63 +18,62 @@
     import NewAssignBundle from "./assign/NewAssignBundle.svelte";
     import { APPSYNC_GRAPHQLENDPOINT, APPSYNC_APIKEY, APPSYNC_REGION, APPSYNC_AUTHTYPE} from "./constants/aws_config.js";
 
-    onMount(async () => {
-        // get info for user
-    });
+    let sidebarReload = false;
 
     const url = APPSYNC_GRAPHQLENDPOINT;
     const region = APPSYNC_REGION;
-
     const auth = {
         type: APPSYNC_AUTHTYPE,
         apiKey: APPSYNC_APIKEY
     };
-
     const httpLink = new HttpLink({ uri: url });
-
     const link = ApolloLink.from([
         createAuthLink({ url, region, auth }),
         createSubscriptionHandshakeLink({ url, region, auth }, httpLink),
     ]);
-
     const client = new ApolloClient({
         link,
         cache: new InMemoryCache(),
     });
 
     setClient(client);
+
+    function triggerReload() {
+        sidebarReload = !sidebarReload;
+    }
+    
 </script>
 
 <div>
   <Router>
       <div class="flex-row">
-          <Sidebar class="sidebar" />
+          <Sidebar class="sidebar" bind:reload={sidebarReload} />
           <div class="homepage">
             <Route path="/*">
                 <Dashboard text="dashboard"/>
             </Route>
             <Route path="/new_course/:id/:name" let:params>
-                <NewCourse term_id={params.id} term_name={params.name} />
+                <NewCourse term_id={params.id} term_name={params.name} on:message={triggerReload}/>
             </Route>
             <Route path="/new_assign/:term_id/:term_name/:course_id/:course_name" let:params>
                 <NewAssign term_id={params.term_id} term_name={params.term_name} 
-                            course_id={params.course_id} course_name={params.course_name}/>
+                            course_id={params.course_id} course_name={params.course_name} />
             </Route>
             <Route path="/new_assignbundle/:term_id/:term_name/:course_id/:course_name" let:params>
                 <NewAssignBundle term_id={params.term_id} term_name={params.term_name} 
-                            course_id={params.course_id} course_name={params.course_name}/>
+                            course_id={params.course_id} course_name={params.course_name} />
             </Route>
             <Route path="/new_term">
-                <NewTerm />
+                <NewTerm  on:message={triggerReload} />
             </Route>
             <Route path="/course/:term_id/:term_name/:id/:name" let:params>
                 <Course id={params.id} name={params.name} term_id={params.term_id} term_name={params.term_name} />
             </Route>
             <Route path="/term/:id/:name" let:params>
-                <Term id={params.id} name={params.name} />
+                <Term id={params.id} name={params.name}  on:message={triggerReload} />
             </Route>
             <Route path="/course/edit/:id/:name" let:params>
-                <CourseInfo id={params.id} name={params.name} />
+                <CourseInfo id={params.id} name={params.name}  on:message={triggerReload}/>
             </Route>
             <Route path="/assign/edit/:id/:name" let:params>
                 <Assign id={params.id} name={params.name} />

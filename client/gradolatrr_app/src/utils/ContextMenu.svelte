@@ -5,6 +5,7 @@
     export let x;
     export let y;
     export let index;
+    export let item;
 
     let menu = { h: 0, w: 0 }
     let browser = { h: 0, w: 0 }
@@ -49,7 +50,8 @@
         showMenu = false; 
         dispatch('context', {
             context: "delete",
-            index: index
+            index: index, 
+            item: item
         })
     }
 

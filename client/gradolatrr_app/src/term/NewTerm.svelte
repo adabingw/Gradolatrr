@@ -1,12 +1,16 @@
 <script>
     import { mutation } from "svelte-apollo";
     import { v4 as uuidv4 } from 'uuid';
+    import { navigate } from 'svelte-navigator';
+    import { createEventDispatcher } from "svelte";
 
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import TextField from "../utils/TextField.svelte";
     import InfoTable from "../utils/InfoTable.svelte";
     import new_term from "../constants/new_term.json";
     import { ADD_TERM } from "../constants/queries_post";
+
+    const dispatch = createEventDispatcher();
 
     let id = uuidv4();
     let checked;
@@ -42,6 +46,10 @@
                     }
                 } 
             });
+            dispatch('message', {
+                text: "reload"
+            });
+            navigate(`/term/${id}/${name}`);
         } catch (error) {
             console.error(error);
         }

@@ -9,6 +9,11 @@
             "checked": true, 
             "type": "text", 
             "required": true
+        },
+        "mark": {
+            "checked": true, 
+            "type": "number", 
+            "required": true
         }
     },
     "data": {

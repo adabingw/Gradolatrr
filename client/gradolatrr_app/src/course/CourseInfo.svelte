@@ -54,6 +54,9 @@
     }
 
     async function deleteCourse() {
+        let confirmDelete = confirm("delete this course?");
+        if (!confirmDelete) return;
+
         try {
             await delete_course({ 
                 variables: { 

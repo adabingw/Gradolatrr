@@ -1,44 +1,10 @@
 {
     "id": -1,
     "course_id": -1,
-    "course_name": -1,
     "term_id": -1,
-    "term_name": -1,
     "name": "",
     "type": "item",
     "data": {
 
-    },
-    "content_info": {
-        "name": {
-            "checked": true, 
-            "type": "text", 
-            "required": true,
-            "order": 0
-        },
-        "mark": {
-            "checked": true, 
-            "type": "number", 
-            "required": false,
-            "order": 1
-        },
-        "weight": {
-            "checked": true, 
-            "type": "number",
-            "required": false,
-            "order": 2
-        },
-        "tags": {
-            "checked": true, 
-            "type": "tags",
-            "required": false,
-            "order": 3
-        },
-        "description": {
-            "checked": false, 
-            "type": "textarea",
-            "required": false,
-            "order": 4
-        }
     }
 }

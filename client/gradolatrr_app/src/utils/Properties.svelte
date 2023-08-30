@@ -1,10 +1,16 @@
 <script>
+// @ts-nocheck
+// https://svelte.dev/examples/modal
     import { createEventDispatcher } from 'svelte';
+    import { Table, TableBody, TableBodyRow, TableBodyCell } from "flowbite-svelte";
 
     import Close from "../assets/delete_icon.png";
+    import Open from "../assets/open_icon.png";
     import Button from './Button.svelte';
     import TextField from './TextField.svelte';
     import Dropdown from './Dropdown.svelte';
+    import Modal from './Modal.svelte';
+    import TagBlock from './TagBlock.svelte';
 
     export let courseinfo;
 
@@ -12,12 +18,11 @@
     let info_name;
     let info_type;
     let types = [["text", 0], ["number", 0], ["tags", 0], ["textarea", 0]];
+    let showModal = false;
+    let properties = [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]];
 
     const dispatch = createEventDispatcher();
 
-    /**
-   * @param {string | number} name
-   */
     function checkInfo(name) {
         dispatch('info', {
             info: 'checked'
@@ -59,14 +64,28 @@
 
         info_name = "";
     }
+
+    function openModal() {
+        showModal = true;
+    }
+
 </script>
 
 <div>
+    <Modal bind:showModal>
+        <h2 slot="header">
+            tags
+        </h2>
+        <TagBlock properties={properties} />    
+    </Modal>
+    <Table><TableBody>
+    <div class="property-table">
     {#each Object.keys(courseinfo) as item}
+        <TableBodyRow>
         <!-- svelte-ignore empty-block -->
-        {#if item != "type"}
             <div class="type-block">
                 <div class="type-block2" >
+                    <TableBodyCell>
                     <p class="tag-check">
                     {#if !courseinfo[item]["required"]}
                         <input type="checkbox"
@@ -76,14 +95,24 @@
                         &nbsp; &nbsp;
                     {/if} {item}
                     </p>
-                    <p>{courseinfo[item]["type"]}</p>
+                    </TableBodyCell>
+                    <TableBodyCell><p>{courseinfo[item]["type"]}</p></TableBodyCell>
                 </div>
-                {#if !courseinfo[item]["required"]}
-                <img src={Close} class="close" on:click={() => deleteTag(item)}/>
+                <TableBodyCell>
+                {#if courseinfo[item]["type"] == "tags"}
+                    <img src={Open} on:click={() => openModal()} alt="open" />
                 {/if}
+                </TableBodyCell>
+                <TableBodyCell>
+                    {#if !courseinfo[item]["required"]}
+                        <img src={Close} on:click={() => deleteTag(item)}/>
+                    {/if}
+                </TableBodyCell>
             </div>
-        {/if}
+        </TableBodyRow>
     {/each}
+    </div>
+    </TableBody></Table>
     {#if add}
         <TextField bind:inputText={info_name} type="text" text=""/>
         <Dropdown info={types} bind:selected={info_type}/>
@@ -95,13 +124,20 @@
 </div>
 
 <style>
+.property-table {
+    margin-left: 50px;
+}
+
 .type-block {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: left;
   line-height: 35px;  
-  height: fit-content;
+}
+
+td {
+    margin-left: 100px;
 }
 
 .type-block2 {

@@ -20,8 +20,15 @@ const ADD_ASSIGNMENT = gql`
     }
 `;
 
+const ADD_BUNDLE = gql`
+    mutation AddBundle($input: [CreateAssignmentInput]) {
+        createAssignmentBatch(input: $input) { id }
+    }
+`;
+
 export {
     ADD_TERM,
     ADD_COURSE,
-    ADD_ASSIGNMENT
+    ADD_ASSIGNMENT, 
+    ADD_BUNDLE
 }

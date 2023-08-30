@@ -33,6 +33,9 @@
     }
 
     async function deleteTerm() {
+        let confirmDelete = confirm("delete this term?");
+        if (!confirmDelete) return;
+
         try {
             await delete_term({ 
                 variables: { 

@@ -3,12 +3,11 @@
     
     import { query, mutation } from 'svelte-apollo';
     import { v4 as uuidv4 } from 'uuid';
+    import { navigate } from 'svelte-navigator';
 
     import TextField from '../utils/TextField.svelte';
     import CancelOrSave from '../utils/CancelOrSave.svelte';
     import new_assign from "../constants/new_assign.json";
-    // @ts-ignore
-    // @ts-ignore
     import InfoTable from '../utils/InfoTable.svelte';
     import { GET_CONTENT_INFO } from '../constants/queries_get';
     import { ADD_ASSIGNMENT } from '../constants/queries_post';
@@ -18,8 +17,6 @@
     export let term_id;
     export let term_name;
 
-    // @ts-ignore
-    // @ts-ignore
     let id = uuidv4();
     let name;
     let add_assign = mutation(ADD_ASSIGNMENT);
@@ -58,7 +55,7 @@
                         }
                     } 
                 });
-                navigate(`/assign/edit/${term_id}/${term_name}/${course_id}/${course_name}/${id}/${name}`);
+                navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`);
         } catch (error) {
             console.error(error);
         }
@@ -77,7 +74,7 @@
                     };
                 } else if (value["type"] == "number") {
                     new_assign["data"][i] = {
-                        "content": -1, 
+                        "content": 0, 
                         "type": value["type"]
                     };
                 }

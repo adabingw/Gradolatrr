@@ -1,13 +1,13 @@
 <script>
     // @ts-nocheck
-    import Edit from '../assets/edit_icon.png'
+    import Edit from '../assets/edit_icon.png';
     import Button from '../utils/Button.svelte';
     import { COURSE_CONTENT } from "../constants/queries_get";
     import { DELETE_ASSIGN } from '../constants/queries_delete';
-
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     import { Link } from 'svelte-navigator';
     import { query, mutation } from 'svelte-apollo';
+    import Open from '../assets/open_icon.png';
     
     export let term_id;
     export let term_name;
@@ -26,6 +26,8 @@
     let delete_assign = mutation(DELETE_ASSIGN);
 
     async function deleteAssignment(assign_id) {
+        let confirmDelete = confirm("delete this assignment?");
+        if (!confirmDelete) return;
         try {
             await delete_assign({ 
                 variables: { 
@@ -84,7 +86,7 @@
         {#if content_info != undefined || content_info != null}
         <TableHead>
             {#each Object.keys(content_info) as i}
-            {#if i != "type" && content_info[i]["checked"]}
+            {#if i != "tags" && content_info[i]["checked"]}
                 <TableHeadCell on:click={() => sortTable(i)}>
                     <p class="term-header">{i}</p>
                 </TableHeadCell>
@@ -106,7 +108,9 @@
                     {/if}
                 {/each}
                 <Link to={`/assign/edit/${term_id}/${term_name}/${id}/${name}/${content[i]["id"]}/${content[i]["name"]}`}>
-                    <TableBodyCell class="edit">edit</TableBodyCell>
+                    <TableBodyCell class="edit">
+                        <img src={Open} />
+                    </TableBodyCell>
                 </Link>
                 <TableBodyCell class="edit" 
                         on:click={() => deleteAssignment(content[i]["id"])}>delete</TableBodyCell>

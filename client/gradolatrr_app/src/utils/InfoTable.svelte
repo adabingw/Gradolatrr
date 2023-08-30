@@ -11,6 +11,7 @@
     import NewProperty from "./NewProperty.svelte";
     import ContextMenu from "./ContextMenu.svelte";
     import Context from "../assets/context_menu_icon.jpg";
+    import Blank from "../assets/blank.png";
 
     export let cmd;
     export let info;
@@ -170,6 +171,7 @@
         {#if cmd == "course" && content_info != undefined && content_info.length != 0}
             <TableBodyRow>
                 <div class="TableBodyRow" >
+                <TableBodyCell><img src={Blank} class="context_menu"/></TableBodyCell>
                 <TableBodyCell class="term-header tablecol">item info</TableBodyCell>
                 <TableBodyCell>
                     <Properties bind:courseinfo={content_info} on:info={infoController}/>

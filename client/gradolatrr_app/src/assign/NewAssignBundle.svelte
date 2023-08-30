@@ -2,7 +2,9 @@
 // @ts-nocheck
 
     import { DateInput } from 'date-picker-svelte'
-    import { query } from 'svelte-apollo';
+    import { query, mutation } from 'svelte-apollo';
+    import { v4 as uuidv4 } from 'uuid';
+    import { navigate } from 'svelte-navigator';
     
     import TextField from '../utils/TextField.svelte';
     import CancelOrSave from '../utils/CancelOrSave.svelte';
@@ -10,6 +12,7 @@
     import course_info from "../constants/course_info.json";
     import new_assign from "../constants/new_assign.json";
     import { GET_CONTENT_INFO } from '../constants/queries_get';
+    import { ADD_BUNDLE } from '../constants/queries_post';
 
     export let course_id;
     export let course_name;
@@ -26,16 +29,55 @@
     let query_result = query(GET_CONTENT_INFO, {
         variables: { id: course_id }
     });
+    let add_bundle = mutation(ADD_BUNDLE);
 
+    let last_assign = JSON.parse(JSON.stringify(new_assign));
     let info;
 
-    function saveChanges() {
+    async function saveChanges() {
         console.log("save changes")
-        console.log(new_assign)
+        console.log(info)
         console.log(suffix)
         console.log(num)
-        // DONE
-        // ADD COURSE CONTENT
+
+        if (suffix == "" || suffix == undefined) {
+            alert("name is required");
+            return;
+        }
+
+        if (num == undefined) {
+            alert("number is required");
+            return;
+        }
+
+        let bundle = [];
+        for (let i = 0; i < num; i++) {
+            let name = suffix + " " + i;
+            new_assign["data"]["name"]["content"] = name;
+
+            info = JSON.parse(JSON.stringify(new_assign));
+            info["data"] = JSON.stringify(new_assign["data"]);
+
+            let input = {
+                id: uuidv4(), 
+                term_id: term_id, 
+                course_id: course_id, 
+                name: name, 
+                type: "item", 
+                data: info["data"],
+            };
+            bundle.push(input);
+        }
+        console.log(bundle);
+
+        try {
+            await add_bundle({ 
+                    variables: { input: bundle } 
+            });
+            navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     function newDateSelected() {
@@ -48,8 +90,15 @@
         }
     }
 
+    function dataChange(event) {
+        last_assign = undefined;
+        let thing = JSON.parse(event.detail.data);
+        new_assign["data"] = undefined;
+        new_assign["data"] = JSON.parse(JSON.stringify(thing));
+    }
+
     $: {
-        if ($query_result.data != undefined) {
+        if ($query_result.data != undefined && ( JSON.stringify(last_assign) === JSON.stringify(new_assign))) {
             new_assign["content_info"] = $query_result["data"]["getCourse"]["content_info"]
             let content_info = JSON.parse(new_assign["content_info"])
             for (let i of Object.keys(content_info)) {
@@ -75,6 +124,7 @@
             }
             info = JSON.parse(JSON.stringify(new_assign));
             info["data"] = JSON.stringify(new_assign["data"]);
+            last_assign = JSON.parse(JSON.stringify(new_assign));
         }
     }
 </script>
@@ -89,7 +139,7 @@
 
     <!-- <DateInput bind:value={date} on:select={() => {newDateSelected()}} format="yyyy-MM-dd"/> -->
     {#if info != undefined}
-        <InfoTable cmd="bundle" bind:info={info} />
+        <InfoTable cmd="bundle" bind:info={info} on:message={dataChange} />
     {/if}
     <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} />
 </div>

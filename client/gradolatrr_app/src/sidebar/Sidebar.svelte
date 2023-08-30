@@ -24,10 +24,14 @@
         console.log(reload);
         query_result.refetch();
         if (info != undefined) last_info = JSON.parse(JSON.stringify(info));
+        else {
+            last_info = undefined; 
+            info = undefined;
+        }
     }
 
     $: {
-        if ($query_result.data != undefined && (info == last_info)) {
+        if ($query_result.data != undefined && (JSON.stringify(info) == JSON.stringify(last_info))) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
             for (const term of info["allTerm"]["items"]) {

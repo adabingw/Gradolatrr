@@ -54,6 +54,35 @@
     $: {
         if ($query_result.data != undefined && (last_info == info)) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
+            
+            let content_info = JSON.parse(info["getAssignment"]["course"]["content_info"])
+            let info_temp = JSON.parse(info["getAssignment"]["data"]);
+            for (let c of Object.keys(content_info)) {
+                if (info_temp[c] == undefined) {
+                    let value = content_info[c]
+                    if (value["type"] == "text" || value["type"] == "textarea") {
+                        info_temp[c] = {
+                            "content": "", 
+                            "type": value["type"]
+                        };
+                    } else if (value["type"] == "number") {
+                        info_temp[c] = {
+                            "content": 0, 
+                            "type": value["type"]
+                        };
+                    } else if (value["type"] == "tags") {
+                        info_temp[c] = {
+                            "content": [], 
+                            "type": value["type"], 
+                            "tag_info": content_info[c]["tag_info"]
+                        };
+                    }
+                } else if (info_temp[c] != undefined && content_info[c]["type"] == "tags") {
+                    info_temp[c]["tag_info"] = content_info[c]["tag_info"];
+                }
+            }
+
+            info["getAssignment"]["data"] = JSON.stringify(info_temp);
             last_info = JSON.parse(JSON.stringify(info));
         }
     }

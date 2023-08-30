@@ -7,7 +7,7 @@
 
     import Button from "./Button.svelte";
     import TextField from "./TextField.svelte";
-    import colours from "../constants/colours.json";
+    import Close from "../assets/delete_icon.png";
 
     const dispatch = createEventDispatcher();
 
@@ -19,14 +19,20 @@
     function saveTag(e) {
         console.log("save tag")
         add = false;
-
-        let rand = Math.floor(Math.random() * 17);
-
         dispatch('message', {
+            message: "add",
             tags: [...properties, tag_name]
         });
 
         tag_name = "";
+    }
+
+    function deleteTag(tag, index) {
+        properties.splice(index, 1);
+        dispatch('message', {
+            message: "delete",
+            tags: [...properties]
+        });
     }
 
     function cancelTag() {
@@ -35,24 +41,36 @@
     }
 </script>
 
-<div>
+<div class="tags-modal">
     <div class="tag-block">
-        {#each properties as tag}
+        {#each properties as tag, i}
+        <div class="tag-row">
             <div class="tag">
                 {tag}
             </div>
+            <img src={Close} on:click={() => deleteTag(tag, i)} alt="close"/>
+        </div>
         {/each}
     </div>
     {#if add}
         <TextField bind:inputText={tag_name} type="text" text=""/>
-        <Button text="save" on:message={saveTag} />
-        <Button text="cancel" on:message={cancelTag} />
+        <div class="tag-row">
+            <Button text="save" on:message={saveTag} />
+            <Button text="cancel" on:message={cancelTag}/>
+        </div>
     {:else}
         <Button text="+ add tag" on:click={addTag} on:message={addTag}/>
     {/if}
 </div>
 
 <style>
+.tags-modal {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+}
+
 .tag {
     text-align: center;
     border-radius: 12px;
@@ -61,8 +79,16 @@
     padding-bottom: 8px; 
     padding-left: 12px;
     padding-right: 12px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+    margin-top: 4px;
     width: 100px;
+    margin-right: 8px;
+}
+
+.tag-row {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
 }
 
 .tag-block {

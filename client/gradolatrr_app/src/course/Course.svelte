@@ -86,7 +86,7 @@
         {#if content_info != undefined || content_info != null}
         <tr>
             {#each Object.keys(content_info) as i}
-            {#if i != "tags" && content_info[i]["checked"]}
+            {#if content_info[i]["checked"]}
                 <th on:click={() => sortTable(i)}>
                     <p class="term-header tablecol">{i}</p>
                 </th>
@@ -97,12 +97,17 @@
         {/if}
             {#each Object.keys(content) as i}
             <tr >
-                {#each Object.keys(JSON.parse(content[i]["data"])) as j}
+                <!-- {#each Object.keys(JSON.parse(content[i]["data"])) as j} -->
+                {#each Object.keys(content_info) as j}
                     {#if content_info[j]["checked"]}
-                        {#if content_info[j]["type"] == "tags"}
-                            <td>{JSON.parse(content[i]["data"])[j]["content"][0]}</td>
+                        {#if JSON.parse(content[i]["data"])[j] == undefined} 
+                            <td> </td>
                         {:else}
-                            <td>{JSON.parse(content[i]["data"])[j]["content"]}</td>
+                            {#if content_info[j]["type"] == "tags"}
+                                <td>{JSON.parse(content[i]["data"])[j]["content"]}</td>
+                            {:else}
+                                <td>{JSON.parse(content[i]["data"])[j]["content"]}</td>
+                            {/if}
                         {/if}
                     {/if}
                 {/each}

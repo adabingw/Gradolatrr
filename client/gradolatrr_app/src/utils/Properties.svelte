@@ -19,7 +19,7 @@
     let add = false;
     let info_name;
     let info_type;
-    let types = [["text", 0], ["number", 0], ["tags", 0], ["textarea", 0]];
+    let types = ["text", "number", "tags", "textarea"];
     let showModal = false;
     let modalName = "";
     let properties = ["assignment", "final", "midterm"];
@@ -49,6 +49,11 @@
     }
 
     function saveInfo() {
+        if (info_name == undefined) {
+            alert("name is required");
+            return;
+        }
+
         let new_info = {
             "checked": true, 
             "type": info_type, 
@@ -71,7 +76,6 @@
     }
 
     function deleteTag(name) {
-        // delete courseinfo[name]
         dispatch('info', {
             info: 'delete',
             data: name
@@ -133,8 +137,10 @@
     </div>
     </TableBody></Table>
     {#if add}
+    <div class="add-row">
         <TextField bind:inputText={info_name} type="text" text=""/>
         <Dropdown info={types} bind:selected={info_type}/>
+    </div>
         <Button text="save" on:message={saveInfo} />
         <Button text="cancel" on:message={cancelInfo} />
     {:else}
@@ -145,6 +151,12 @@
 <style>
 .property-table {
   margin-top: 15px;
+}
+
+.add-row {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
 }
 
 .type-block {

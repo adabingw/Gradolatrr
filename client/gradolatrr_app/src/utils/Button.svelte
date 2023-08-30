@@ -15,6 +15,11 @@
 <p class="term-changes" on:click={() => dispatchSave()}>{text}</p>
 
 <style>
+.term-changes {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
 .term-changes:hover {
   font-weight: bold;
   cursor: pointer;

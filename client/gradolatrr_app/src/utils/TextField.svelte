@@ -31,8 +31,8 @@
   border-left: none;
   border-top: none;
   border-right: none;
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-left: 15px;
+  margin-right: 15px;
   margin-top: 15px;
 }
 

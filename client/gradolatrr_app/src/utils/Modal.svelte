@@ -1,7 +1,6 @@
 <script>
-	export let showModal; // boolean
-
-	let dialog; // HTMLDialogElement
+	export let showModal;
+	let dialog;
 
 	$: if (dialog && showModal) dialog.showModal();
 </script>
@@ -18,8 +17,7 @@
 		<hr />
 		<slot />
 		<hr />
-		<!-- svelte-ignore a11y-autofocus -->
-		<button autofocus on:click={() => dialog.close()}>close</button>
+		<!-- <button on:click={() => dialog.close()}>close</button> -->
 	</div>
 </dialog>
 
@@ -30,6 +28,7 @@
 		border-radius: 0.2em;
 		border: none;
 		padding: 0;
+		max-height: 60vh;
 	}
 	dialog::backdrop {
 		background: rgba(0, 0, 0, 0.3);

@@ -11,13 +11,18 @@
 
     const dispatch = createEventDispatcher();
 
-    let types = [["text", 0], ["number", 0], ["tags", 0], ["textarea", 0]];
+    let types = ["text", "number", "tags", "textarea"];
 
     function addProperty() {
         add = true;
     }
 
     function saveProperty() {
+        if (name == undefined) {
+            alert("name is required");
+            return;
+        }
+        
         add = false;
         dispatch('message', {
             name: name, 
@@ -35,11 +40,21 @@
 
 <div>
     {#if add} 
+    <div class="add-row">
         <TextField bind:inputText={name} text="name" type="text" />
         <Dropdown info={types} bind:selected={type}/>
+    </div>
         <Button text="save" on:message={saveProperty} />
         <Button text="cancel" on:message={cancelProperty} />
     {:else}
         <Button text="+add properties" on:message={addProperty} />
     {/if}
 </div>
+
+<style>
+.add-row {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+}
+</style>

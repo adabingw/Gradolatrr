@@ -79,6 +79,8 @@ table {
   border-spacing: 0;
 }
 
-.s-2C2OUQxm3wgq:hover {
-  cursor: pointer;
+button {
+  background-color: white;
+  padding: 8px;
+  border-radius: 12px;
 }

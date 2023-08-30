@@ -12,5 +12,18 @@
 </script>
 
 <div class="input-row">
-    <input type="text" class="input-text" bind:value={inputText} on:change={dataChange} on:input={dataChange} />
+    <textarea class="input-text" rows="4" cols="50" bind:value={inputText} on:change={dataChange} on:input={dataChange} />
 </div>
+
+<style>
+.input-text {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 550px;
+    height: 50px;
+}
+
+textarea {
+    resize: vertical;
+}
+</style>

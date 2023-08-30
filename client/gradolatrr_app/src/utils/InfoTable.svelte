@@ -6,6 +6,7 @@
     import TextArea from "./TextArea.svelte";
     import TextField from "./TextField.svelte";
     import TagBlock from "./TagBlock.svelte";
+    import Multiselect from "./Multiselect.svelte";
     import Dropdown from "./Dropdown.svelte";
     import Properties from "./Properties.svelte";
     import NewProperty from "./NewProperty.svelte";
@@ -20,10 +21,8 @@
     data = JSON.parse(data);
         
     let content_info;
-    console.log(cmd)
     if (cmd == "course") {
         content_info = JSON.parse(info["content_info"]);
-        console.log(content_info);
     }
 
     let data_array = [];
@@ -52,6 +51,8 @@
             delete content_info[event.detail.data]
         } else if (event.detail.info == "saved") {
             content_info[event.detail.info_name] = event.detail.new_info;
+        } else if (event.detail.info == "tags") {
+            content_info[event.detail.info_name] = event.detail.tags;
         }
         info["content_info"] = JSON.stringify(content_info);
         content_info = content_info;
@@ -86,23 +87,12 @@
         });
     }
 
-    // only for content_info / courses
-    function addedTag(event, attribute_name) {
-        const tag = event.detail.tag;
-        const colour = event.detail.colour;
-        for (let i = 0; i < data_array.length; i++) {
-            if (data_array[i][0] == attribute_name) {
-                if (data_array[i][1]["content"].includes(tag)) {
-                    console.log("has tag already");
-                }
-                data_array[i][1]["content"].push([tag, `#${colour}`]);
-                data_array[i][1]["content"].pop();
-                data_array = data_array;
-                break;
-            }
-        }
-        data[attribute_name]["content"].push([tag, `#${colour}`])
+    function dataChangeSelect(event, key) {
+        data[key]["content"].push(event.detail.data);
         info["data"] = JSON.stringify(data);
+        dispatch('message', {
+            data: info["data"]
+        });
     }
 
     function openMenu(e, index, item) {
@@ -115,11 +105,6 @@
         const context = e.detail.context; 
         const index = e.detail.index;
         const item = e.detail.item;
-        // lol need to do this
-        console.log("context is: ", context);
-        console.log("index is: ", index);
-        console.log("key is ", item);
-
         data_array.splice(index, 1);
         delete data[item];
         info["data"] = JSON.stringify(data);
@@ -150,18 +135,19 @@
                             alt="context menu" class="context_menu" />
                     </TableBodyCell>
                 {/if}
-                <TableBodyCell class="term-header tablecol">{data[0]}</TableBodyCell>
+                <TableBodyCell>
+                    <p class="term-header tablecol">{data[0]}</p>
+                </TableBodyCell>
                 <TableBodyCell>
                     {#if data[1]["type"] == "textarea"}
                         <TextArea bind:inputText={data[1]["content"]} on:message={dataChange}/>
-                    {:else if data[1]["type"] == "tags" && cmd == "course"}
-                        <TagBlock bind:properties={data[1]["content"]} on:message={(event) => addedTag(event, data[0])}/>
+                    <!-- {:else if data[1]["type"] == "tags" && cmd == "course"}
+                        <TagBlock bind:properties={data[1]["content"]} on:message={(event) => addedTag(event, data[0])}/> -->
                     {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
                         <TextField bind:inputText={data[1]["content"]} text={data[1]["content"]} type={data[1]["type"]} on:message={dataChange}/>
-                    <!-- {:else if data[1]["type"] == "tags" && (cmd == "assign" || cmd == "bundle")}
-                        {data[1]["addition"]} -->
-                        <!-- <Dropdown bind:info={data[1]["addition"]} 
-                            bind:selected={data[1]["content"][0]} /> -->
+                    {:else if data[1]["type"] == "tags" && (cmd == "assign" || cmd == "bundle")}
+                        <Multiselect bind:properties={data[1]["tag_info"]} 
+                            bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
                     {/if}
                 </TableBodyCell>
             </div>
@@ -171,8 +157,8 @@
         {#if cmd == "course" && content_info != undefined && content_info.length != 0}
             <TableBodyRow>
                 <div class="TableBodyRow" >
-                <TableBodyCell><img src={Blank} class="context_menu"/></TableBodyCell>
-                <TableBodyCell class="term-header tablecol">item info</TableBodyCell>
+                <TableBodyCell><p class="context_menu"></p></TableBodyCell>
+                <TableBodyCell><p class="term-header tablecol">item info</p></TableBodyCell>
                 <TableBodyCell>
                     <Properties bind:courseinfo={content_info} on:info={infoController}/>
                 </TableBodyCell>
@@ -190,5 +176,21 @@
 .context_menu {
     width: 40px;
     height: 40px;
+}
+
+.tablecol {
+  width: 20vw;
+}
+
+.TableBodyRow {
+  display: flex; 
+  align-items: center;
+  padding-right: 30px;
+  border-radius: 12px;
+}
+
+.TableBodyRow:hover {
+    background-color: #C9DECE;
+    cursor: pointer;
 }
 </style>

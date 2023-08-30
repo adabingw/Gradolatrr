@@ -1,11 +1,13 @@
 <script>
 // @ts-nocheck
 // https://svelte.dev/examples/modal
+
     import { createEventDispatcher } from 'svelte';
     import { Table, TableBody, TableBodyRow, TableBodyCell } from "flowbite-svelte";
 
     import Close from "../assets/delete_icon.png";
     import Open from "../assets/open_icon.png";
+    import Blank from "../assets/blank.png";
     import Button from './Button.svelte';
     import TextField from './TextField.svelte';
     import Dropdown from './Dropdown.svelte';
@@ -19,7 +21,8 @@
     let info_type;
     let types = [["text", 0], ["number", 0], ["tags", 0], ["textarea", 0]];
     let showModal = false;
-    let properties = [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]];
+    let modalName = "";
+    let properties = ["assignment", "final", "midterm"];
 
     const dispatch = createEventDispatcher();
 
@@ -30,8 +33,19 @@
     }
 
     function addInfo() {
-        console.log("add tag")
         add = true;
+    }
+
+    function tagChange(event) {
+        console.log("add tag");
+        const tags = event.detail.tags;
+        courseinfo[modalName]["tag_info"] = tags;
+        properties = courseinfo[modalName]["tag_info"];
+        dispatch('info', {
+            info: 'tag',
+            tags: tags, 
+            info_name: modalName
+        });
     }
 
     function saveInfo() {
@@ -41,6 +55,7 @@
             "required": false,
             "order": 0
         }
+        if (info_type == "tags") new_info["tag_info"] = [];
         courseinfo[info_name] = new_info;
         dispatch('info', {
             info: 'saved',
@@ -65,8 +80,10 @@
         info_name = "";
     }
 
-    function openModal() {
+    function openModal(item, item_name) {
         showModal = true;
+        modalName = item_name;
+        properties = item["tag_info"];
     }
 
 </script>
@@ -74,9 +91,9 @@
 <div>
     <Modal bind:showModal>
         <h2 slot="header">
-            tags
+            {modalName}
         </h2>
-        <TagBlock properties={properties} />    
+        <TagBlock properties={properties} on:message={tagChange}/>    
     </Modal>
     <Table><TableBody>
     <div class="property-table">
@@ -99,9 +116,11 @@
                     <TableBodyCell><p>{courseinfo[item]["type"]}</p></TableBodyCell>
                 </div>
                 <TableBodyCell>
-                {#if courseinfo[item]["type"] == "tags"}
-                    <img src={Open} on:click={() => openModal()} alt="open" />
-                {/if}
+                    {#if courseinfo[item]["type"] == "tags"}
+                        <img src={Open} on:click={() => openModal(courseinfo[item], item)} alt="open" class="open-icon" />
+                    {:else} 
+                        <p  class="open-icon"></p>
+                    {/if}
                 </TableBodyCell>
                 <TableBodyCell>
                     {#if !courseinfo[item]["required"]}
@@ -119,13 +138,13 @@
         <Button text="save" on:message={saveInfo} />
         <Button text="cancel" on:message={cancelInfo} />
     {:else}
-        <Button text="+ add course info" on:click={() => addInfo()} on:message={addInfo} />
+        <Button text="+ add course info" on:click={() => addInfo()} on:message={addInfo} class="add-info"/>
     {/if}
 </div>
 
 <style>
 .property-table {
-    margin-left: 50px;
+  margin-top: 15px;
 }
 
 .type-block {
@@ -133,11 +152,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: left;
-  line-height: 35px;  
-}
-
-td {
-    margin-left: 100px;
+  line-height: 25px;  
 }
 
 .type-block2 {
@@ -155,8 +170,14 @@ td {
   flex-direction: row;
   align-items: center;
   justify-content: left;
-  width: 250px;
+  width: 150px;
   line-height: 5px;
   height: 5px;
 }
+
+.open-icon {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 </style>

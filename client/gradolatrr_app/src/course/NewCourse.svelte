@@ -3,6 +3,7 @@
     import { v4 as uuidv4 } from 'uuid';
     import { mutation } from 'svelte-apollo';
     import { createEventDispatcher } from 'svelte';
+    import { navigate } from 'svelte-navigator';
     
     import TextField from "../utils/TextField.svelte";
     import CancelOrSave from "../utils/CancelOrSave.svelte";

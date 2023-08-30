@@ -3,8 +3,6 @@
 
     import { Link } from "svelte-navigator";
     import { query } from "svelte-apollo";
-
-    import SidebarButton from "../utils/SidebarButton.svelte";
     import NewButton from "../utils/NewButton.svelte";
     import Edit from "../assets/edit_icon.png";
     import Add from "../assets/add_icon.png";
@@ -13,7 +11,9 @@
 
     export let reload;
 
-    const info = query(ALL_COURSES);
+    const query_result = query(ALL_COURSES);
+    let info;
+    let last_info;
     let expand = {};
 
     function termClick(k) {
@@ -22,60 +22,56 @@
 
     $: {
         console.log(reload);
-        info.refetch();
+        query_result.refetch();
+        if (info != undefined) last_info = JSON.parse(JSON.stringify(info));
     }
 
     $: {
-        console.log($info.data)
-        if ($info.data != undefined) {
-            for (const term of $info["data"]["allTerm"]["items"]) {
+        if ($query_result.data != undefined && (info == last_info)) {
+            info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
+            last_info = JSON.parse(JSON.stringify(info));
+            for (const term of info["allTerm"]["items"]) {
                 expand[term["id"]] = true;
             }
         }
+        expand = expand;
     }
 
 </script>
 
 <div class="sidebar">
-    <h3>GRADROLATRR</h3>
+    <Link to="/"><h3>GRADROLATRR</h3></Link>
     <NewButton type="new_term" name="+ new term" />
-    <!-- <NewButton type="new_course" name="+ new course" /> -->
     <div class="content">
-        {#if $info.loading}
-            <li>Loading...</li>
-        {:else if $info.error}
-            <li>ERROR: {$info.error.message}</li>
-        {:else}
-            {#each Object.keys($info.data.allTerm["items"]) as i}
-                {#if $info.data.allTerm["items"][i] != undefined} 
-                    <div class="term-row">
-                        <div on:click={() => termClick($info.data.allTerm["items"][i]["id"])}>
-                            <p class="term">{$info.data.allTerm["items"][i]["name"]}</p>
-                        </div>
-                        <div>
-                            <Link to={`/new_course/${$info.data.allTerm["items"][i]["id"]}/${$info.data.allTerm["items"][i]["name"]}`}>
-                                <img  src={Add} alt="add" class="sidebarimg"/> 
-                            </Link>
-                            <Link to={`/term/${$info.data.allTerm["items"][i]["id"]}/${$info.data.allTerm["items"][i]["name"]}`} class="sidebarimg">
-                                <img  src={Edit} alt="edit"/> 
-                            </Link>
-                        </div>
-                    </div>
-                {/if}
-                 {#if $info.data.allTerm["items"][i]["courses"] != undefined && 
-                        expand[$info.data.allTerm["items"][i]["id"]]}
-                    {#each Object.keys($info.data.allTerm["items"][i]["courses"]) as j}
-                        <SidebarButton 
-                            id={$info.data.allTerm["items"][i]["courses"][j]["id"]} 
-                            type={$info.data.allTerm["items"][i]["courses"][j]["type"]} 
-                            name={$info.data.allTerm["items"][i]["courses"][j]["name"]}
-                            term_name={$info.data.allTerm["items"][i]["name"]}
-                            term_id={$info.data.allTerm["items"][i]["id"]}
-                        />
-                    {/each}
-                {/if} 
+    {#if info != undefined}
+    {#each Object.keys(info.allTerm["items"]) as i}
+        {#if info.allTerm["items"][i] != undefined} 
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div class="term-row">
+                <p class="term" on:click={() => termClick(info.allTerm["items"][i]["id"])}>{info.allTerm["items"][i]["name"]}</p>
+                <div>
+                    <Link to={`/new_course/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`}>
+                        <img  src={Add} alt="add" class="sidebarimg"/> 
+                    </Link>
+                    <Link to={`/term/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`} class="sidebarimg">
+                        <img  src={Edit} alt="edit"/> 
+                    </Link>
+                </div>
+            </div>
+        {/if}
+        <div class="courses">
+            {#if info.allTerm["items"][i]["courses"] != undefined && 
+                expand[info.allTerm["items"][i]["id"]]}
+            {#each Object.keys(info.allTerm["items"][i]["courses"]) as j}
+                <Link to={`/course/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}/${info.allTerm["items"][i]["courses"][j]["id"]}/${info.allTerm["items"][i]["courses"][j]["name"]}`}>
+                    <p class="course">{info.allTerm["items"][i]["courses"][j]["name"]}</p>
+                </Link>
             {/each}
         {/if} 
+        </div>
+    {/each}
+    {/if}
     </div>
 </div>
 
@@ -96,8 +92,27 @@
   width: 100%;
   align-items: center;
   align-self: center;
-  height: 5px;
-  margin-top: 45px;
+  height: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 12px;
+  margin-left: -18px;
+}
+
+.courses {
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.term-row:hover {
+    background-color: #D8CAD6;
+    cursor: pointer;
+}
+
+.term {
+    font-weight: bold;
 }
 
 .term:hover {
@@ -106,6 +121,21 @@
 
 .content {
   margin-top: 40px;
+}
+
+.course {
+  margin-left: 8px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 12px;
+  margin-bottom: -20px;
+}
+
+.course:hover {
+  cursor: pointer;
+  background-color: #F9D4C2;
 }
 
 </style>

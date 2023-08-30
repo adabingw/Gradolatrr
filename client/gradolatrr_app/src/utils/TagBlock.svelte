@@ -23,8 +23,7 @@
         let rand = Math.floor(Math.random() * 17);
 
         dispatch('message', {
-            tag: tag_name,
-            colour: colours[rand]
+            tags: [...properties, tag_name]
         });
 
         tag_name = "";
@@ -39,8 +38,8 @@
 <div>
     <div class="tag-block">
         {#each properties as tag}
-            <div class="tag" style={`background-color: ${tag[1]}`}>
-                {tag[0]}
+            <div class="tag">
+                {tag}
             </div>
         {/each}
     </div>
@@ -57,11 +56,19 @@
 .tag {
     text-align: center;
     border-radius: 12px;
+    background-color: lightgray;
     padding-top: 8px;
     padding-bottom: 8px; 
     padding-left: 12px;
     padding-right: 12px;
     margin-bottom: 8px;
     width: 100px;
+}
+
+.tag-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 </style>

@@ -82,54 +82,71 @@
         <img  src={Edit} alt="edit"/> 
     </Link></p>    
     {#if content != undefined || content != null}
-    <Table>
+    <table>
         {#if content_info != undefined || content_info != null}
-        <TableHead>
+        <tr>
             {#each Object.keys(content_info) as i}
             {#if i != "tags" && content_info[i]["checked"]}
-                <TableHeadCell on:click={() => sortTable(i)}>
-                    <p class="term-header">{i}</p>
-                </TableHeadCell>
+                <th on:click={() => sortTable(i)}>
+                    <p class="term-header tablecol">{i}</p>
+                </th>
             {/if}
             {/each}
-            <TableHeadCell> </TableHeadCell>
-        </TableHead>
+            <th> </th>
+        </tr>
         {/if}
-        <TableBody class="divide-y">
             {#each Object.keys(content) as i}
-            <TableBodyRow class="TableBodyRow">
+            <tr >
                 {#each Object.keys(JSON.parse(content[i]["data"])) as j}
                     {#if content_info[j]["checked"]}
                         {#if content_info[j]["type"] == "tags"}
-                            <TableBodyCell>{JSON.parse(content[i]["data"])[j]["content"][0]}</TableBodyCell>
+                            <td>{JSON.parse(content[i]["data"])[j]["content"][0]}</td>
                         {:else}
-                            <TableBodyCell>{JSON.parse(content[i]["data"])[j]["content"]}</TableBodyCell>
+                            <td>{JSON.parse(content[i]["data"])[j]["content"]}</td>
                         {/if}
                     {/if}
                 {/each}
                 <Link to={`/assign/edit/${term_id}/${term_name}/${id}/${name}/${content[i]["id"]}/${content[i]["name"]}`}>
-                    <TableBodyCell class="edit">
-                        <img src={Open} />
-                    </TableBodyCell>
+                    <td>
+                        <img src={Open} class="edit" />
+                    </td>
                 </Link>
-                <TableBodyCell class="edit" 
-                        on:click={() => deleteAssignment(content[i]["id"])}>delete</TableBodyCell>
-            </TableBodyRow>
+                <td class="edit" 
+                        on:click={() => deleteAssignment(content[i]["id"])}>delete</td>
+            </tr>
             {/each}
-        </TableBody>
-    </Table>
+    </table>
     {/if}
-    <!-- INCLUDE LINK TO STUFF -->
     <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><Button text="+ add item" /></Link>
     <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><Button text="+ add bundle" /></Link>
 </div>
     
 <style>
 .edit {
-   color: teal;
+   margin-right: 25px;
+   padding-right: 10px;
 }
 
 .edit:hover {
   cursor: pointer;
 }
+
+.tablecol {
+  width: 15vw;
+}
+
+.TableBodyRow {
+    border: transparent;
+    border-radius: 12px;
+}
+
+.TableBodyRow:hover {
+  border-style: none solid solid none;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: #B4A390;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 </style>

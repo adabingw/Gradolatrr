@@ -49,7 +49,6 @@
         let info_temp = JSON.parse(info["getAssignment"]["data"]);
         info_temp["name"]["content"] = name;
         info["getAssignment"]["data"] = JSON.stringify(info_temp);
-        console.log(info["getAssignment"]["data"])
     }
 
     $: {

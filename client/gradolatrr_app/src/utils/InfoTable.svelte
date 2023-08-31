@@ -169,7 +169,7 @@
     {/if} 
 </Table>
 {#if cmd != "assign" && cmd != "bundle"}
-    <NewProperty on:message={addedProperty} />
+    <NewProperty on:message={addedProperty} data={data_array}/>
 {/if}
 
 <style>

@@ -7,7 +7,6 @@
 
     import Close from "../assets/delete_icon.png";
     import Open from "../assets/open_icon.png";
-    import Blank from "../assets/blank.png";
     import Button from './Button.svelte';
     import TextField from './TextField.svelte';
     import Dropdown from './Dropdown.svelte';
@@ -52,6 +51,13 @@
         if (info_name == undefined) {
             alert("name is required");
             return;
+        }
+
+        for (let item of Object.keys(courseinfo)) {
+            if (item == info_name) {
+                alert("name already exists");
+                return;
+            }
         }
 
         let new_info = {

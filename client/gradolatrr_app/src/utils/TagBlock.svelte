@@ -18,6 +18,14 @@
 
     function saveTag(e) {
         console.log("save tag")
+
+        for (let p of properties) {
+            if (tag_name == p) {
+                alert("tag already exists");
+                return;
+            }
+        }
+
         add = false;
         dispatch('message', {
             message: "add",

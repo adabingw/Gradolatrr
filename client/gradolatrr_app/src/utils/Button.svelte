@@ -18,10 +18,14 @@
 .term-changes {
     margin-left: 8px;
     margin-right: 8px;
+    border-radius: 12px;
+    width: fit-content;
+    padding: 8px;
 }
 
 .term-changes:hover {
   font-weight: bold;
   cursor: pointer;
+  background-color: #D7DBCF;
 }
 </style>

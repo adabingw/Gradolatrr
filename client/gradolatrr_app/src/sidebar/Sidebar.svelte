@@ -35,7 +35,9 @@
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
             for (const term of info["allTerm"]["items"]) {
-                expand[term["id"]] = true;
+                if(expand[term["id"]] == undefined) {
+                    expand[term["id"]] = true;
+                }
             }
         }
         expand = expand;
@@ -82,7 +84,7 @@
 <style>
 .sidebar {
   padding-top: 25px;
-  max-width: 15vw;
+  width: 15vw;
   margin-left: 25px;
   padding-right: 25px;
   border-right: 1px solid black;

@@ -38,12 +38,6 @@ h3 {
   flex: row;
 }
 
-.new {
-  margin-left: 8px;
-  margin-top: 20px;
-  height: 2px;
-}
-
 .term-header {
   font-weight: bold;
 }

@@ -89,7 +89,7 @@
 </script>
 
 <div>
-    <TextField bind:inputText={name} type="text" text="" />
+    <TextField bind:inputText={name} type="text" text="" min="" max=""  focus={true}/>
     <label>
         <input type="checkbox" bind:checked={checked} /> select as current term.
     </label>

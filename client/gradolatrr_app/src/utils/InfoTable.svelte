@@ -48,6 +48,8 @@
 
     function infoController(event) {
         if (event.detail.info == "delete") {
+            console.log(event.detail.data);
+            console.log(content_info);
             delete content_info[event.detail.data]
         } else if (event.detail.info == "saved") {
             content_info[event.detail.info_name] = event.detail.new_info;
@@ -144,7 +146,9 @@
                     <!-- {:else if data[1]["type"] == "tags" && cmd == "course"}
                         <TagBlock bind:properties={data[1]["content"]} on:message={(event) => addedTag(event, data[0])}/> -->
                     {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
-                        <TextField bind:inputText={data[1]["content"]} text={data[1]["content"]} type={data[1]["type"]} on:message={dataChange}/>
+                        <TextField bind:inputText={data[1]["content"]} 
+                            text={data[1]["content"]} type={data[1]["type"]} on:message={dataChange}
+                            max={100} min={0}  focus={false}/>
                     {:else if data[1]["type"] == "tags" && (cmd == "assign" || cmd == "bundle")}
                         <Multiselect bind:properties={data[1]["tag_info"]} 
                             bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>

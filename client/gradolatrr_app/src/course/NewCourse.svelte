@@ -63,7 +63,7 @@
 
 <div>
     <p>Create new course</p>
-    <TextField type="text" text="course name" bind:inputText={name}/>
+    <TextField type="text" text="course name" bind:inputText={name} min="" max=""  focus={true}/>
     <InfoTable cmd="course" bind:info={info} />
     <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>

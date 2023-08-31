@@ -50,6 +50,7 @@
     }
 
     async function regrade(refetch) {
+        console.log("regrading running");
         if (refetch) query_result.refetch({ id });
         let sum = 0;
         for (let assign of content) {

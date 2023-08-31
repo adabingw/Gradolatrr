@@ -97,7 +97,7 @@
 </script>
 
 <div>
-    <TextField bind:inputText={name} type="text" text="" />
+    <TextField bind:inputText={name} type="text" text="" min="" max=""  focus={true}/>
     {#if info != undefined}
         <InfoTable cmd="course" bind:info={info.getCourse} />
     {/if}

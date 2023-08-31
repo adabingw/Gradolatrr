@@ -59,7 +59,7 @@
 
 <div>
     <p>Create new term</p>
-    <TextField type="text" text="term name" bind:inputText={name}/>
+    <TextField type="text" text="term name" bind:inputText={name} min="" max=""  focus={true}/>
     <label>
         <input type="checkbox" bind:checked={checked} /> select as current term.
         <!-- CHECK IF HAS CURRENT TERM FOR OTHER TERM. IF YES, RAISE ERROR -->

@@ -102,7 +102,7 @@
 
 <div>
     <!-- <p>{name}</p>     -->
-    <TextField bind:inputText={name} type="text" text="" on:message={nameChange}/>
+    <TextField bind:inputText={name} type="text" text="" on:message={nameChange}  focus={true} max="" min=""/>
     <p>{term_name}/{course_name}</p>
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info.getAssignment} />

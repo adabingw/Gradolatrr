@@ -9,6 +9,7 @@
     import TextField from '../utils/TextField.svelte';
     import CancelOrSave from '../utils/CancelOrSave.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
+    import Button from '../utils/Button.svelte';
     import course_info from "../constants/course_info.json";
     import new_assign from "../constants/new_assign.json";
     import { GET_CONTENT_INFO } from '../constants/queries_get';
@@ -23,8 +24,10 @@
 
     let num;
     let suffix;
-    let date = new Date()
-    let dates = []
+    let names = [];
+    let date = new Date();
+    let dates = [];
+    let manual = false;
 
     let query_result = query(GET_CONTENT_INFO, {
         variables: { id: course_id }
@@ -36,11 +39,7 @@
 
     async function saveChanges() {
         console.log("save changes")
-        console.log(info)
-        console.log(suffix)
-        console.log(num)
-
-        if (suffix == "" || suffix == undefined) {
+        if ((suffix == "" || suffix == undefined) && !manual) {
             alert("name is required");
             return;
         }
@@ -50,9 +49,18 @@
             return;
         }
 
+        if (num > 10) {
+            alert("bundle can contain at most 10 items");
+            return;
+        }
+
         let bundle = [];
+
         for (let i = 0; i < num; i++) {
-            let name = suffix + " " + i;
+            let name;
+            if (!manual) name = suffix + " " + i + 1;
+            else name = names[i];
+
             new_assign["data"]["name"]["content"] = name;
 
             info = JSON.parse(JSON.stringify(new_assign));
@@ -98,6 +106,20 @@
     }
 
     $: {
+        console.log(num); 
+        let len = names.length;
+        if (num < len) {
+            for (let i = 0; i < len - num; i++) {
+                names.pop();
+            }
+        } else if (num > len) {
+            for (let i = 0; i < num - len; i++) {
+                names.push('');
+            }
+        }
+    }
+
+    $: {
         if ($query_result.data != undefined && ( JSON.stringify(last_assign) === JSON.stringify(new_assign))) {
             new_assign["content_info"] = $query_result["data"]["getCourse"]["content_info"]
             let content_info = JSON.parse(new_assign["content_info"])
@@ -113,14 +135,13 @@
                         "content": 0, 
                         "type": value["type"]
                     };
-                } 
-                // else if (value["type"] == "tags") {
-                //     new_assign["data"][i] = {
-                //         "content": [["", 0]], 
-                //         "type": value["type"], 
-                //         "addition": content_info[i]["content"]
-                //     };
-                // }
+                } else if (value["type"] == "tags") {
+                    new_assign["data"][i] = {
+                        "content": [], 
+                        "type": value["type"], 
+                        "tag_info": content_info[i]["tag_info"]
+                    };
+                }
             }
             info = JSON.parse(JSON.stringify(new_assign));
             info["data"] = JSON.stringify(new_assign["data"]);
@@ -131,11 +152,31 @@
 
 <div>
     <p>Create item bundle   {term_name}/{course_name}</p>
-    <TextField type="number" text="num items" bind:inputText={num}/>
-    <!-- <Button text="manually input names"/> -->
-    
-    <p>item suffix (ie: ECON ASSGN)</p>
-    <TextField type="text" text="" bind:inputText={suffix}/>
+    <TextField type="number" text="num items" bind:inputText={num} max={10} min={1}  focus={true}/>
+
+    <div class="bundle">
+    {#if manual}
+        <Button text="enter item suffix" on:message={() => { manual = false; } }/>
+        {#if num != undefined && num <= 10}
+            {#each Array(num) as _, i}
+            <div class="bundle-name">
+                <TextField type="text" text={`item ${i + 1}`} 
+                    bind:inputText={names[i]} min="" max=""  focus={false} />
+            </div>
+            {/each}
+        {:else} 
+            <p class="alert">
+                {num > 10 ? "bundle can contain max 10 items" : "please input number of items in the bundle"}
+            </p>
+        {/if}
+    {:else} 
+        <Button text="manually input names" on:message={() => { manual = true; } }/>
+        <div class="name-div">
+            <p>item suffix (ie: ECON ASSGN)</p>
+            <TextField type="text" text="" bind:inputText={suffix} min="" max=""  focus={false}/>
+        </div>
+    {/if}
+    </div>
 
     <!-- <DateInput bind:value={date} on:select={() => {newDateSelected()}} format="yyyy-MM-dd"/> -->
     {#if info != undefined}
@@ -144,3 +185,23 @@
     <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} />
 </div>
 
+<style>
+.alert {
+    color: #C6858D;
+}
+
+.name-div {
+    display: flex;
+    flex-direction: row; 
+}
+
+.bundle-name {
+    margin-top: -15px;
+    margin-bottom: -15px;
+}
+
+.bundle {
+    border-bottom: 1px solid black;
+    width: 60vw;
+}
+</style>

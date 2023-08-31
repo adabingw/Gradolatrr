@@ -2,6 +2,7 @@
     import TextField from "./TextField.svelte";
     import Dropdown from "./Dropdown.svelte";
     import Button from "./Button.svelte";
+    import { TYPES } from "../constants/types";
 
     import { createEventDispatcher } from 'svelte';
 
@@ -9,7 +10,6 @@
     let add = false;
     let name; 
     let type;
-    let types = ["text", "number", "tags", "textarea"];
     const dispatch = createEventDispatcher();
 
     function addProperty() {
@@ -47,8 +47,8 @@
 <div>
     {#if add} 
     <div class="add-row">
-        <TextField bind:inputText={name} text="name" type="text" />
-        <Dropdown info={types} bind:selected={type}/>
+        <TextField bind:inputText={name} text="name" type="text" max="" min="" focus={true}/>
+        <Dropdown info={TYPES} bind:selected={type}/>
     </div>
         <Button text="save" on:message={saveProperty} />
         <Button text="cancel" on:message={cancelProperty} />

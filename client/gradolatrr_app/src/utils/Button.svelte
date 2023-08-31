@@ -21,6 +21,7 @@
     border-radius: 12px;
     width: fit-content;
     padding: 8px;
+    font-weight: bold;
 }
 
 .term-changes:hover {

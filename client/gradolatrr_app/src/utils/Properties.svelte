@@ -77,11 +77,25 @@
         info_name = "";
     }
 
+    function changeInfo(event, infoname) {
+        console.log(infoname);
+        console.log(event.detail.data);
+        let infostuff = courseinfo[infoname];
+        courseinfo[event.detail.data] = infostuff;
+        deleteTag(infoname);
+        dispatch('info', {
+            info: 'saved',
+            new_info: infostuff, 
+            info_name: event.detail.data
+        });
+    }
+
     function cancelInfo() {
         add = false;
     }
 
     function deleteTag(name) {
+        console.log(name);
         dispatch('info', {
             info: 'delete',
             data: name
@@ -105,46 +119,49 @@
         </h2>
         <TagBlock properties={properties} on:message={tagChange}/>    
     </Modal>
-    <Table><TableBody>
+    <table>
     <div class="property-table">
     {#each Object.keys(courseinfo) as item}
-        <TableBodyRow>
+        <tr>
         <!-- svelte-ignore empty-block -->
             <div class="type-block">
                 <div class="type-block2" >
-                    <TableBodyCell>
-                    <p class="tag-check">
-                    {#if !courseinfo[item]["required"]}
-                        <input type="checkbox"
-                        bind:checked={courseinfo[item]["checked"]} 
-                        on:change={() => {checkInfo(item)}}/>
-                    {:else}
-                        &nbsp; &nbsp;
-                    {/if} {item}
-                    </p>
-                    </TableBodyCell>
-                    <TableBodyCell><p>{courseinfo[item]["type"]}</p></TableBodyCell>
+                    <td class="info-name">
+                        <p class="tag-check">
+                            {#if !courseinfo[item]["required"]}
+                                <input type="checkbox"
+                                    bind:checked={courseinfo[item]["checked"]} 
+                                    on:change={() => {checkInfo(item)}}/>
+                                <TextField bind:inputText={item} type="text" text={item} on:message={(e) => changeInfo(e, item)}
+                                    min="" max=""  focus={true}/>
+                            {:else}
+                                <p  class="check-icon"></p>
+                                {item}
+                            {/if} 
+                        </p>
+                    </td>
+                    <td><p class="info-type">{courseinfo[item]["type"]}</p></td>
                 </div>
-                <TableBodyCell>
+                <td class="info-icon">
                     {#if courseinfo[item]["type"] == "tags"}
                         <img src={Open} on:click={() => openModal(courseinfo[item], item)} alt="open" class="open-icon" />
                     {:else} 
                         <p  class="open-icon"></p>
                     {/if}
-                </TableBodyCell>
-                <TableBodyCell>
+                </td>
+                <td>
                     {#if !courseinfo[item]["required"]}
                         <img src={Close} on:click={() => deleteTag(item)}/>
                     {/if}
-                </TableBodyCell>
+                </td>
             </div>
-        </TableBodyRow>
+        </tr>
     {/each}
     </div>
-    </TableBody></Table>
+    </table>
     {#if add}
     <div class="add-row">
-        <TextField bind:inputText={info_name} type="text" text=""/>
+        <TextField bind:inputText={info_name} type="text" text="" min="" max=""  focus={true}/>
         <Dropdown info={types} bind:selected={info_type}/>
     </div>
         <Button text="save" on:message={saveInfo} />
@@ -165,12 +182,23 @@
     align-items: center;
 }
 
+.info-name {
+    width: 350px;
+}
+
+.info-type {
+    margin-left: 100px;
+}
+
+.info-icon {
+    margin-left: 80px;
+}
+
 .type-block {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: left;
-  line-height: 25px;  
 }
 
 .type-block2 {
@@ -179,8 +207,7 @@
   align-items: center;
   justify-content: left;
   width: 250px;
-  line-height: 2px;
-  height: 25px;
+  height: 35px;
 }
 
 .tag-check {
@@ -189,13 +216,16 @@
   align-items: center;
   justify-content: left;
   width: 150px;
-  line-height: 5px;
-  height: 5px;
 }
 
 .open-icon {
   padding-left: 10px;
   padding-right: 10px;
+}
+
+.check-icon {
+  padding-left: 18px;
+  padding-right: 18px;
 }
 
 </style>

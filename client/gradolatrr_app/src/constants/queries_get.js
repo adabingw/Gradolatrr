@@ -8,11 +8,25 @@ const ALL_COURSES = gql`
             items {
                 id
                 name
+                order
                 courses {
                     id
                     name
                     type
+                    order
                 }
+            }
+        }
+    }  
+`;
+
+const TERM_ORDERS = gql`
+    query {
+        allTerm {
+            items {
+                id
+                name
+                order
             }
         }
     }  
@@ -29,6 +43,19 @@ const TERM_INFO = gql`
             courses { 
                 id,
                 name
+            }
+        }
+    }
+`;
+
+const COURSE_ORDERS = gql`
+    query CourseOrder($id: ID!) {
+        getTerm(id: $id) {
+            id, 
+            courses { 
+                id,
+                name
+                order
             }
         }
     }
@@ -92,5 +119,7 @@ export {
     COURSE_INFO, 
     COURSE_CONTENT, 
     GET_CONTENT_INFO,
-    ASSIGN_INFO
+    ASSIGN_INFO, 
+    COURSE_ORDERS, 
+    TERM_ORDERS
 }

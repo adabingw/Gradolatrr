@@ -39,7 +39,7 @@
     setClient(client);
 
     function triggerReload() {
-        sidebarReload = !sidebarReload;
+        sidebarReload = true;
     }
     
 </script>

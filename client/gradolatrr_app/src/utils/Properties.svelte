@@ -121,24 +121,39 @@
     </Modal>
     <table>
     <div class="property-table">
+        <tr>
+            <!-- svelte-ignore empty-block -->
+            <div class="type-block">
+                <div class="type-block2" >
+                    <td class="info-name tag-check">
+                        <p  class="check-icon"></p>name
+                    </td>
+                    <td><p class="info-type">text</p></td>
+                </div>
+            </div>
+        </tr>
+        <tr>
+            <!-- svelte-ignore empty-block -->
+            <div class="type-block">
+                <div class="type-block2" >
+                    <td class="info-name tag-check">
+                        <p  class="check-icon"></p>mark
+                    </td>
+                    <td><p class="info-type">number</p></td>
+                </div>
+            </div>
+        </tr>
     {#each Object.keys(courseinfo) as item}
+    {#if item != "name" && item != "mark"}
         <tr>
         <!-- svelte-ignore empty-block -->
             <div class="type-block">
                 <div class="type-block2" >
-                    <td class="info-name">
-                        <p class="tag-check">
-                            {#if !courseinfo[item]["required"]}
-                                <input type="checkbox"
-                                    bind:checked={courseinfo[item]["checked"]} 
-                                    on:change={() => {checkInfo(item)}}/>
-                                <TextField bind:inputText={item} type="text" text={item} on:message={(e) => changeInfo(e, item)}
-                                    min="" max=""  focus={true}/>
-                            {:else}
-                                <p  class="check-icon"></p>
-                                {item}
-                            {/if} 
-                        </p>
+                    <td class="info-name tag-check">
+                        <input type="checkbox"bind:checked={courseinfo[item]["checked"]} 
+                            on:change={() => {checkInfo(item)}}/>
+                        <TextField bind:inputText={item} type="text" text={item} on:message={(e) => changeInfo(e, item)}
+                            min="" max=""  focus={true}/>
                     </td>
                     <td><p class="info-type">{courseinfo[item]["type"]}</p></td>
                 </div>
@@ -150,12 +165,11 @@
                     {/if}
                 </td>
                 <td>
-                    {#if !courseinfo[item]["required"]}
-                        <img src={Close} on:click={() => deleteTag(item)}/>
-                    {/if}
+                <img src={Close} on:click={() => deleteTag(item)}/>
                 </td>
             </div>
         </tr>
+    {/if}
     {/each}
     </div>
     </table>
@@ -183,7 +197,7 @@
 }
 
 .info-name {
-    width: 350px;
+    min-width: 150px;
 }
 
 .info-type {

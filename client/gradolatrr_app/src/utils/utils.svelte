@@ -28,22 +28,32 @@ export function drop (ev, key2, index2, content_array, info) {
     var index = ev.dataTransfer.getData("index");
     var order = content_array[index][1]["order"];
     var order2 = content_array[index2][1]["order"];
+    console.log(content_array)
     order = order2 + 1;
     
     let orders = [order];
-    for (const [i, value] of Object.entries(info)) {
-        if (i == "metadata" || i == "content_info") continue;
+    let info_arr = JSON.parse(info["data"]);
+    info_arr[key]["order"] = order;
+    content_array[index][1]["order"] = order;
+    for (const [i, value] of Object.entries(info_arr)) {
+        const o = info_arr[i]["order"]
         if (i == key) continue;
-        const o = info[i]["order"]
         if (orders.includes(o)) {
             orders.push(o + 1);
-            info[i]["order"]++;
+            info_arr[i]["order"]++;
         } else {
             orders.push(o);
         }
     }
 
-    return [order, info, content_array]
+    for (let i = 0; i < content_array.length; i++) {
+        content_array[i][1]["order"] = info_arr[content_array[i][0]]["order"];
+    }
+
+    console.log(info_arr);
+    info["data"] = JSON.stringify(info_arr);
+
+    return [info, content_array]
 }
 
 export function maxOrder(content_array) {

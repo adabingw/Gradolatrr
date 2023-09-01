@@ -12,7 +12,6 @@
     import NewProperty from "./NewProperty.svelte";
     import ContextMenu from "./ContextMenu.svelte";
     import Context from "../assets/context_menu_icon.jpg";
-    import Blank from "../assets/blank.png";
 
     export let cmd;
     export let info;
@@ -37,13 +36,10 @@
     const dispatch = createEventDispatcher();
 
     function dropEvent(ev, key2, index2) {
-        var key = ev.dataTransfer.getData("key");
-        var index = ev.dataTransfer.getData("index");
         let return_info = drop(ev, key2, index2, data_array, info);
-        data_array[index][1]["order"] = return_info[0];
-        data[key]["order"] = return_info[0];
-        info = return_info[1];
-        data_array = return_info[2];
+        info = return_info[0];
+        data_array = return_info[1];
+        data_array = sortOrder(data_array);
     }
 
     function infoController(event) {
@@ -128,7 +124,7 @@
         {#if data[0] != "name"}
             <TableBodyRow>
             <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <div class="TableBodyRow" draggable={(cmd == "assign" || cmd == "bundle") ? false : true}
+            <div class="TableBodyRow" draggable={true}
                 on:dragstart={event => dragstart(event, data[0] , i)}
                 on:drop={event => dropEvent(event, data[0], i)} on:dragover={dragover}>
                 {#if cmd != "assign" && cmd != "bundle"}

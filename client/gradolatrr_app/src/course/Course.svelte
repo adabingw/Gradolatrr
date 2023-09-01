@@ -6,6 +6,7 @@
     import { DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE } from '../constants/queries_put';
     import { DEFAULT_GRADING } from '../constants/constants';
+    import { dragover, dragstart, sortOrder } from '../utils/utils.svelte';
     import { tokenize } from "../utils/utils.svelte";
     import Reload from "../assets/reload_icon.png";
     import Modal from '../utils/Modal.svelte';
@@ -30,6 +31,7 @@
     let last_info;              // prevent rerendering and refetching
     let content;                // the assignments of a course
     let content_info;           // the headers
+    let content_array = [];
     let sortKey = 'name';       // default sort key
     let sortDirection = 1;      // default sort direction (ascending)
     let grading_scheme = DEFAULT_GRADING;
@@ -96,8 +98,6 @@
             return;
         }
 
-        console.log(variables);
-
         for (let assign of content) {
             for (let v of variables.message) {
                 console.log(JSON.parse(assign["data"]))
@@ -123,8 +123,6 @@
             parser.clear();
         }
 
-        console.log(result);
-
         if (result != grade && result != undefined) {
             grade = result;
             try {
@@ -146,17 +144,57 @@
         }
     }
 
+    function drop (ev, key2, index2) {
+        ev.preventDefault();
+        var key = ev.dataTransfer.getData("key");
+        if (key2 == key) return;
+
+        var index = ev.dataTransfer.getData("index");
+        var order = content_array[index][1]["order"];
+        var order2 = content_array[index2][1]["order"];
+        console.log(content_array);
+
+        order = order2 + 1;
+        
+        let orders = [order];
+        content_array[index][1]["order"] = order;
+        for (const [i, value] of Object.entries(content_info)) {
+            const o = content_info[i]["order"]
+            if (i == key) continue;
+            if (orders.includes(o)) {
+                orders.push(o + 1);
+                content_info[i]["order"]++;
+            } else {
+                orders.push(o);
+            }
+        }
+
+        for (let i = 0; i < content_array.length; i++) {
+            content_array[i][1]["order"] = content_info[content_array[i][0]]["order"];
+        }
+
+        console.log(content_array);
+        console.log(content_info);
+        content_array = sortOrder(content_array);
+        console.log(content_array);
+        info["getCourse"]["content_info"] = JSON.stringify(content_info);
+        last_info = undefined;
+        // ADD TO DATABASE
+        return;
+    }
+
     function sortTable(key) {
-        console.log("?")
         if (sortKey === key) sortDirection = -sortDirection;
         else {
             sortKey = key;
             sortDirection = 1;
         }
         const sorted = content.sort((a, b) => {
-            const aVal = a[key];
-            const bVal = b[key];
-            console.log(a, b);
+            let a_arr = JSON.parse(a["data"]);
+            let b_arr = JSON.parse(b["data"]);
+            const aVal = a_arr[key]["content"];
+            const bVal = b_arr[key]["content"];
+
             if (aVal < bVal) return -sortDirection;
             else if (aVal > bVal) return sortDirection;
             return 0;
@@ -170,7 +208,15 @@
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
             content = JSON.parse(JSON.stringify($query_result["data"]["getCourse"]["assignments"]))
-            content_info = JSON.parse($query_result["data"]["getCourse"]["content_info"])
+            content_info = JSON.parse($query_result["data"]["getCourse"]["content_info"]);
+            if (content_array.length != 0) content_array = [];
+            for (let key of Object.keys(content_info)) {
+                if (key == "name" || key == "mark") continue; 
+                console.log(key);
+                content_array.push([key, content_info[key]]);
+            }
+
+            console.log(content_array);
             grade = info["getCourse"]["grade"]
             if (info["getCourse"]["grading_scheme"] != undefined) {
                 grading_scheme = info["getCourse"]["grading_scheme"]
@@ -180,7 +226,7 @@
     }
 
     $: {
-        console.log(id)
+        console.log(id);
         query_result.refetch({ id });
         last_info = info;
     }
@@ -200,30 +246,41 @@
     </Link></p>    
     {#if content != undefined || content != null}
     <table>
-        {#if content_info != undefined || content_info != null}
+        {#if content_array != undefined || content_array != null}
         <tr>
-            {#each Object.keys(content_info) as i}
-            {#if content_info[i]["checked"]}
-                <th on:click={() => sortTable(i)}>
-                    <p class="term-header tablecol">{i}</p>
-                </th>
-            {/if}
+            <th on:click={() => sortTable("name")}>
+                <p class="term-header tablecol">name</p>
+            </th>
+            <th on:click={() => sortTable("mark")}>
+                <p class="term-header tablecol">mark</p>
+            </th>
+            
+            {#each content_array as item, index}
+                {#if item[1]["checked"] && item[0] != "name" && item[0] != "mark"}
+                    <th on:click={() => sortTable(item[0])} draggable={true}
+                        on:dragstart={event => dragstart(event, item[0] , index)}
+                        on:drop={event => drop(event, item[0], index)} on:dragover={dragover}>
+                            <p class="term-header tablecol">{item[0]}</p>
+                    </th>
+                {/if}
             {/each}
             <th> </th>
         </tr>
         {/if}
             {#each Object.keys(content) as i}
             <tr >
-                <!-- {#each Object.keys(JSON.parse(content[i]["data"])) as j} -->
-                {#each Object.keys(content_info) as j}
-                    {#if content_info[j]["checked"]}
-                        {#if JSON.parse(content[i]["data"])[j] == undefined} 
+                <td>{JSON.parse(content[i]["data"])["name"]["content"]}</td>
+                <td>{JSON.parse(content[i]["data"])["mark"]["content"]}</td>
+
+                {#each content_array as j}
+                    {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
+                        {#if JSON.parse(content[i]["data"])[j[0]] == undefined} 
                             <td> </td>
                         {:else}
-                            {#if content_info[j]["type"] == "tags"}
-                                <td>{JSON.parse(content[i]["data"])[j]["content"]}</td>
+                            {#if j[1]["type"] == "tags"}
+                                <td>{JSON.parse(content[i]["data"])[j[0]]["content"]}</td>
                             {:else}
-                                <td>{JSON.parse(content[i]["data"])[j]["content"]}</td>
+                                <td>{JSON.parse(content[i]["data"])[j[0]]["content"]}</td>
                             {/if}
                         {/if}
                     {/if}
@@ -311,6 +368,14 @@ table {
     display: flex; 
     flex-direction: row;
     align-items: center;
+}
+
+/* th {
+    color: #9A98C3;
+} */
+
+th:hover {
+    cursor: pointer;
 }
 
 </style>

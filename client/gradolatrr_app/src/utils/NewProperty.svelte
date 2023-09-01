@@ -2,7 +2,7 @@
     import TextField from "./TextField.svelte";
     import Dropdown from "./Dropdown.svelte";
     import Button from "./Button.svelte";
-    import { TYPES } from "../constants/types";
+    import { TYPES } from "../constants/constants";
 
     import { createEventDispatcher } from 'svelte';
 

@@ -5,12 +5,16 @@
     import { COURSE_CONTENT } from "../constants/queries_get";
     import { DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE } from '../constants/queries_put';
+    import { DEFAULT_GRADING } from '../constants/constants';
+    import { tokenize } from "../utils/utils.svelte";
     import Reload from "../assets/reload_icon.png";
     import Modal from '../utils/Modal.svelte';
+    import Grading from '../utils/Grading.svelte';
 
     import { Link } from 'svelte-navigator';
     import { query, mutation } from 'svelte-apollo';
     import Open from '../assets/open_icon.png';
+    import { create, all } from 'mathjs'
     
     export let term_id;
     export let term_name;
@@ -28,8 +32,11 @@
     let content_info;           // the headers
     let sortKey = 'name';       // default sort key
     let sortDirection = 1;      // default sort direction (ascending)
+    let grading_scheme = DEFAULT_GRADING;
     let delete_assign = mutation(DELETE_ASSIGN);
     let update_course = mutation(UPDATE_COURSE);
+    const config = { }
+    const math = create(all, config)
 
     async function deleteAssignment(assign_id) {
         let confirmDelete = confirm("delete this assignment?");
@@ -49,18 +56,77 @@
         regrade(true); 
     }
 
+    async function changeGradeScheme(e) {
+        let equation = e.detail.equation;
+        console.log("new equation: ", equation);
+
+        if (equation != undefined) {
+            try {
+                await update_course({ 
+                    variables: { 
+                        input: {
+                            id: id,
+                            name: name, 
+                            term_id: term_id, 
+                            type: "course", 
+                            grading_scheme: equation
+                        }
+                    } 
+                });
+                regrade(true);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
+
     async function regrade(refetch) {
         console.log("regrading running");
         if (refetch) query_result.refetch({ id });
-        let sum = 0;
-        for (let assign of content) {
-            console.log(assign);
-            sum += JSON.parse(assign["data"])["mark"]["content"];
+
+        last_info = info;
+
+        let result = 0;
+        let equation = grading_scheme;
+        let variables = tokenize(grading_scheme, content_info);
+        const parser = math.parser();
+
+        if (!variables.status) {
+            console.log("error in tokenizing");
+            return;
         }
-        sum /= content.length;
-        if (sum != grade) {
-            // update course
-            grade = sum;
+
+        console.log(variables);
+
+        for (let assign of content) {
+            for (let v of variables.message) {
+                console.log(JSON.parse(assign["data"]))
+                if (JSON.parse(assign["data"])[v] == undefined) {
+                    continue;
+                }
+                
+                if (JSON.parse(assign["data"])[v]["content"] == undefined) {
+                    parser.clear();
+                    continue;
+                }
+                parser.set(`${v}`, `${JSON.parse(assign["data"])[v]["content"]}`);
+            }
+
+            if (equation.includes('#')) {
+                let l = content.length;
+                equation = equation.replaceAll('#', l);
+                console.log(l);
+            }
+
+            let result_0 = parser.evaluate(equation);
+            result += result_0;
+            parser.clear();
+        }
+
+        console.log(result);
+
+        if (result != grade && result != undefined) {
+            grade = result;
             try {
                 await update_course({ 
                     variables: { 
@@ -81,6 +147,7 @@
     }
 
     function sortTable(key) {
+        console.log("?")
         if (sortKey === key) sortDirection = -sortDirection;
         else {
             sortKey = key;
@@ -89,6 +156,7 @@
         const sorted = content.sort((a, b) => {
             const aVal = a[key];
             const bVal = b[key];
+            console.log(a, b);
             if (aVal < bVal) return -sortDirection;
             else if (aVal > bVal) return sortDirection;
             return 0;
@@ -104,6 +172,9 @@
             content = JSON.parse(JSON.stringify($query_result["data"]["getCourse"]["assignments"]))
             content_info = JSON.parse($query_result["data"]["getCourse"]["content_info"])
             grade = info["getCourse"]["grade"]
+            if (info["getCourse"]["grading_scheme"] != undefined) {
+                grading_scheme = info["getCourse"]["grading_scheme"]
+            }
             regrade(false);
         }
     }
@@ -121,6 +192,8 @@
         <h2 slot="header">
             how is this calculated?
         </h2>
+        <Grading grading={grading_scheme} variables={content_info} showModal={showModal}
+            on:message={changeGradeScheme}/>
     </Modal>
     <p>{name} <Link to={`/course/edit/${term_id}/${term_name}/${id}/${name}`}>
         <img  src={Edit} alt="edit"/> 
@@ -168,7 +241,9 @@
     {/if}
     <div class="grade-block">
         <p class="grade">grade: </p> { grade == undefined ? "no grade" : grade}
-        <p class="what" on:click={() => showModal = true}>?</p>
+        <p class="what" on:click={() => {
+            showModal = true;
+        }}>?</p>
         <img src={Reload} alt="reload" on:click={() => regrade(true)} />
     </div>
     <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><Button text="+ add item" /></Link>
@@ -185,8 +260,14 @@
   cursor: pointer;
 }
 
+table {
+    overflow-y: scroll;
+}
+
 .tablecol {
-  width: 15vw;
+  width: fit-content;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .TableBodyRow {

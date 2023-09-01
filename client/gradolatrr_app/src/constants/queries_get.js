@@ -62,6 +62,8 @@ const COURSE_CONTENT = gql`
             id, 
             name,
             content_info,
+            grade, 
+            grading_scheme,
             assignments {
                 id, 
                 name,

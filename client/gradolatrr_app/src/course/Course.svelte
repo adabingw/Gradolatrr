@@ -130,8 +130,6 @@
                     variables: { 
                         input: {
                             id: id,
-                            name: name, 
-                            term_id: term_id, 
                             type: "course", 
                             grade: grade
                         }
@@ -144,12 +142,13 @@
         }
     }
 
-    function drop (ev, key2, index2) {
+    async function drop (ev, key2, index2) {
         ev.preventDefault();
         var key = ev.dataTransfer.getData("key");
         if (key2 == key) return;
 
         var index = ev.dataTransfer.getData("index");
+        console.log(content_array);
         var order = content_array[index][1]["order"];
         var order2 = content_array[index2][1]["order"];
         console.log(content_array);
@@ -179,7 +178,20 @@
         console.log(content_array);
         info["getCourse"]["content_info"] = JSON.stringify(content_info);
         last_info = undefined;
-        // ADD TO DATABASE
+        try {
+            await update_course({ 
+                variables: { 
+                    input: {
+                        id: id,
+                        type: "course", 
+                        content_info: info["getCourse"]["content_info"]
+                    }
+                } 
+            });
+        } catch (error) {
+            console.error(error);
+        }
+
         return;
     }
 
@@ -216,7 +228,6 @@
                 content_array.push([key, content_info[key]]);
             }
 
-            console.log(content_array);
             grade = info["getCourse"]["grade"]
             if (info["getCourse"]["grading_scheme"] != undefined) {
                 grading_scheme = info["getCourse"]["grading_scheme"]

@@ -20,8 +20,29 @@ const DELETE_ASSIGN = gql`
     }
 `;
 
+const DELETE_COURSE_FROM_TERM = gql`
+    mutation DeleteCoursefromTerm($input: DeleteGrAppInput!) {
+        deleteCoursefromTerm(input: $input) { id }
+    }
+`;
+
+const DELETE_ASSIGN_FROM_TERM = gql`
+    mutation DeleteAssignmentfromTerm($input: DeleteGrAppInput!) {
+        deleteAssignmentfromTerm(input: $input) { term_id }
+    }
+`;
+
+const DELETE_ASSIGN_FROM_COURSE = gql`
+    mutation DeleteAssignmentfromTerm($input: DeleteGrAppInput!) {
+        deleteAssignmentfromCourse(input: $input) { id }
+    }
+`;
+
 export {
     DELETE_TERM, 
     DELETE_COURSE, 
-    DELETE_ASSIGN
+    DELETE_ASSIGN, 
+    DELETE_ASSIGN_FROM_COURSE,
+    DELETE_COURSE_FROM_TERM,
+    DELETE_ASSIGN_FROM_TERM
 };

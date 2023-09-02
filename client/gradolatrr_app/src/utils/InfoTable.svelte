@@ -1,13 +1,13 @@
 <script>
     import { Table, TableBody, TableBodyRow, TableBodyCell } from "flowbite-svelte";
     import { createEventDispatcher } from "svelte";
+    import { mutation } from "svelte-apollo";
 
+    import { UPDATE_ASSIGNMENT, UPDATE_COURSE, UPDATE_TERM } from "../constants/queries_put";
     import { sortOrder, dragstart, dragover, drop, maxOrder } from "./utils.svelte";
     import TextArea from "./TextArea.svelte";
     import TextField from "./TextField.svelte";
-    import TagBlock from "./TagBlock.svelte";
     import Multiselect from "./Multiselect.svelte";
-    import Dropdown from "./Dropdown.svelte";
     import Properties from "./Properties.svelte";
     import NewProperty from "./NewProperty.svelte";
     import ContextMenu from "./ContextMenu.svelte";
@@ -32,20 +32,68 @@
 
     let showMenu = false;
     let context_bundle = [ 0, 0, 0 ];
+    let update;
+
+    if (cmd == "term") update = mutation(UPDATE_TERM);
+    else if (cmd == "course") update = mutation(UPDATE_COURSE);
+    else if (cmd == "assign") update = mutation(UPDATE_ASSIGNMENT);
 
     const dispatch = createEventDispatcher();
 
-    function dropEvent(ev, key2, index2) {
+    async function dropEvent(ev, key2, index2) {
         let return_info = drop(ev, key2, index2, data_array, info);
         info = return_info[0];
         data_array = return_info[1];
         data_array = sortOrder(data_array);
+
+        if (cmd == "term") {
+            try {
+                await update({
+                    variables: {
+                        input: {
+                            id: info["id"], 
+                            type: cmd, 
+                            data: info["data"]
+                        }
+                    }
+                });
+            } catch(error) {
+                console.log(info["id"], cmd, info["data"]);
+                console.error(error);
+            }
+        } else if (cmd == "course") {
+            try {
+                await update({
+                    variables: {
+                        input: {
+                            id: info["id"], 
+                            type: "course", 
+                            data: info["data"]
+                        }
+                    }
+                });
+            } catch(error) {
+                console.error(error);
+            }
+        } else if (cmd == "assign") {
+            try {
+                await update({
+                    variables: {
+                        input: {
+                            id: info["id"], 
+                            type: "item", 
+                            data: info["data"]
+                        }
+                    }
+                });
+            } catch(error) {
+                console.error(error);
+            }
+        }
     }
 
     function infoController(event) {
         if (event.detail.info == "delete") {
-            console.log(event.detail.data);
-            console.log(content_info);
             delete content_info[event.detail.data]
         } else if (event.detail.info == "saved") {
             content_info[event.detail.info_name] = event.detail.new_info;

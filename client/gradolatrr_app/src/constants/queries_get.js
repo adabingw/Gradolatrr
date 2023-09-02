@@ -113,6 +113,14 @@ const ASSIGN_INFO = gql`
     }
 `;
 
+const ASSIGN_FROM_TERM = gql`
+    query Assignment($id: ID!) {
+        getAssignmentfromTerm(term_id: $id) {
+            id
+        }
+    }
+`;
+
 export {
     ALL_COURSES, 
     TERM_INFO, 
@@ -121,5 +129,6 @@ export {
     GET_CONTENT_INFO,
     ASSIGN_INFO, 
     COURSE_ORDERS, 
-    TERM_ORDERS
+    TERM_ORDERS, 
+    ASSIGN_FROM_TERM
 }

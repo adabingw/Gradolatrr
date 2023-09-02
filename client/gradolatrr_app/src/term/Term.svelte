@@ -9,7 +9,7 @@
     import InfoTable from '../utils/InfoTable.svelte';
     import TextField from "../utils/TextField.svelte";
     import { TERM_INFO } from "../constants/queries_get";
-    import { DELETE_TERM } from "../constants/queries_delete";
+    import { DELETE_TERM, DELETE_COURSE_FROM_TERM, DELETE_ASSIGN_FROM_TERM } from "../constants/queries_delete";
     import { UPDATE_TERM } from "../constants/queries_put";
 
     const dispatch = createEventDispatcher();
@@ -24,6 +24,8 @@
     let last_info;
     let checked = query_result["current"];
     let delete_term = mutation(DELETE_TERM);
+    let delete_assign_from_term = mutation(DELETE_ASSIGN_FROM_TERM);
+    let delete_course_from_term = mutation(DELETE_COURSE_FROM_TERM);
     let update_term = mutation(UPDATE_TERM);
 
     function archiveClick() {
@@ -45,13 +47,34 @@
                     }
                 } 
             });
-            dispatch('message', {
-                text: "reload"
+
+            await delete_course_from_term({
+                variables: {
+                    input: {
+                        id: id, 
+                        type: "course"
+                    }
+                }
+            });
+
+            await delete_assign_from_term({
+                variables: {
+                    input: {
+                        id: id, 
+                        type: "item"
+                    }
+                }
             });
         } catch (error) {
             console.error(error);
+            // we're deleting blindly, so if there doesn't exist a course or assignment in the term, 
+            // then apollo throws error and we end up here. it's fine that it throws since everything
+            // needed to be deleted will be deleted
         }
-        navigate("/"); // -1
+        dispatch('message', {
+            text: "reload"
+        });
+        navigate("/");
     }
 
     async function saveChanges() {

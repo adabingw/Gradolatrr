@@ -10,7 +10,7 @@
     import InfoTable from '../utils/InfoTable.svelte';
     import TextField from '../utils/TextField.svelte';
     import { COURSE_INFO } from "../constants/queries_get";
-    import { DELETE_COURSE } from '../constants/queries_delete';
+    import { DELETE_COURSE, DELETE_ASSIGN_FROM_COURSE } from '../constants/queries_delete';
     import { UPDATE_COURSE } from '../constants/queries_put';
     
     export let id;
@@ -26,6 +26,7 @@
     let info;
     let last_info;
     let delete_course = mutation(DELETE_COURSE);
+    let delete_assign_from_course = mutation(DELETE_ASSIGN_FROM_COURSE);
     let update_course = mutation(UPDATE_COURSE);
 
     async function saveChanges() {
@@ -66,13 +67,23 @@
                     }
                 } 
             });
-            dispatch('message', {
-                text: "reload"
-            });
-            navigate("/");
+
+            await delete_assign_from_course({
+                variables: {
+                    input: {
+                        id: id, 
+                        type: "item"
+                    }
+                }
+            })
         } catch (error) {
             console.error(error);
         }
+
+        dispatch('message', {
+            text: "reload"
+        });
+        navigate("/");
     }
 
     $: {

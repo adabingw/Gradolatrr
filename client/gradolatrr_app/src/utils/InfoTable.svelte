@@ -58,7 +58,6 @@
                     }
                 });
             } catch(error) {
-                console.log(info["id"], cmd, info["data"]);
                 console.error(error);
             }
         } else if (cmd == "course") {

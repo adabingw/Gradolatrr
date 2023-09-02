@@ -23,9 +23,6 @@
     let update_assign = mutation(UPDATE_ASSIGNMENT);
 
     async function saveChanges() {
-        console.log("save changes")
-        console.log(info);
-        console.log(name);
         try {
             await update_assign({
                 variables: {
@@ -88,7 +85,7 @@
     }
 
     $: {
-        console.log(id)
+        console.log(id);
         query_result.refetch({ id });
         last_info = info;
     }

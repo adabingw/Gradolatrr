@@ -34,7 +34,6 @@
         }
 
         if (id == -1) {
-            console.log("id is -1");
             return;
         }
 

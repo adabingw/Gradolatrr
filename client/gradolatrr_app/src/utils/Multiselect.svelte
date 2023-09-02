@@ -17,7 +17,6 @@
         selected={selected}
         placeholder="pick tags"
         on:add={(event) => {
-            console.log(event.detail.option)
             dispatch('message', {
                 data: event.detail.option
             });

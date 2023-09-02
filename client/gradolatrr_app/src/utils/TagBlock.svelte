@@ -12,13 +12,10 @@
     const dispatch = createEventDispatcher();
 
     function addTag() {
-        console.log("add")
         add = true;
     }
 
     function saveTag(e) {
-        console.log("save tag")
-
         for (let p of properties) {
             if (tag_name == p) {
                 alert("tag already exists");
@@ -44,7 +41,6 @@
     }
 
     function cancelTag() {
-        console.log("cancel tag")
         add = false;
     }
 </script>

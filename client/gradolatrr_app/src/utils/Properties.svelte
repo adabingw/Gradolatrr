@@ -36,7 +36,6 @@
     }
 
     function tagChange(event) {
-        console.log("add tag");
         const tags = event.detail.tags;
         courseinfo[modalName]["tag_info"] = tags;
         properties = courseinfo[modalName]["tag_info"];
@@ -78,8 +77,6 @@
     }
 
     function changeInfo(event, infoname) {
-        console.log(infoname);
-        console.log(event.detail.data);
         let infostuff = courseinfo[infoname];
         courseinfo[event.detail.data] = infostuff;
         deleteTag(infoname);
@@ -95,7 +92,6 @@
     }
 
     function deleteTag(name) {
-        console.log(name);
         dispatch('info', {
             info: 'delete',
             data: name

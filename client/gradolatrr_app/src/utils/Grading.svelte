@@ -35,20 +35,19 @@
             try {
                 parser.evaluate(eq_temp.replaceAll("#", 1));
             } catch(error) {
-                console.log(error);
+                console.error(error);
                 eq_error = "syntax results in parser error";
                 
                 return;
             }
 
             eq_error = undefined;
-            console.log("i think equation is ok lol");
             dispatch('message', {
                 equation: equation
             });
         } else {
             eq_error = result.message;
-            console.log("error in equation");
+            console.error("error in equation");
         }
     }
 

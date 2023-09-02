@@ -3,8 +3,10 @@ import { TOKENS } from "../constants/constants";
 
 export function sortOrder(content_array) {
     const sorted = content_array.sort((a, b) => {
-        const aVal = a[1]["order"];
-        const bVal = b[1]["order"];
+        let aVal = a[1]["order"];
+        let bVal = b[1]["order"];
+        if (aVal == null || aVal == undefined || isNaN(aVal)) aVal = 0;
+        if (bVal == null || bVal == undefined || isNaN(bVal)) bVal = 0;
         return aVal - bVal;
     });
     return sorted;
@@ -28,7 +30,6 @@ export function drop (ev, key2, index2, content_array, info) {
     var index = ev.dataTransfer.getData("index");
     var order = content_array[index][1]["order"];
     var order2 = content_array[index2][1]["order"];
-    console.log(content_array)
     order = order2 + 1;
     
     let orders = [order];
@@ -50,9 +51,7 @@ export function drop (ev, key2, index2, content_array, info) {
         content_array[i][1]["order"] = info_arr[content_array[i][0]]["order"];
     }
 
-    console.log(info_arr);
     info["data"] = JSON.stringify(info_arr);
-
     return [info, content_array]
 }
 
@@ -89,31 +88,25 @@ export function tokenize(eq, variables) {
                     message: `end of character token error`
                 }
             }
-            if ((token == "sum" && e == "(") || e == '#') {
-                console.log("sum");
+            
+            if (token == "") {
+                continue;
+            }
+            if (variableExists(token, variables)) {
+                token_arr.push(token);
+                token = "";
+            } else if (/^\d+$/.test(token)) {
+                console.log(`${token} is a num`);
             } else {
-                if (token == "") {
-                    continue;
-                }
-                if (variableExists(token, variables)) {
-                    console.log(`${token} exists`);
-                    token_arr.push(token);
-                    token = "";
-                } else if (/^\d+$/.test(token)) {
-                    console.log("is a num ", token);
-                } else {
-                    console.log(`${token} doesn't exist`);
-                    return {
-                        status: false, 
-                        message: `${token} doesn't exist`
-                    };
-                }
+                return {
+                    status: false, 
+                    message: `${token} doesn't exist`
+                };
             }
         } else {
             if (e.match(/^[0-9a-z]+$/)) {
                 token += e;
             } else {
-                console.log(`invalid character ${e}`);
                 return {
                     status: false,
                     message: `invalid character ${e}`
@@ -122,9 +115,7 @@ export function tokenize(eq, variables) {
         }
     }
     if (token != "" && token != undefined) {
-        console.log(token);
         if (!variableExists(token, variables) && !(/^\d+$/.test(token))) {
-            console.log(`${token} doesn't exist`);
             return {
                 status: false, 
                 message: `${token} doesn't exist`

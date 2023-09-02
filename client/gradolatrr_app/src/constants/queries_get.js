@@ -43,6 +43,9 @@ const TERM_INFO = gql`
             courses { 
                 id,
                 name
+                assignments {
+                    id
+                }
             }
         }
     }
@@ -69,6 +72,9 @@ const COURSE_INFO = gql`
             data, 
             content_info,
             term_id, 
+            assignments {
+                id
+            }
         }
     }
 `;

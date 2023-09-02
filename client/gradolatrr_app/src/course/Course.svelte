@@ -1,5 +1,10 @@
 <script>
     // @ts-nocheck
+    import { Link } from 'svelte-navigator';
+    import { query, mutation } from 'svelte-apollo';
+    import Open from '../assets/open_icon.png';
+    import { create, all } from 'mathjs';
+
     import Edit from '../assets/edit_icon.png';
     import Button from '../utils/Button.svelte';
     import { COURSE_CONTENT } from "../constants/queries_get";
@@ -11,11 +16,6 @@
     import Reload from "../assets/reload_icon.png";
     import Modal from '../utils/Modal.svelte';
     import Grading from '../utils/Grading.svelte';
-
-    import { Link } from 'svelte-navigator';
-    import { query, mutation } from 'svelte-apollo';
-    import Open from '../assets/open_icon.png';
-    import { create, all } from 'mathjs'
     
     export let term_id;
     export let term_name;
@@ -37,8 +37,8 @@
     let grading_scheme = DEFAULT_GRADING;
     let delete_assign = mutation(DELETE_ASSIGN);
     let update_course = mutation(UPDATE_COURSE);
-    const config = { }
-    const math = create(all, config)
+    const config = { };
+    const math = create(all, config);
 
     async function deleteAssignment(assign_id) {
         let confirmDelete = confirm("delete this assignment?");
@@ -60,7 +60,6 @@
 
     async function changeGradeScheme(e) {
         let equation = e.detail.equation;
-        console.log("new equation: ", equation);
 
         if (equation != undefined) {
             try {
@@ -83,7 +82,6 @@
     }
 
     async function regrade(refetch) {
-        console.log("regrading running");
         if (refetch) query_result.refetch({ id });
 
         last_info = info;
@@ -94,13 +92,11 @@
         const parser = math.parser();
 
         if (!variables.status) {
-            console.log("error in tokenizing");
             return;
         }
 
         for (let assign of content) {
             for (let v of variables.message) {
-                console.log(JSON.parse(assign["data"]))
                 if (JSON.parse(assign["data"])[v] == undefined) {
                     continue;
                 }
@@ -115,7 +111,6 @@
             if (equation.includes('#')) {
                 let l = content.length;
                 equation = equation.replaceAll('#', l);
-                console.log(l);
             }
 
             let result_0 = parser.evaluate(equation);
@@ -148,10 +143,8 @@
         if (key2 == key) return;
 
         var index = ev.dataTransfer.getData("index");
-        console.log(content_array);
         var order = content_array[index][1]["order"];
         var order2 = content_array[index2][1]["order"];
-        console.log(content_array);
 
         order = order2 + 1;
         
@@ -172,10 +165,7 @@
             content_array[i][1]["order"] = content_info[content_array[i][0]]["order"];
         }
 
-        console.log(content_array);
-        console.log(content_info);
         content_array = sortOrder(content_array);
-        console.log(content_array);
         info["getCourse"]["content_info"] = JSON.stringify(content_info);
         last_info = undefined;
         try {
@@ -224,8 +214,8 @@
             if (content_array.length != 0) content_array = [];
             for (let key of Object.keys(content_info)) {
                 if (key == "name" || key == "mark") continue; 
-                console.log(key);
                 content_array.push([key, content_info[key]]);
+                content_array = sortOrder(content_array);
             }
 
             grade = info["getCourse"]["grade"]

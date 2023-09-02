@@ -38,7 +38,6 @@
     let info;
 
     async function saveChanges() {
-        console.log("save changes")
         if ((suffix == "" || suffix == undefined) && !manual) {
             alert("name is required");
             return;
@@ -76,15 +75,14 @@
             };
             bundle.push(input);
         }
-        console.log(bundle);
 
         try {
             await add_bundle({ 
-                    variables: { input: bundle } 
+                variables: { input: bundle } 
             });
             navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }
 

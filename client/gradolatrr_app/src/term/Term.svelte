@@ -9,7 +9,7 @@
     import InfoTable from '../utils/InfoTable.svelte';
     import TextField from "../utils/TextField.svelte";
     import { TERM_INFO } from "../constants/queries_get";
-    import { DELETE_TERM, DELETE_COURSE_FROM_TERM, DELETE_ASSIGN_FROM_TERM } from "../constants/queries_delete";
+    import { DELETE_TERM, DELETE_COURSE, DELETE_ASSIGN } from "../constants/queries_delete";
     import { UPDATE_TERM } from "../constants/queries_put";
 
     const dispatch = createEventDispatcher();
@@ -24,8 +24,8 @@
     let last_info;
     let checked = query_result["current"];
     let delete_term = mutation(DELETE_TERM);
-    let delete_assign_from_term = mutation(DELETE_ASSIGN_FROM_TERM);
-    let delete_course_from_term = mutation(DELETE_COURSE_FROM_TERM);
+    let delete_course = mutation(DELETE_COURSE);
+    let delete_assign = mutation(DELETE_ASSIGN);
     let update_term = mutation(UPDATE_TERM);
 
     function archiveClick() {
@@ -48,29 +48,33 @@
                 } 
             });
 
-            await delete_course_from_term({
-                variables: {
-                    input: {
-                        id: id, 
-                        type: "course"
-                    }
+            let courses = info["getTerm"]["courses"];
+            for (let i = 0; i < courses.length; i++) {
+                let assignments = courses[i]["assignments"];
+                for (let j = 0; j < assignments.length; j++) {
+                    await delete_assign({
+                        variables: {
+                            input: {
+                                id: assignments[j]["id"],
+                                type: "item"
+                            }
+                        }
+                    });
                 }
-            });
 
-            await delete_assign_from_term({
-                variables: {
-                    input: {
-                        id: id, 
-                        type: "item"
+                await delete_course({
+                    variables: {
+                        input: {
+                            id: courses[i]["id"], 
+                            type: "course"
+                        }
                     }
-                }
-            });
+                });
+            }
         } catch (error) {
             console.error(error);
-            // we're deleting blindly, so if there doesn't exist a course or assignment in the term, 
-            // then apollo throws error and we end up here. it's fine that it throws since everything
-            // needed to be deleted will be deleted
         }
+
         dispatch('message', {
             text: "reload"
         });
@@ -78,8 +82,6 @@
     }
 
     async function saveChanges() {
-        console.log("save changes")
-        console.log(info);
         try {
             await update_term({
                 variables: {
@@ -103,6 +105,7 @@
     }
 
     $: {
+        console.log($query_result);
         if ($query_result.data != undefined && (last_info == info)) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));;

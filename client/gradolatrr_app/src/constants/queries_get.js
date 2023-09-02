@@ -14,6 +14,9 @@ const ALL_COURSES = gql`
                     name
                     type
                     order
+                    assignments {
+                        id
+                    }
                 }
             }
         }

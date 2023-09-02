@@ -248,7 +248,8 @@
     {#if content != undefined || content != null}
     <table>
         {#if content_array != undefined || content_array != null}
-        <tr>
+        <thead>
+        <tr style="position:relative;display:table-row">
             <th on:click={() => sortTable("name")}>
                 <p class="term-header tablecol">name</p>
             </th>
@@ -267,7 +268,9 @@
             {/each}
             <th> </th>
         </tr>
+        </thead>
         {/if}
+        <tbody style="display:table-row-group;overflow:auto">
             {#each Object.keys(content) as i}
             <tr >
                 <td>{JSON.parse(content[i]["data"])["name"]["content"]}</td>
@@ -278,8 +281,12 @@
                         {#if JSON.parse(content[i]["data"])[j[0]] == undefined} 
                             <td> </td>
                         {:else}
-                            {#if j[1]["type"] == "tags"}
-                                <td>{JSON.parse(content[i]["data"])[j[0]]["content"]}</td>
+                            {#if j[1]["type"] == "multiselect" || j[1]["type"] == "singleselect"}
+                                <div class="tags">
+                                {#each JSON.parse(content[i]["data"])[j[0]]["content"] as thing}
+                                    <p class="tag">{thing}</p>
+                                {/each}
+                                </div>
                             {:else}
                                 <td>{JSON.parse(content[i]["data"])[j[0]]["content"]}</td>
                             {/if}
@@ -295,6 +302,7 @@
                         on:click={() => deleteAssignment(content[i]["id"])}>delete</td>
             </tr>
             {/each}
+        </tbody>
     </table>
     {/if}
     <div class="grade-block">
@@ -323,23 +331,8 @@ table {
 }
 
 .tablecol {
-  width: fit-content;
   padding-left: 15px;
   padding-right: 15px;
-}
-
-.TableBodyRow {
-    border: transparent;
-    border-radius: 12px;
-}
-
-.TableBodyRow:hover {
-  border-style: none solid solid none;
-  padding: 10px;
-  border-radius: 12px;
-  background-color: #B4A390;
-  padding-top: 5px;
-  padding-bottom: 5px;
 }
 
 .grade {
@@ -371,9 +364,26 @@ table {
     align-items: center;
 }
 
-/* th {
-    color: #9A98C3;
-} */
+.tag {
+    background-color: #C9D6DF;
+    border-radius: 12px;
+    padding: 8px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.tags {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+td {
+    width: fit-content;
+    max-width: 250px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
 
 th:hover {
     cursor: pointer;

@@ -8,6 +8,7 @@
     import TextArea from "./TextArea.svelte";
     import TextField from "./TextField.svelte";
     import Multiselect from "./Multiselect.svelte";
+    import Singleselect from "./Singleselect.svelte";
     import Properties from "./Properties.svelte";
     import NewProperty from "./NewProperty.svelte";
     import ContextMenu from "./ContextMenu.svelte";
@@ -75,6 +76,7 @@
                 console.error(error);
             }
         } else if (cmd == "assign") {
+            console.log(info);
             try {
                 await update({
                     variables: {
@@ -98,6 +100,9 @@
             content_info[event.detail.info_name] = event.detail.new_info;
         } else if (event.detail.info == "tags") {
             content_info[event.detail.info_name] = event.detail.tags;
+        } else if (event.detail.info == "type") {
+            delete content_info[event.detail.info_name];
+            content_info[event.detail.info_name] = event.detail.new_info;
         }
         info["content_info"] = JSON.stringify(content_info);
         content_info = content_info;
@@ -114,7 +119,7 @@
 
         if (new_type == "text" || new_type == "textarea") new_property["content"] = "";
         else if (new_type == "number") new_property["content"] = 0;
-        else if (new_type == "tags") new_property["content"] = [["", 0]];
+        else if (new_type == "multiselect" || new_type == "singleselect") new_property["content"] = [["", 0]];
 
         data_array.push([new_name, new_property]);
         data[new_name] = new_property;
@@ -186,14 +191,15 @@
                 <TableBodyCell>
                     {#if data[1]["type"] == "textarea"}
                         <TextArea bind:inputText={data[1]["content"]} on:message={dataChange}/>
-                    <!-- {:else if data[1]["type"] == "tags" && cmd == "course"}
-                        <TagBlock bind:properties={data[1]["content"]} on:message={(event) => addedTag(event, data[0])}/> -->
                     {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
                         <TextField bind:inputText={data[1]["content"]} 
                             text={data[1]["content"]} type={data[1]["type"]} on:message={dataChange}
                             max={100} min={0}  focus={false}/>
-                    {:else if data[1]["type"] == "tags" && (cmd == "assign" || cmd == "bundle")}
+                    {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
                         <Multiselect bind:properties={data[1]["tag_info"]} 
+                            bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
+                    {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
+                        <Singleselect bind:properties={data[1]["tag_info"]} 
                             bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
                     {/if}
                 </TableBodyCell>

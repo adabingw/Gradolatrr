@@ -74,10 +74,9 @@
 <div>
     <p>Create new term</p>
     <TextField type="text" text="term name" bind:inputText={name} min="" max=""  focus={true}/>
-    <label>
+    <!-- <label>
         <input type="checkbox" bind:checked={checked} /> select as current term.
-        <!-- CHECK IF HAS CURRENT TERM FOR OTHER TERM. IF YES, RAISE ERROR -->
-    </label>
+    </label> -->
     {#if info["data"] != undefined}
         <InfoTable cmd="term" bind:info={info} />
     {/if} 

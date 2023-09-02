@@ -9,7 +9,6 @@
     import CancelOrSave from '../utils/CancelOrSave.svelte';
     import new_assign from "../constants/new_assign.json";
     import InfoTable from '../utils/InfoTable.svelte';
-    import Multiselect from '../utils/Multiselect.svelte';
     import { GET_CONTENT_INFO } from '../constants/queries_get';
     import { ADD_ASSIGNMENT } from '../constants/queries_post';
 
@@ -77,11 +76,16 @@
                         "content": 0, 
                         "type": value["type"]
                     };
-                } else if (value["type"] == "tags") {
+                } else if (value["type"] == "multiselect" || value["type"] == "singleselect") {
                     new_assign["data"][i] = {
                         "content": [], 
                         "type": value["type"], 
                         "tag_info": content_info[i]["tag_info"]
+                    };
+                } else if (value["type"] == "date") {
+                    new_assign["data"][i] = {
+                        "content": new Date(),
+                        "type": value["type"]
                     };
                 }
             }

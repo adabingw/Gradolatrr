@@ -8,13 +8,14 @@
     import Edit from "../assets/edit_icon.png";
     import Add from "../assets/add_icon.png";
     import { ALL_COURSES } from "../constants/queries_get";
-    import { UPDATE_TERM, UPDATE_COURSE } from "../constants/queries_put";
+    import { UPDATE_TERM, UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
 
     export let reload;
 
     const query_result = query(ALL_COURSES);
     const update_term = mutation(UPDATE_TERM);
     const update_course = mutation(UPDATE_COURSE);
+    const update_assign = mutation(UPDATE_ASSIGNMENT);
     let info;
     let last_info;
     let expand = {};
@@ -25,6 +26,7 @@
 
     function maxOrder(content) {
         let max = 0;
+        console.log(content);
         for (let item of content) {
             if (item["order"] != null && item["order"] != undefined && !isNaN(item["order"])) {
                 max = Math.max(max, item["order"]);
@@ -53,7 +55,7 @@
     }
 
     function dragstart (ev, index) {
-        ev.dataTransfer.setData("index", index);
+        ev.dataTransfer.setData("termIndex", index);
     }
 
     function dragover (ev) {
@@ -61,9 +63,49 @@
         ev.dataTransfer.dropEffect = 'move';
     }
 
+    async function switchCourse(course, old_term, new_term) {
+        let max_order = maxOrder(new_term["courses"]) + 1;
+        try {
+            await update_course({
+                variables: {
+                    input: {
+                        id: course["id"],
+                        type: "course", 
+                        term_id: new_term["id"],
+                        order: max_order
+                    }
+                }
+            });
+
+            for (let i = 0; i < course["assignments"].length; i++) {
+                await update_assign({
+                    variables: {
+                        input: {
+                            id: course["assignments"][i]["id"], 
+                            type: "item", 
+                            term_id: new_term["id"]
+                        }
+                    }
+                })
+            }
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
     async function drop (ev, index2) {
         ev.preventDefault();
-        var index = ev.dataTransfer.getData("index");
+        var index = ev.dataTransfer.getData("termIndex");
+        var type = ev.dataTransfer.getData("type");
+        if (type == "course") {
+            let course_index = ev.dataTransfer.getData("courseIndex");
+            let original_term = info["allTerm"]["items"][index];
+            let new_term = info["allTerm"]["items"][index2];
+            let course = info["allTerm"]["items"][index]["courses"][course_index];
+            switchCourse(course, original_term, new_term);
+            reload = true;
+            return;
+        }
 
         if (index == index2) return;
         let order = info["allTerm"]["items"][index]["order"];
@@ -116,17 +158,26 @@
     }
 
     function dragstartCourse (ev, index, termIndex) {
-        ev.dataTransfer.setData("index", index);
+        ev.dataTransfer.setData("type", "course");
+        ev.dataTransfer.setData("courseIndex", index);
         ev.dataTransfer.setData("termIndex", termIndex);
     }
 
     async function dropCourse (ev, index2, termIndex2) {
         ev.preventDefault();
-        var index = ev.dataTransfer.getData("index");
+        var index = ev.dataTransfer.getData("courseIndex");
         var termIndex = ev.dataTransfer.getData("termIndex");
 
-        if (termIndex != termIndex2) return;
         if (index == index2) return;
+
+        if (termIndex != termIndex2) {
+            let original_term = info["allTerm"]["items"][termIndex];
+            let new_term = info["allTerm"]["items"][termIndex2];
+            let course = info["allTerm"]["items"][termIndex]["courses"][index];
+            switchCourse(course, original_term, new_term);
+            reload = true;
+            return;
+        }
 
         let order = info["allTerm"]["items"][termIndex]["courses"][index]["order"];
         let order2 = info["allTerm"]["items"][termIndex]["courses"][index2]["order"];

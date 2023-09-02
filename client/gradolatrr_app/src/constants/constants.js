@@ -1,4 +1,4 @@
-let TYPES = ["text", "number", "tags", "textarea"];
+let TYPES = ["text", "number", "textarea", "multiselect", "singleselect", "date"];
 let DEFAULT_GRADING = "mark / #";
 let WEIGHTED_GRADING = "mark * weight";
 let TOKENS = ['+', '-', '/', '*', '[', ']', '(', ')', '#']

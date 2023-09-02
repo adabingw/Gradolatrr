@@ -67,14 +67,19 @@
                             "content": 0, 
                             "type": value["type"]
                         };
-                    } else if (value["type"] == "tags") {
+                    } else if (value["type"] == "multiselect" || value["type"] == "singleselect") {
                         info_temp[c] = {
                             "content": [], 
                             "type": value["type"], 
                             "tag_info": content_info[c]["tag_info"]
                         };
+                    } else if (value["type"] == "date") {
+                        info_temp[c] = {
+                            "content": new Date(),
+                            "type": value["type"]
+                        }
                     }
-                } else if (info_temp[c] != undefined && content_info[c]["type"] == "tags") {
+                } else if (info_temp[c] != undefined && content_info[c]["type"] == "multiselect" || content_info[c]["type"] == "singleselect") {
                     info_temp[c]["tag_info"] = content_info[c]["tag_info"];
                 }
             }

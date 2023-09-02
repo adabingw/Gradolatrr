@@ -116,9 +116,9 @@
 
 <div>
     <TextField bind:inputText={name} type="text" text="" min="" max=""  focus={true}/>
-    <label>
+    <!-- <label>
         <input type="checkbox" bind:checked={checked} /> select as current term.
-    </label>
+    </label> -->
     {#if info != undefined} 
         <InfoTable cmd="term" bind:info={info["getTerm"]} />
     {/if}

@@ -139,6 +139,17 @@
                         "type": value["type"], 
                         "tag_info": content_info[i]["tag_info"]
                     };
+                } else if (value["type"] == "multiselect" || value["type"] == "singleselect") {
+                    new_assign["data"][i] = {
+                        "content": [], 
+                        "type": value["type"], 
+                        "tag_info": content_info[i]["tag_info"]
+                    };
+                } else if (value["type"] == "date") {
+                    new_assign["data"][i] = {
+                        "content": new Date(),
+                        "type": value["type"]
+                    };
                 }
             }
             info = JSON.parse(JSON.stringify(new_assign));

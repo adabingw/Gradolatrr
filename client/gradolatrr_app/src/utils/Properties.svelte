@@ -3,7 +3,6 @@
 // https://svelte.dev/examples/modal
 
     import { createEventDispatcher } from 'svelte';
-    import { Table, TableBody, TableBodyRow, TableBodyCell } from "flowbite-svelte";
 
     import Close from "../assets/delete_icon.png";
     import Open from "../assets/open_icon.png";
@@ -12,13 +11,13 @@
     import Dropdown from './Dropdown.svelte';
     import Modal from './Modal.svelte';
     import TagBlock from './TagBlock.svelte';
+    import { TYPES } from '../constants/constants';
 
     export let courseinfo;
 
     let add = false;
     let info_name;
     let info_type;
-    let types = ["text", "number", "tags", "textarea"];
     let showModal = false;
     let modalName = "";
     let properties = ["assignment", "final", "midterm"];
@@ -65,7 +64,7 @@
             "required": false,
             "order": 0
         }
-        if (info_type == "tags") new_info["tag_info"] = [];
+        if (info_type == "multiselect" || info_type == "singleselect") new_info["tag_info"] = [];
         courseinfo[info_name] = new_info;
         dispatch('info', {
             info: 'saved',
@@ -79,12 +78,22 @@
     function changeInfo(event, infoname) {
         let infostuff = courseinfo[infoname];
         courseinfo[event.detail.data] = infostuff;
+        console.log(infostuff);
         deleteTag(infoname);
         dispatch('info', {
             info: 'saved',
             new_info: infostuff, 
             info_name: event.detail.data
         });
+    }
+
+    function changeType(event, infoname) {
+        courseinfo[infoname]["type"] = event.detail.data;
+        dispatch('info', {
+            info: 'type', 
+            new_info: courseinfo[infoname],
+            info_name: infoname,
+        })
     }
 
     function cancelInfo() {
@@ -151,10 +160,14 @@
                         <TextField bind:inputText={item} type="text" text={item} on:message={(e) => changeInfo(e, item)}
                             min="" max=""  focus={true}/>
                     </td>
-                    <td><p class="info-type">{courseinfo[item]["type"]}</p></td>
+                    <td>
+                        <p class="info-type">{courseinfo[item]["type"]}</p>
+                        <!-- <Dropdown info={TYPES} selected={courseinfo[item]["type"]} 
+                                on:message={(e) => changeType(e, item)}/> -->
+                    </td>
                 </div>
                 <td class="info-icon">
-                    {#if courseinfo[item]["type"] == "tags"}
+                    {#if courseinfo[item]["type"] == "multiselect" || courseinfo[item]["type"] == "singleselect"}
                         <img src={Open} on:click={() => openModal(courseinfo[item], item)} alt="open" class="open-icon" />
                     {:else} 
                         <p  class="open-icon"></p>
@@ -172,7 +185,7 @@
     {#if add}
     <div class="add-row">
         <TextField bind:inputText={info_name} type="text" text="" min="" max=""  focus={true}/>
-        <Dropdown info={types} bind:selected={info_type}/>
+        <Dropdown info={TYPES} bind:selected={info_type}/>
     </div>
         <Button text="save" on:message={saveInfo} />
         <Button text="cancel" on:message={cancelInfo} />
@@ -197,7 +210,9 @@
 }
 
 .info-type {
-    margin-left: 100px;
+    margin-left: 80px;
+    width: fit-content;
+    margin-right: 20px;
 }
 
 .info-icon {

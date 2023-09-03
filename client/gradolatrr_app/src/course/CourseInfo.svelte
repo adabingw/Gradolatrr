@@ -11,12 +11,13 @@
     import TextField from '../utils/TextField.svelte';
     import { COURSE_INFO } from "../constants/queries_get";
     import { DELETE_COURSE, DELETE_ASSIGN } from '../constants/queries_delete';
-    import { UPDATE_COURSE } from '../constants/queries_put';
+    import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
     
     export let id;
     export let name;
     export let term_id; 
     export let term_name;
+    export let reload;
 
     const dispatch = createEventDispatcher();
 
@@ -25,12 +26,64 @@
     });
     let info;
     let last_info;
+    let name_change = name;
     let delete_course = mutation(DELETE_COURSE);
     let delete_assign = mutation(DELETE_ASSIGN);
     let update_course = mutation(UPDATE_COURSE);
+    let update_assign = mutation(UPDATE_ASSIGNMENT);
 
     async function saveChanges() {
         try {
+
+            let content_info = JSON.parse(info["getCourse"]["content_info"]);
+            for (let key of Object.keys(content_info)) {
+                if (content_info[key]["old_type"] != undefined) {
+                    let old_type = content_info[key]["old_type"];
+                    let new_type = content_info[key]["type"];
+                    let assignments = info["getCourse"]["assignments"];
+
+                    for (let i = 0; i < assignments.length; i++) {
+                        let assign = assignments[i];
+                        let assign_data = JSON.parse(assign["data"]);
+                        assign_data[key]["type"] = new_type;
+                        if (old_type == "number" || old_type == "text" || old_type == "textarea") {
+                            if (new_type == "multiselect" || new_type == "singleselect") {
+                                assign_data[key]["content"] = [];
+                                assign_data[key]["tag_info"] = content_info[key]["tag_info"];
+                            } else if (new_type == "date") {
+                                assign_data[key]["content"] = new Date();
+                            } 
+                        } else if (old_type == "multiselect" || old_type == "singleselect") {
+                            if (new_type == "singleselect" || new_type == "multiselect") {
+                                assign_data[key]["content"] = [];
+                            } else if (new_type == "text" || new_type == "textarea") {
+                                assign_data[key]["content"] = "";
+                                delete assign_data[key]["tag_info"];
+                            } else if (new_type == "date") {
+                                assign_data[key]["content"] = new Date();
+                                delete assign_data[key]["tag_info"];
+                            } else if (new_type == "number") {
+                                assign_data[key]["content"] = 0;
+                                delete assign_data[key]["tag_info"];
+                            }
+                        }
+
+                        await update_assign({
+                            variables: {
+                                input: {
+                                    id: assign["id"], 
+                                    type: "item", 
+                                    data: JSON.stringify(assign_data)
+                                }
+                            }
+                        })
+                    }
+                    delete content_info[key]["old_type"]
+                    info["getCourse"]["content_info"] = JSON.stringify(content_info);
+                }
+            }
+
+            console.log(info["getCourse"]["content_info"]);
             await update_course({
                 variables: {
                     input: {
@@ -44,9 +97,15 @@
                 }
             });
             navigate(`/course/edit/${term_id}/${term_name}/${id}/${name}`);
-            dispatch('message', {
-                text: "reload"
-            });
+
+            if (name_change != name) {
+                dispatch('message', {
+                    text: "reload"
+                });
+                name_change = name;
+            }
+
+            reload = !reload;
         } catch(error) {
             console.error(error);
         }
@@ -88,7 +147,6 @@
     }
 
     $: {
-        console.log($query_result)
         if ($query_result.data != undefined && (last_info == info)) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
@@ -96,20 +154,21 @@
     }
 
     $: {
-        console.log(id)
+        id;
         query_result.refetch({ id });
         last_info = info;
     }
 
     $: {
-        console.log(info);
+        info;
         last_info = undefined;
     }
 
 </script>
 
 <div>
-    <TextField bind:inputText={name} type="text" text="" min="" max=""  focus={true}/>
+    <TextField bind:inputText={name} type="text" text="" min="" max=""  focus={true} 
+        on:message={(event) => { name_change = event.detail.data ; }}/>
     {#if info != undefined}
         <InfoTable cmd="course" bind:info={info.getCourse} />
     {/if}

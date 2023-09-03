@@ -1,6 +1,6 @@
 <script>
-// @ts-nocheck
-// https://svelte.dev/examples/modal
+    // @ts-nocheck
+    // https://svelte.dev/examples/modal
 
     import { createEventDispatcher } from 'svelte';
 
@@ -20,7 +20,7 @@
     let info_type;
     let showModal = false;
     let modalName = "";
-    let properties = ["assignment", "final", "midterm"];
+    let properties = [];
 
     const dispatch = createEventDispatcher();
 
@@ -78,7 +78,6 @@
     function changeInfo(event, infoname) {
         let infostuff = courseinfo[infoname];
         courseinfo[event.detail.data] = infostuff;
-        console.log(infostuff);
         deleteTag(infoname);
         dispatch('info', {
             info: 'saved',
@@ -88,11 +87,17 @@
     }
 
     function changeType(event, infoname) {
+        let old_type = courseinfo[infoname]["type"];
         courseinfo[infoname]["type"] = event.detail.data;
+        courseinfo[infoname]["old_type"] = old_type;
+        if (event.detail.data == "multiselect" || event.detail.data == "singleselect") {
+            courseinfo[infoname]["tag_info"] = [];
+        }
+        
         dispatch('info', {
             info: 'type', 
             new_info: courseinfo[infoname],
-            info_name: infoname,
+            info_name: infoname
         })
     }
 
@@ -161,9 +166,9 @@
                             min="" max=""  focus={true}/>
                     </td>
                     <td>
-                        <p class="info-type">{courseinfo[item]["type"]}</p>
-                        <!-- <Dropdown info={TYPES} selected={courseinfo[item]["type"]} 
-                                on:message={(e) => changeType(e, item)}/> -->
+                        <!-- <p class="info-type">{courseinfo[item]["type"]}</p> -->
+                        <Dropdown info={TYPES} selected={courseinfo[item]["type"]} 
+                                on:message={(e) => changeType(e, item)}/>
                     </td>
                 </div>
                 <td class="info-icon">

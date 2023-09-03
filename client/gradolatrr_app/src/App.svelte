@@ -19,6 +19,7 @@
     import { APPSYNC_GRAPHQLENDPOINT, APPSYNC_APIKEY, APPSYNC_REGION, APPSYNC_AUTHTYPE} from "./constants/aws_config.js";
 
     let sidebarReload = false;
+    let reload = false;
 
     const url = APPSYNC_GRAPHQLENDPOINT;
     const region = APPSYNC_REGION;
@@ -47,13 +48,14 @@
 <div>
   <Router>
       <div class="flex-row">
-          <Sidebar class="sidebar" bind:reload={sidebarReload} />
+          <Sidebar class="sidebar" bind:reload={sidebarReload} bind:triggerreload={reload}/>
           <div class="homepage">
             <Route path="/*">
-                <Dashboard text="dashboard"/>
+                <Dashboard text="dashboard" />
             </Route>
             <Route path="/new_course/:id/:name" let:params>
-                <NewCourse term_id={params.id} term_name={params.name} on:message={triggerReload}/>
+                <NewCourse term_id={params.id} term_name={params.name} 
+                    on:message={triggerReload} />
             </Route>
             <Route path="/new_assign/:term_id/:term_name/:course_id/:course_name" let:params>
                 <NewAssign term_id={params.term_id} term_name={params.term_name} 
@@ -67,18 +69,19 @@
                 <NewTerm  on:message={triggerReload} />
             </Route>
             <Route path="/course/:term_id/:term_name/:id/:name" let:params>
-                <Course id={params.id} name={params.name} term_id={params.term_id} term_name={params.term_name} />
+                <Course id={params.id} name={params.name} term_id={params.term_id} 
+                    term_name={params.term_name} bind:reload={reload}/>
             </Route>
             <Route path="/term/:id/:name" let:params>
                 <Term id={params.id} name={params.name}  on:message={triggerReload} />
             </Route>
             <Route path="/course/edit/:term_id/:term_name/:id/:name" let:params>
                 <CourseInfo id={params.id} name={params.name} term_id={params.term_id} term_name={params.term_name}
-                            on:message={triggerReload}/>
+                            on:message={triggerReload} bind:reload={reload} />
             </Route>
             <Route path="/assign/edit/:term_id/:term_name/:course_id/:course_name/:id/:name" let:params>
                 <Assign id={params.id} name={params.name} course_id={params.course_id} course_name={params.course_name}
-                        term_id={params.term_id} term_name={params.term_name} />
+                        term_id={params.term_id} term_name={params.term_name} reload={reload} />
             </Route>
           </div>
       </div>

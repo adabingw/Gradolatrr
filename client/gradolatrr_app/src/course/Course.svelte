@@ -4,6 +4,7 @@
     import { query, mutation } from 'svelte-apollo';
     import Open from '../assets/open_icon.png';
     import { create, all } from 'mathjs';
+    import { navigate } from 'svelte-navigator';
 
     import Edit from '../assets/edit_icon.png';
     import Button from '../utils/Button.svelte';
@@ -21,6 +22,7 @@
     export let term_name;
     export let id;
     export let name;
+    export let reload;
 
     let query_result = query(COURSE_CONTENT, {
         variables: { id }
@@ -205,7 +207,6 @@
     };
 
     $: {
-        console.log($query_result)
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
@@ -227,7 +228,11 @@
     }
 
     $: {
-        console.log(id);
+        query_result.refetch({ id });
+        last_info = info;
+    }
+
+    $: {
         query_result.refetch({ id });
         last_info = info;
     }
@@ -281,23 +286,24 @@
                         {#if JSON.parse(content[i]["data"])[j[0]] == undefined} 
                             <td> </td>
                         {:else}
+                        <td>
                             {#if j[1]["type"] == "multiselect" || j[1]["type"] == "singleselect"}
+                                {#if JSON.parse(content[i]["data"])[j[0]]["content"].length != 0}
                                 <div class="tags">
-                                {#each JSON.parse(content[i]["data"])[j[0]]["content"] as thing}
-                                    <p class="tag">{thing}</p>
-                                {/each}
+                                    {#each JSON.parse(content[i]["data"])[j[0]]["content"] as thing}
+                                        <p class="tag">{thing}</p>
+                                    {/each}
                                 </div>
+                                {/if}
                             {:else}
-                                <td>{JSON.parse(content[i]["data"])[j[0]]["content"]}</td>
+                                {JSON.parse(content[i]["data"])[j[0]]["content"]}
                             {/if}
+                        </td>
                         {/if}
                     {/if}
                 {/each}
-                <Link to={`/assign/edit/${term_id}/${term_name}/${id}/${name}/${content[i]["id"]}/${content[i]["name"]}`}>
-                    <td>
-                        <img src={Open} class="edit" />
-                    </td>
-                </Link>
+                <td class="edit" 
+                        on:click={() => navigate(`/assign/edit/${term_id}/${term_name}/${id}/${name}/${content[i]["id"]}/${content[i]["name"]}`)}><img src={Open}/></td>
                 <td class="edit" 
                         on:click={() => deleteAssignment(content[i]["id"])}>delete</td>
             </tr>
@@ -317,9 +323,15 @@
 </div>
     
 <style>
+table {
+    vertical-align: center;
+}
+
 .edit {
    margin-right: 25px;
    padding-right: 10px;
+   background-color: red;
+   height: 100%;
 }
 
 .edit:hover {
@@ -378,11 +390,14 @@ table {
     flex-wrap: wrap;
 }
 
+
 td {
     width: fit-content;
     max-width: 250px;
     padding-left: 12px;
     padding-right: 12px;
+    height: inherit;
+    vertical-align: middle;
 }
 
 th:hover {

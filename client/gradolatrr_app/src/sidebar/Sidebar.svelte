@@ -11,6 +11,7 @@
     import { UPDATE_TERM, UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
 
     export let reload;
+    export let triggerreload;
 
     const query_result = query(ALL_COURSES);
     const update_term = mutation(UPDATE_TERM);
@@ -26,7 +27,6 @@
 
     function maxOrder(content) {
         let max = 0;
-        console.log(content);
         for (let item of content) {
             if (item["order"] != null && item["order"] != undefined && !isNaN(item["order"])) {
                 max = Math.max(max, item["order"]);
@@ -231,6 +231,20 @@
         return;
     }
 
+    function loadData() {
+        info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
+        last_info = JSON.parse(JSON.stringify(info));
+        info["allTerm"]["items"] = sortOrder(info["allTerm"]["items"]);
+        for (let i = 0; i < info["allTerm"]["items"].length; i++) {
+            let term = info["allTerm"]["items"][i]
+            info["allTerm"]["items"][i]["courses"] = sortOrder(info["allTerm"]["items"][i]["courses"]);
+            if(expand[term["id"]] == undefined) {
+                expand[term["id"]] = true;
+            }
+        }
+        reload = false;
+    }
+
     $: {
         if (reload) {
             query_result.refetch();
@@ -244,18 +258,9 @@
     }
 
     $: {
-        if ($query_result.data != undefined && (JSON.stringify(info) == JSON.stringify(last_info))) {
-            info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
-            last_info = JSON.parse(JSON.stringify(info));
-            info["allTerm"]["items"] = sortOrder(info["allTerm"]["items"]);
-            for (let i = 0; i < info["allTerm"]["items"].length; i++) {
-                let term = info["allTerm"]["items"][i]
-                info["allTerm"]["items"][i]["courses"] = sortOrder(info["allTerm"]["items"][i]["courses"]);
-                if(expand[term["id"]] == undefined) {
-                    expand[term["id"]] = true;
-                }
-            }
-            reload = false;
+        $query_result;
+        if ($query_result.data != undefined) {
+            loadData();
         }
         expand = expand;
     }
@@ -291,8 +296,11 @@
                 expand[info.allTerm["items"][i]["id"]]}
             {#each Object.keys(info.allTerm["items"][i]["courses"]) as j}
                 <Link to={`/course/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}/${info.allTerm["items"][i]["courses"][j]["id"]}/${info.allTerm["items"][i]["courses"][j]["name"]}`}>
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <p class="course" draggable={true} on:dragstart={event => dragstartCourse(event, j, i)} 
-                        on:drop={event => dropCourse(event, j, i)} on:dragover={dragover}>
+                        on:drop={event => dropCourse(event, j, i)} on:dragover={dragover}
+                        on:click={() => { triggerreload = !triggerreload; }}>
                         {info.allTerm["items"][i]["courses"][j]["name"]}
                     </p>
                 </Link>

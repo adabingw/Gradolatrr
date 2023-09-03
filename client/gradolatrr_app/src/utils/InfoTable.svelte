@@ -76,7 +76,6 @@
                 console.error(error);
             }
         } else if (cmd == "assign") {
-            console.log(info);
             try {
                 await update({
                     variables: {
@@ -101,7 +100,6 @@
         } else if (event.detail.info == "tags") {
             content_info[event.detail.info_name] = event.detail.tags;
         } else if (event.detail.info == "type") {
-            delete content_info[event.detail.info_name];
             content_info[event.detail.info_name] = event.detail.new_info;
         }
         info["content_info"] = JSON.stringify(content_info);
@@ -131,17 +129,17 @@
         for (const key of data_array) {
             data[key[0]] = key[1];
         }
-        info["data"] = JSON.stringify(data);
+        let data_temp = JSON.stringify(data);
         dispatch('message', {
-            data: info["data"]
+            data: data_temp
         });
     }
 
     function dataChangeSelect(event, key) {
         data[key]["content"].push(event.detail.data);
-        info["data"] = JSON.stringify(data);
+        let data_temp = JSON.stringify(data);
         dispatch('message', {
-            data: info["data"]
+            data: data_temp
         });
     }
 
@@ -159,6 +157,20 @@
         delete data[item];
         info["data"] = JSON.stringify(data);
         data_array = data_array;
+    }
+
+    function updateInfo() {        
+        data = JSON.parse(info["data"]);
+        if (data_array.length != 0) data_array = [];
+        for (const key in data) {
+            data_array.push([ key, data[key] ])
+        }
+        data_array = sortOrder(data_array);
+    }
+
+    $: {
+        info;
+        updateInfo();
     }
 
 </script>

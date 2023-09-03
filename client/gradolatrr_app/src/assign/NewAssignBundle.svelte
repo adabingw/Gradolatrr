@@ -99,7 +99,6 @@
     function dataChange(event) {
         last_assign = undefined;
         let thing = JSON.parse(event.detail.data);
-        new_assign["data"] = undefined;
         new_assign["data"] = JSON.parse(JSON.stringify(thing));
     }
 

@@ -20,6 +20,7 @@
     let query_result = query(TERM_INFO, {
         variables: { id }
     });
+    let name_change = name;
     let info;
     let last_info;
     let checked = query_result["current"];
@@ -96,16 +97,18 @@
                 }
             });
             navigate(`/term/${id}/${name}`);
-            dispatch('message', {
-                text: "reload"
-            });
+
+            if (name != name_change) {
+                dispatch('message', {
+                    text: "reload"
+                });
+            }
         } catch(error) {
             console.error(error);
         }
     }
 
     $: {
-        console.log($query_result);
         if ($query_result.data != undefined && (last_info == info)) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));;
@@ -115,7 +118,8 @@
 </script>
 
 <div>
-    <TextField bind:inputText={name} type="text" text="" min="" max=""  focus={true}/>
+    <TextField bind:inputText={name} type="text" text="" min="" max="" focus={true} 
+            on:message={(event) => {name_change = event.detail.data;} }/>
     <!-- <label>
         <input type="checkbox" bind:checked={checked} /> select as current term.
     </label> -->

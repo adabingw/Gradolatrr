@@ -14,6 +14,7 @@
     export let course_name;
     export let term_id;
     export let term_name;
+    export let reload;
 
     let query_result = query(ASSIGN_INFO, {
         variables: { id }
@@ -36,7 +37,7 @@
                     }
                 }
             });
-            navigate(`/assign/edit/${term_id}/${term_name}/${course_id}/${course_name}/${id}/${name}`);
+            navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`);
         } catch(error) {
             console.error(error);
         }
@@ -48,66 +49,80 @@
         info["getAssignment"]["data"] = JSON.stringify(info_temp);
     }
 
-    $: {
-        if ($query_result.data != undefined && (last_info == info)) {
-            info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
-            
-            let content_info = JSON.parse(info["getAssignment"]["course"]["content_info"])
-            let info_temp = JSON.parse(info["getAssignment"]["data"]);
-            for (let c of Object.keys(content_info)) {
-                if (info_temp[c] == undefined) {
-                    let value = content_info[c]
-                    if (value["type"] == "text" || value["type"] == "textarea") {
-                        info_temp[c] = {
-                            "content": "", 
-                            "type": value["type"]
-                        };
-                    } else if (value["type"] == "number") {
-                        info_temp[c] = {
-                            "content": 0, 
-                            "type": value["type"]
-                        };
-                    } else if (value["type"] == "multiselect" || value["type"] == "singleselect") {
-                        info_temp[c] = {
-                            "content": [], 
-                            "type": value["type"], 
-                            "tag_info": content_info[c]["tag_info"]
-                        };
-                    } else if (value["type"] == "date") {
-                        info_temp[c] = {
-                            "content": new Date(),
-                            "type": value["type"]
-                        }
+    function updateChange(event) {
+        info["getAssignment"]["data"] = event.detail.data;
+    }
+
+    function loadData() {
+        info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
+        let content_info = JSON.parse(info["getAssignment"]["course"]["content_info"])
+        let info_temp = JSON.parse(info["getAssignment"]["data"]);
+        for (let c of Object.keys(content_info)) {
+            if (info_temp[c] == undefined) {
+                let value = content_info[c]
+                if (value["type"] == "text" || value["type"] == "textarea") {
+                    info_temp[c] = {
+                        "content": "", 
+                        "type": value["type"]
+                    };
+                } else if (value["type"] == "number") {
+                    info_temp[c] = {
+                        "content": 0, 
+                        "type": value["type"]
+                    };
+                } else if (value["type"] == "multiselect" || value["type"] == "singleselect") {
+                    info_temp[c] = {
+                        "content": [], 
+                        "type": value["type"], 
+                        "tag_info": content_info[c]["tag_info"]
+                    };
+                } else if (value["type"] == "date") {
+                    info_temp[c] = {
+                        "content": new Date(),
+                        "type": value["type"]
                     }
-                } else if (info_temp[c] != undefined && content_info[c]["type"] == "multiselect" || content_info[c]["type"] == "singleselect") {
+                }
+            } else if (info_temp[c] != undefined) {
+                if (content_info[c]["type"] == "multiselect" || content_info[c]["type"] == "singleselect") {
                     info_temp[c]["tag_info"] = content_info[c]["tag_info"];
                 }
             }
+        }
 
-            info["getAssignment"]["data"] = JSON.stringify(info_temp);
-            last_info = JSON.parse(JSON.stringify(info));
+        info["getAssignment"]["data"] = JSON.stringify(info_temp);
+        last_info = JSON.parse(JSON.stringify(info));
+    }
+
+    $: {
+        $query_result
+        if ($query_result.data != undefined) {
+            loadData();
         }
     }
 
     $: {
-        console.log(id);
+        id;
         query_result.refetch({ id });
         last_info = info;
     }
 
     $: {
-        console.log(info);
+        info;
         last_info = undefined;
+    }
+
+    $: {
+        reload;
+        query_result.refetch({ id });
     }
 
 </script>
 
 <div>
-    <!-- <p>{name}</p>     -->
     <TextField bind:inputText={name} type="text" text="" on:message={nameChange}  focus={true} max="" min=""/>
     <p>{term_name}/{course_name}</p>
     {#if info != undefined}
-        <InfoTable cmd="assign" bind:info={info.getAssignment} />
+        <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange}/>
     {/if}
     <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} />
 </div>

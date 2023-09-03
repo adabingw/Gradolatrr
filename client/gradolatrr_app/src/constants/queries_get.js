@@ -76,7 +76,8 @@ const COURSE_INFO = gql`
             content_info,
             term_id, 
             assignments {
-                id
+                id,
+                data 
             }
         }
     }

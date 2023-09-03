@@ -9,7 +9,7 @@
 
     const dispatch = createEventDispatcher();
 
-    function dataChange() {
+    function dataChange(e) {
         dispatch('message', {
             text: "data changed",
             data: inputText

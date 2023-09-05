@@ -1,7 +1,6 @@
 <script>
 // @ts-nocheck
 
-    import { DateInput } from 'date-picker-svelte'
     import { query, mutation } from 'svelte-apollo';
     import { v4 as uuidv4 } from 'uuid';
     import { navigate } from 'svelte-navigator';
@@ -146,7 +145,7 @@
                     };
                 } else if (value["type"] == "date") {
                     new_assign["data"][i] = {
-                        "content": new Date(),
+                        "content": (new Date()).toISOString().split('T')[0],
                         "type": value["type"]
                     };
                 }
@@ -186,7 +185,6 @@
     {/if}
     </div>
 
-    <!-- <DateInput bind:value={date} on:select={() => {newDateSelected()}} format="yyyy-MM-dd"/> -->
     {#if info != undefined}
         <InfoTable cmd="bundle" bind:info={info} on:message={dataChange} />
     {/if}

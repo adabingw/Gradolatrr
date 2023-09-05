@@ -7,7 +7,7 @@
     "data": {
         "description": {
             "type": "textarea",
-            "content": "hello",
+            "content": "",
             "order": 0
         }
     }

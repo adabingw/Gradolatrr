@@ -330,7 +330,6 @@ table {
 .edit {
    margin-right: 25px;
    padding-right: 10px;
-   background-color: red;
    height: 100%;
 }
 
@@ -388,20 +387,22 @@ table {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    align-content: flex-start;
 }
-
 
 td {
     width: fit-content;
     max-width: 250px;
+    min-width: 100px;
     padding-left: 12px;
     padding-right: 12px;
-    height: inherit;
+    border-bottom: 1px solid grey;
     vertical-align: middle;
 }
 
 th:hover {
     cursor: pointer;
 }
+
 
 </style>

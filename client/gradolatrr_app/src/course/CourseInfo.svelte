@@ -51,7 +51,7 @@
                                 assign_data[key]["content"] = [];
                                 assign_data[key]["tag_info"] = content_info[key]["tag_info"];
                             } else if (new_type == "date") {
-                                assign_data[key]["content"] = new Date();
+                                assign_data[key]["content"] = (new Date()).toISOString().split('T')[0];
                             } 
                         } else if (old_type == "multiselect" || old_type == "singleselect") {
                             if (new_type == "singleselect" || new_type == "multiselect") {
@@ -60,7 +60,7 @@
                                 assign_data[key]["content"] = "";
                                 delete assign_data[key]["tag_info"];
                             } else if (new_type == "date") {
-                                assign_data[key]["content"] = new Date();
+                                assign_data[key]["content"] = (new Date()).toISOString().split('T')[0];
                                 delete assign_data[key]["tag_info"];
                             } else if (new_type == "number") {
                                 assign_data[key]["content"] = 0;

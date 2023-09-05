@@ -37,7 +37,6 @@
             } catch(error) {
                 console.error(error);
                 eq_error = "syntax results in parser error";
-                
                 return;
             }
 

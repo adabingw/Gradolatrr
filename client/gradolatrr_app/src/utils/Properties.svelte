@@ -132,56 +132,47 @@
     <table>
     <div class="property-table">
         <tr>
-            <!-- svelte-ignore empty-block -->
-            <div class="type-block">
-                <div class="type-block2" >
-                    <td class="info-name tag-check">
-                        <p  class="check-icon"></p>name
-                    </td>
-                    <td><p class="info-type">text</p></td>
-                </div>
-            </div>
+            <td class="tag-check">
+                <p  class="check-icon"></p>
+            </td>
+            <td class="info-name">name</td>
+            <td><p class="info-type">text</p></td>
         </tr>
         <tr>
-            <!-- svelte-ignore empty-block -->
-            <div class="type-block">
-                <div class="type-block2" >
-                    <td class="info-name tag-check">
-                        <p  class="check-icon"></p>mark
-                    </td>
-                    <td><p class="info-type">number</p></td>
-                </div>
-            </div>
+            <td class="tag-check">
+                <p  class="check-icon"></p>
+            </td>
+            <td class="info-name">mark</td>
+            <td><p class="info-type">number</p></td>
         </tr>
     {#each Object.keys(courseinfo) as item}
     {#if item != "name" && item != "mark"}
         <tr>
-        <!-- svelte-ignore empty-block -->
-            <div class="type-block">
-                <div class="type-block2" >
-                    <td class="info-name tag-check">
-                        <input type="checkbox"bind:checked={courseinfo[item]["checked"]} 
-                            on:change={() => {checkInfo(item)}}/>
-                        <TextField bind:inputText={item} type="text" text={item} on:message={(e) => changeInfo(e, item)}
-                            min="" max=""  focus={true}/>
-                    </td>
-                    <td>
-                        <!-- <p class="info-type">{courseinfo[item]["type"]}</p> -->
-                        <Dropdown info={TYPES} selected={courseinfo[item]["type"]} 
-                                on:message={(e) => changeType(e, item)}/>
-                    </td>
-                </div>
-                <td class="info-icon">
-                    {#if courseinfo[item]["type"] == "multiselect" || courseinfo[item]["type"] == "singleselect"}
-                        <img src={Open} on:click={() => openModal(courseinfo[item], item)} alt="open" class="open-icon" />
-                    {:else} 
-                        <p  class="open-icon"></p>
-                    {/if}
-                </td>
-                <td>
-                <img src={Close} on:click={() => deleteTag(item)}/>
-                </td>
+            <td class="tag-check">
+                <input type="checkbox"bind:checked={courseinfo[item]["checked"]} 
+                    on:change={() => {checkInfo(item)}}/>
+            </td>
+            <td class="info-name">
+                <TextField bind:inputText={item} type="text" text={item} on:message={(e) => changeInfo(e, item)}
+                    min="" max=""  focus={true}/>
+            </td>
+            <td>
+                <!-- <p class="info-type">{courseinfo[item]["type"]}</p> -->
+            <div class="change-type">
+                <Dropdown info={TYPES} selected={courseinfo[item]["type"]} 
+                        on:message={(e) => changeType(e, item)}/>
             </div>
+            </td>
+            <td class="info-icon">
+                {#if courseinfo[item]["type"] == "multiselect" || courseinfo[item]["type"] == "singleselect"}
+                    <img src={Open} on:click={() => openModal(courseinfo[item], item)} alt="open" class="open-icon" />
+                {:else} 
+                    <p  class="open-icon"></p>
+                {/if}
+            </td>
+            <td>
+                <img src={Close} on:click={() => deleteTag(item)}/>
+            </td>
         </tr>
     {/if}
     {/each}
@@ -189,17 +180,20 @@
     </table>
     {#if add}
     <div class="add-row">
-        <TextField bind:inputText={info_name} type="text" text="" min="" max=""  focus={true}/>
+        <TextField bind:inputText={info_name} type="text" text="" min="" max="" focus={true} on:enter={saveInfo}/>
         <Dropdown info={TYPES} bind:selected={info_type}/>
     </div>
-        <Button text="save" on:message={saveInfo} />
+    <div class="save-div">
         <Button text="cancel" on:message={cancelInfo} />
+        <Button text="save" on:message={saveInfo} />
+    </div>
     {:else}
         <Button text="+ add course info" on:click={() => addInfo()} on:message={addInfo} class="add-info"/>
     {/if}
 </div>
 
 <style>
+
 .property-table {
   margin-top: 15px;
 }
@@ -208,44 +202,24 @@
     display: flex; 
     flex-direction: row;
     align-items: center;
+    margin-left: 40px;
 }
 
 .info-name {
-    min-width: 150px;
+    margin-left: 15px;
+    width: 200px;
 }
 
 .info-type {
-    margin-left: 80px;
     width: fit-content;
-    margin-right: 20px;
 }
 
 .info-icon {
     margin-left: 80px;
 }
 
-.type-block {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: left;
-}
-
-.type-block2 {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: left;
-  width: 250px;
-  height: 35px;
-}
-
-.tag-check {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: left;
-  width: 150px;
+table {
+    text-align: left;
 }
 
 .open-icon {
@@ -256,6 +230,15 @@
 .check-icon {
   padding-left: 18px;
   padding-right: 18px;
+}
+
+.save-div {
+    display: flex;
+    flex-direction: row;
+}
+
+td {
+    line-height: 0px;
 }
 
 </style>

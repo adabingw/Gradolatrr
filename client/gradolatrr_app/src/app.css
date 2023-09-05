@@ -81,3 +81,7 @@ button {
   padding: 8px;
   border-radius: 12px;
 }
+
+div.multiselect  {
+  max-width: 30vw !important;
+}

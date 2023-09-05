@@ -78,7 +78,7 @@
                     };
                 } else if (value["type"] == "date") {
                     info_temp[c] = {
-                        "content": new Date(),
+                        "content": (new Date()).toISOString().split('T')[0],
                         "type": value["type"]
                     }
                 }

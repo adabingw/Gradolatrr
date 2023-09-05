@@ -12,6 +12,7 @@
     import Properties from "./Properties.svelte";
     import NewProperty from "./NewProperty.svelte";
     import ContextMenu from "./ContextMenu.svelte";
+    import Date from "./Date.svelte";
     import Context from "../assets/context_menu_icon.jpg";
 
     export let cmd;
@@ -213,6 +214,8 @@
                     {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
                         <Singleselect bind:properties={data[1]["tag_info"]} 
                             bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
+                    {:else if data[1]["type"] == "date"}
+                        <Date bind:date={data[1]["content"]} on:message={dataChange} />
                     {/if}
                 </TableBodyCell>
             </div>

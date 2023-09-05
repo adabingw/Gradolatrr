@@ -23,6 +23,7 @@
 
     function termClick(k) {
         expand[k] = !expand[k];
+        localStorage.setItem("expand", JSON.stringify(expand));
     }
 
     function maxOrder(content) {
@@ -235,12 +236,21 @@
         info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
         last_info = JSON.parse(JSON.stringify(info));
         info["allTerm"]["items"] = sortOrder(info["allTerm"]["items"]);
+
+        expand = JSON.parse(localStorage.getItem("expand"));
+
+        console.log("expand: ", expand);
+        if (expand == null || expand == undefined) expand = {};
+
         for (let i = 0; i < info["allTerm"]["items"].length; i++) {
             let term = info["allTerm"]["items"][i]
             info["allTerm"]["items"][i]["courses"] = sortOrder(info["allTerm"]["items"][i]["courses"]);
+
             if(expand[term["id"]] == undefined) {
                 expand[term["id"]] = true;
             }
+
+            localStorage.setItem("expand", JSON.stringify(expand));
         }
         reload = false;
     }
@@ -262,7 +272,6 @@
         if ($query_result.data != undefined) {
             loadData();
         }
-        expand = expand;
     }
 
 </script>

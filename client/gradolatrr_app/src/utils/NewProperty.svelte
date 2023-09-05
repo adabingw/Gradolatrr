@@ -47,11 +47,13 @@
 <div>
     {#if add} 
     <div class="add-row">
-        <TextField bind:inputText={name} text="name" type="text" max="" min="" focus={true}/>
+        <TextField bind:inputText={name} text="name" type="text" max="" min="" focus={true} on:enter={saveProperty}/>
         <Dropdown info={TYPES} bind:selected={type}/>
     </div>
+    <div class="save-div">
         <Button text="save" on:message={saveProperty} />
         <Button text="cancel" on:message={cancelProperty} />
+    </div>
     {:else}
         <Button text="+add properties" on:message={addProperty} />
     {/if}
@@ -62,5 +64,11 @@
     display: flex; 
     flex-direction: row;
     align-items: center;
+    margin-left: 20px;
+}
+
+.save-div {
+    display: flex;
+    flex-direction: row;
 }
 </style>

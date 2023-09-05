@@ -57,7 +57,8 @@
         {/each}
     </div>
     {#if add}
-        <TextField bind:inputText={tag_name} type="text" text="" min="" max=""  focus={true}/>
+        <TextField bind:inputText={tag_name} type="text" text="" 
+            min="" max="" focus={true} on:enter={saveTag} />
         <div class="tag-row">
             <Button text="save" on:message={saveTag} />
             <Button text="cancel" on:message={cancelTag}/>

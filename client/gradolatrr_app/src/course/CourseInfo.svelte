@@ -34,7 +34,6 @@
 
     async function saveChanges() {
         try {
-
             let content_info = JSON.parse(info["getCourse"]["content_info"]);
             for (let key of Object.keys(content_info)) {
                 if (content_info[key]["old_type"] != undefined) {
@@ -83,7 +82,6 @@
                 }
             }
 
-            console.log(info["getCourse"]["content_info"]);
             await update_course({
                 variables: {
                     input: {
@@ -146,6 +144,10 @@
         navigate("/");
     }
 
+    function updateChange(event) {
+        info["getCourse"]["data"] = event.detail.data;
+    }
+
     $: {
         if ($query_result.data != undefined && (last_info == info)) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
@@ -170,7 +172,7 @@
     <TextField bind:inputText={name} type="text" text="" min="" max=""  focus={true} 
         on:message={(event) => { name_change = event.detail.data ; }}/>
     {#if info != undefined}
-        <InfoTable cmd="course" bind:info={info.getCourse} />
+        <InfoTable cmd="course" bind:info={info.getCourse} on:message={updateChange} />
     {/if}
     <div class="term-op" on:click={() => deleteCourse()}>
         <Button text="delete this course" />

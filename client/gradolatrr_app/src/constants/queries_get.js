@@ -43,9 +43,11 @@ const TERM_INFO = gql`
             archived,
             current, 
             data,
+            grade,
             courses { 
                 id,
-                name
+                name,
+                grade 
                 assignments {
                     id
                 }

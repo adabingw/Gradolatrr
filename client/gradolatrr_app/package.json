@@ -27,6 +27,7 @@
     "axios": "^1.4.0",
     "carbon-components-svelte": "^0.79.0",
     "date-picker-svelte": "^2.6.0",
+    "dayjs": "^1.11.9",
     "flowbite-svelte": "^0.44.4",
     "flowbite-svelte-icons": "^0.3.6",
     "graphql": "^16.8.0",

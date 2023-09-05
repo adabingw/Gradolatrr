@@ -1,5 +1,4 @@
 <script>
-    import { DateInput } from 'date-picker-svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let date;    

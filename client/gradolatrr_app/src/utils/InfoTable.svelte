@@ -11,6 +11,7 @@
     import Singleselect from "./Singleselect.svelte";
     import Properties from "./Properties.svelte";
     import NewProperty from "./NewProperty.svelte";
+    import Datepicker from "./Datepicker.svelte";
     import ContextMenu from "./ContextMenu.svelte";
     import Date from "./Date.svelte";
     import Context from "../assets/context_menu_icon.jpg";
@@ -127,6 +128,7 @@
     }
 
     function dataChange() {
+        console.log("hi");
         for (const key of data_array) {
             data[key[0]] = key[1];
         }
@@ -214,8 +216,10 @@
                     {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
                         <Singleselect bind:properties={data[1]["tag_info"]} 
                             bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
-                    {:else if data[1]["type"] == "date"}
+                    {:else if data[1]["type"] == "date" && cmd == "assign"}
                         <Date bind:date={data[1]["content"]} on:message={dataChange} />
+                    {:else if data[1]["type"] == "date" && cmd == "bundle"}
+                        <Datepicker bind:dates={data[1]["content"]} bind:num={data[1]["num"]} on:message={dataChange}/>
                     {/if}
                 </TableBodyCell>
             </div>

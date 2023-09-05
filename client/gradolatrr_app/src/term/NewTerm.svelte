@@ -59,6 +59,10 @@
         });
     }
 
+    function updateChange(event) {
+        info["getTerm"]["data"] = event.detail.data;
+    }
+
     $: {
         if ($query_result.data != undefined) {
             for (let item of $query_result["data"]["allTerm"]["items"]) {
@@ -74,11 +78,8 @@
 <div>
     <p>Create new term</p>
     <TextField type="text" text="term name" bind:inputText={name} min="" max=""  focus={true}/>
-    <!-- <label>
-        <input type="checkbox" bind:checked={checked} /> select as current term.
-    </label> -->
     {#if info["data"] != undefined}
-        <InfoTable cmd="term" bind:info={info} />
+        <InfoTable cmd="term" bind:info={info} on:message={updateChange} />
     {/if} 
     <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>

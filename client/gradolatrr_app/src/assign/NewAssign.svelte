@@ -105,7 +105,7 @@
 
 <div>
     <p>Create new item   {term_name}/{course_name}</p>
-    <TextField type="text" text="item name" bind:inputText={name} min="" max=""  focus={true}/>
+    <TextField type="text" text="item name" bind:inputText={name} min="" max="" focus={true} />
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info} on:message={dataChange}/>
     {/if}

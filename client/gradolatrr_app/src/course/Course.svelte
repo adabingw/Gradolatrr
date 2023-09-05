@@ -120,7 +120,7 @@
             parser.clear();
         }
 
-        if (result != grade && result != undefined) {
+        if (result != grade && (result != undefined && result != null)) {
             grade = result;
             try {
                 await update_course({ 
@@ -128,7 +128,7 @@
                         input: {
                             id: id,
                             type: "course", 
-                            grade: grade
+                            grade: result
                         }
                     } 
                 });
@@ -403,6 +403,4 @@ td {
 th:hover {
     cursor: pointer;
 }
-
-
 </style>

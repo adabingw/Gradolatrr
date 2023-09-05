@@ -53,13 +53,44 @@
         }
 
         let bundle = [];
+        let date_bundles = [];
+
+        for (let i = 0; i < num; i++) {
+            date_bundles.push({});
+        }
+
+        let content_info = JSON.parse(new_assign["content_info"])
+        for (let i of Object.keys(content_info)) {
+            let value = content_info[i];
+            if (value["type"] == "date") {
+                for (let j = 0; j < num; j++) {
+                    let date_arr = new_assign["data"][i]["content"]
+                    if (new_assign["data"][i]["content"].length <= j) {
+                        let last_date = date_arr[date_arr.length - 1];
+                        date_bundles[j][i] = last_date;
+                    } else {
+                        date_bundles[j][i] = date_arr[j];
+                    }
+                }
+            }
+        }
+
+        console.log(date_bundles);
 
         for (let i = 0; i < num; i++) {
             let name;
-            if (!manual) name = suffix + " " + i + 1;
+            if (!manual) name = suffix + " " + (i + 1);
             else name = names[i];
 
             new_assign["data"]["name"]["content"] = name;
+
+            if (!(Object.keys(date_bundles[i]).length === 0)) {
+                for (let key of Object.keys(date_bundles[i])) {
+                    new_assign["data"][key]["content"] = date_bundles[i][key];
+                }
+            }
+
+            console.log(new_assign["data"]);
 
             info = JSON.parse(JSON.stringify(new_assign));
             info["data"] = JSON.stringify(new_assign["data"]);
@@ -102,7 +133,7 @@
     }
 
     $: {
-        console.log(num); 
+        num;
         let len = names.length;
         if (num < len) {
             for (let i = 0; i < len - num; i++) {
@@ -145,8 +176,9 @@
                     };
                 } else if (value["type"] == "date") {
                     new_assign["data"][i] = {
-                        "content": (new Date()).toISOString().split('T')[0],
-                        "type": value["type"]
+                        "content": [(new Date()).toISOString().split('T')[0]],
+                        "type": value["type"], 
+                        "num": 1
                     };
                 }
             }
@@ -208,6 +240,7 @@
 
 .bundle {
     border-bottom: 1px solid black;
+    margin-bottom: 10px;
     width: 60vw;
 }
 </style>

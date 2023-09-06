@@ -4,13 +4,14 @@
     import { Link } from "svelte-navigator";
     import { query, mutation } from "svelte-apollo";
     import { navigate } from "svelte-navigator";
+    import { v4 as uuidv4 } from 'uuid';
 
     import NewButton from "../utils/NewButton.svelte";
     import ContextMenu from "../utils/ContextMenu.svelte";
-    import Edit from "../assets/edit_icon.png";
-    import Add from "../assets/add_icon.png";
     import { ALL_COURSES } from "../constants/queries_get";
+    import { DUPLICATE_TERM } from "../constants/queries_post";
     import { UPDATE_TERM, UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
+    import { DELETE_TERM, DELETE_COURSE, DELETE_ASSIGN } from "../constants/queries_delete";
 
     export let reload;
     export let triggerreload;
@@ -19,6 +20,10 @@
     const update_term = mutation(UPDATE_TERM);
     const update_course = mutation(UPDATE_COURSE);
     const update_assign = mutation(UPDATE_ASSIGNMENT);
+    const delete_term = mutation(DELETE_TERM);
+    const delete_course = mutation(DELETE_COURSE);
+    const delete_assign = mutation(DELETE_ASSIGN);
+    const duplicate_term = mutation(DUPLICATE_TERM);
     let info;
     let last_info;
     let showTerm = false;
@@ -237,6 +242,141 @@
         return;
     }
 
+    async function deleteTerm(index, item) {
+        let confirmDelete = confirm("delete this term?");
+        if (!confirmDelete) return;
+        try {
+            await delete_term({ 
+                variables: { 
+                    input: {
+                        id: item["id"], 
+                        type: "term"
+                    }
+                } 
+            });
+
+            let courses = item["courses"];
+            for (let i = 0; i < courses.length; i++) {
+                let assignments = courses[i]["assignments"];
+                for (let j = 0; j < assignments.length; j++) {
+                    await delete_assign({
+                        variables: {
+                            input: {
+                                id: assignments[j]["id"],
+                                type: "item"
+                            }
+                        }
+                    });
+                }
+
+                await delete_course({
+                    variables: {
+                        input: {
+                            id: courses[i]["id"], 
+                            type: "course"
+                        }
+                    }
+                });
+            }
+            query_result.refetch();
+            navigate("/");
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function deleteCourse(index, item) {
+        let confirmDelete = confirm("delete this course?");
+        if (!confirmDelete) return;
+
+        try {
+            await delete_course({ 
+                variables: { 
+                    input: {
+                        id: item["id"], 
+                        type: "course"
+                    }
+                } 
+            });
+
+            for (let i = 0; i < item["assignments"].length; i++) {
+                await delete_assign({
+                    variables: {
+                        input: {
+                            id: info["assignments"][i]["id"], 
+                            type: "item"
+                        }
+                    }
+                });
+            }
+            query_result.refetch();
+            navigate("/");
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function duplicateTerm(index, item) {
+        let term_id = uuidv4();
+        let term = {
+            id: term_id, 
+            name: "Copy of " + item["name"], 
+            type: "term",
+            data: item["data"], 
+            grade: item["grade"],
+            order: 0
+        }
+
+        let courses = [];
+        let assigns = [];
+        for (let course of item["courses"]) {
+            let course_id = uuidv4();
+            courses.push({
+                id: course_id, 
+                term_id: term_id, 
+                name: "Copy of " + course["name"], 
+                type: "course", 
+                data: course["data"],
+                content_info: course["content_info"],
+                order: course["order"],
+                grading_scheme: course["grading_scheme"],
+                grade: course["grade"]
+            });
+            let assignments = course["assignments"];
+            for (let assign of assignments) {
+                let assign_id = uuidv4();
+                assigns.push({
+                    id: assign_id, 
+                    term_id: term_id, 
+                    course_id: course_id, 
+                    name: "Copy of " + assign["name"], 
+                    type: "item", 
+                    data: assign["data"],
+                })
+            }
+        }
+
+        let input = [{
+            term: term,
+            courses: courses, 
+            assignments: assigns
+        }]
+
+        try {
+            await duplicate_term({ 
+                variables: {
+                    input: input
+                } 
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function duplicateCourse(index, item) {
+
+    }
+
     function loadData() {
         info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
         last_info = JSON.parse(JSON.stringify(info));
@@ -281,9 +421,9 @@
         const item = e.detail.item;
         console.log(context, index, item);
         if (context == 'trash') {
-
-        } else if (context == 'copy') {
-
+            deleteTerm(index, item);
+        } else if (context == 'duplicate') {
+            duplicateTerm(index, item);
         }
     }
 
@@ -293,9 +433,9 @@
         const item = e.detail.item;
         console.log(context, index, item);
         if (context == 'trash') {
-
+            deleteCourse(index, item);
         } else if (context == 'edit') {
-
+            navigate(`/course/edit/${item["term_id"]}/${item["term_name"]}/${item["id"]}/${item["name"]}`);
         } else if (context == 'copy') {
 
         }

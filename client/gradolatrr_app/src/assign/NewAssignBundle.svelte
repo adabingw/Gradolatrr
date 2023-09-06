@@ -41,23 +41,18 @@
             alert("name is required");
             return;
         }
-
         if (num == undefined) {
             alert("number is required");
             return;
         }
-
         if (num > 10) {
             alert("bundle can contain at most 10 items");
             return;
         }
-
         let bundle = [];
         let date_bundles = [];
 
-        for (let i = 0; i < num; i++) {
-            date_bundles.push({});
-        }
+        for (let i = 0; i < num; i++) date_bundles.push({});
 
         let content_info = JSON.parse(new_assign["content_info"])
         for (let i of Object.keys(content_info)) {
@@ -75,8 +70,6 @@
             }
         }
 
-        console.log(date_bundles);
-
         for (let i = 0; i < num; i++) {
             let name;
             if (!manual) name = suffix + " " + (i + 1);
@@ -89,8 +82,6 @@
                     new_assign["data"][key]["content"] = date_bundles[i][key];
                 }
             }
-
-            console.log(new_assign["data"]);
 
             info = JSON.parse(JSON.stringify(new_assign));
             info["data"] = JSON.stringify(new_assign["data"]);
@@ -113,16 +104,6 @@
             navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`);
         } catch (error) {
             console.error(error);
-        }
-    }
-
-    function newDateSelected() {
-        console.log(dates, date)
-        if (dates.includes(date)){
-            const i = dates.indexOf(date);
-            dates.splice(i, 1);
-        } else {
-            dates.push(date);
         }
     }
 

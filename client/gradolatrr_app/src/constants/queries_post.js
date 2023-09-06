@@ -26,9 +26,16 @@ const ADD_BUNDLE = gql`
     }
 `;
 
+const DUPLICATE_TERM = gql`
+    mutation DuplicateTerm($input: [DuplicateTerm]) {
+        duplicateTerm(input: $input) { id }
+    }
+`;
+
 export {
     ADD_TERM,
     ADD_COURSE,
     ADD_ASSIGNMENT, 
-    ADD_BUNDLE
+    ADD_BUNDLE, 
+    DUPLICATE_TERM
 }

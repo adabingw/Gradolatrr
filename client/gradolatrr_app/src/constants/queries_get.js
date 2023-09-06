@@ -9,13 +9,21 @@ const ALL_COURSES = gql`
                 id
                 name
                 order
+                grade 
+                data
                 courses {
                     id
                     name
                     type
                     order
+                    grade
+                    data
+                    content_info
                     assignments {
                         id
+                        data
+                        type
+                        name
                     }
                 }
             }

@@ -240,6 +240,12 @@
 </script>
 
 <div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</div>
+
+<div>
     <Modal bind:showModal>
         <h2 slot="header">
             how is this calculated?
@@ -248,7 +254,8 @@
             on:message={changeGradeScheme}/>
     </Modal>
     <p>{name} <Link to={`/course/edit/${term_id}/${term_name}/${id}/${name}`}>
-        <img  src={Edit} alt="edit"/> 
+        <i class="fa-solid fa-pen-to-square"></i>
+        <!-- <img  src={Edit} alt="edit"/>  -->
     </Link></p>    
     {#if content != undefined || content != null}
     <table>
@@ -323,6 +330,10 @@
 </div>
     
 <style>
+i {
+    margin-left: 8px;
+}
+
 table {
     vertical-align: center;
 }

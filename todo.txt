@@ -2,7 +2,6 @@
 
 FUNCTIONALITIES  
 - graphs
-- use local storage to store expand
 
 MODULES
 - dashboard

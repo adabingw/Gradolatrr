@@ -17,7 +17,6 @@
     }
 
     function handleKeydown(e) {
-        console.log(e.key);
         if (e.key != 'Enter') return;
         dispatch('enter', {
             text: "enter pressed"

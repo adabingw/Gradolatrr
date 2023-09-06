@@ -3,8 +3,10 @@
 
     import { Link } from "svelte-navigator";
     import { query, mutation } from "svelte-apollo";
+    import { navigate } from "svelte-navigator";
 
     import NewButton from "../utils/NewButton.svelte";
+    import ContextMenu from "../utils/ContextMenu.svelte";
     import Edit from "../assets/edit_icon.png";
     import Add from "../assets/add_icon.png";
     import { ALL_COURSES } from "../constants/queries_get";
@@ -19,7 +21,10 @@
     const update_assign = mutation(UPDATE_ASSIGNMENT);
     let info;
     let last_info;
+    let showTerm = false;
+    let showCourse = false;
     let expand = {};
+    let context_bundle = [ 0, 0, 0 ];
 
     function termClick(k) {
         expand[k] = !expand[k];
@@ -236,10 +241,7 @@
         info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
         last_info = JSON.parse(JSON.stringify(info));
         info["allTerm"]["items"] = sortOrder(info["allTerm"]["items"]);
-
         expand = JSON.parse(localStorage.getItem("expand"));
-
-        console.log("expand: ", expand);
         if (expand == null || expand == undefined) expand = {};
 
         for (let i = 0; i < info["allTerm"]["items"].length; i++) {
@@ -253,6 +255,50 @@
             localStorage.setItem("expand", JSON.stringify(expand));
         }
         reload = false;
+    }
+
+    function openTerm(e, index, item) {
+        e.preventDefault();
+        console.log(index, item);
+        context_bundle = [e.clientX, e.clientY, index, item];
+        showTerm = true;
+        showCourse = false;
+    }
+
+    function openCourse(e, index, item, term_id, term_name) {
+        e.preventDefault();
+        item["term_id"] = term_id;
+        item["term_name"] = term_name;
+        console.log(index, item);
+        context_bundle = [e.clientX, e.clientY, index, item];
+        showCourse = true;
+        showTerm = false;
+    }
+
+    function contextControllerTerm(e) {
+        const context = e.detail.context; 
+        const index = e.detail.index;
+        const item = e.detail.item;
+        console.log(context, index, item);
+        if (context == 'trash') {
+
+        } else if (context == 'copy') {
+
+        }
+    }
+
+    function contextControllerCourse(e) {
+        const context = e.detail.context; 
+        const index = e.detail.index;
+        const item = e.detail.item;
+        console.log(context, index, item);
+        if (context == 'trash') {
+
+        } else if (context == 'edit') {
+
+        } else if (context == 'copy') {
+
+        }
     }
 
     $: {
@@ -276,6 +322,26 @@
 
 </script>
 
+<div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</div>
+
+<ContextMenu bind:showMenu={showTerm} 
+        bind:x={context_bundle[0]} 
+        bind:y={context_bundle[1]} 
+        bind:index={context_bundle[2]}
+        bind:item={context_bundle[3]}
+        menuNum={3}
+        on:context={contextControllerTerm}/>
+<ContextMenu bind:showMenu={showCourse} 
+        bind:x={context_bundle[0]} 
+        bind:y={context_bundle[1]} 
+        bind:index={context_bundle[2]}
+        bind:item={context_bundle[3]}
+        menuNum={2}
+        on:context={contextControllerCourse}/>
 <div class="sidebar">
     <Link to="/"><h3>GRADROLATRR</h3></Link>
     <NewButton type="new_term" name="+ new term" />
@@ -288,14 +354,16 @@
         {#if info.allTerm["items"][i] != undefined} 
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <div class="term-row">
+            <div class="term-row" on:contextmenu={(e) => openTerm(e, i, info.allTerm["items"][i])} >
                 <p class="term" on:click={() => termClick(info.allTerm["items"][i]["id"])}>{info.allTerm["items"][i]["name"]}</p>
                 <div>
                     <Link to={`/new_course/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`}>
-                        <img  src={Add} alt="add" class="sidebarimg"/> 
+                        <!-- <img  src={Add} alt="add" class="sidebarimg"/>  -->
+                        <i class="fa-solid fa-plus"></i>
                     </Link>
                     <Link to={`/term/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`} class="sidebarimg">
-                        <img  src={Edit} alt="edit"/> 
+                        <!-- <img  src={Edit} alt="edit"/>  -->
+                        <i class="fa-solid fa-pen-to-square"></i>
                     </Link>
                 </div>
             </div>
@@ -309,7 +377,11 @@
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <p class="course" draggable={true} on:dragstart={event => dragstartCourse(event, j, i)} 
                         on:drop={event => dropCourse(event, j, i)} on:dragover={dragover}
-                        on:click={() => { triggerreload = !triggerreload; }}>
+                        on:click={() => { triggerreload = !triggerreload; }} 
+                        on:contextmenu={
+                            (e) => openCourse(
+                                e, j, info.allTerm["items"][i]["courses"][j],
+                                info.allTerm["items"][i]["id"], info.allTerm["items"][i]["name"]) } >
                         {info.allTerm["items"][i]["courses"][j]["name"]}
                     </p>
                 </Link>
@@ -323,6 +395,15 @@
 </div>
 
 <style>
+
+i {
+    margin-right: 5px;
+}
+
+h3 {
+    text-align: center;
+}
+
 .sidebar {
     padding-top: 25px;
     width: 15vw;

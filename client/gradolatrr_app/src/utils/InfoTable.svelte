@@ -125,6 +125,10 @@
         data[new_name] = new_property;
         info["data"] = JSON.stringify(data);
         data_array = data_array;
+        let data_temp = JSON.stringify(data);
+        dispatch('message', {
+            data: data_temp
+        });
     }
 
     function dataChange() {
@@ -147,8 +151,10 @@
     }
 
     function openMenu(e, index, item) {
+        showMenu = false;
         e.preventDefault();
         context_bundle = [e.clientX, e.clientY, index, item];
+        console.log(e.clientX, e.clientY);
         showMenu = true;
     }
 
@@ -183,10 +189,11 @@
         bind:y={context_bundle[1]} 
         bind:index={context_bundle[2]}
         bind:item={context_bundle[3]}
+        menuNum={1}
         on:context={contextController}/>
 <Table>
+    <TableBody>
     {#if data_array.length > 0 && data_array != undefined}
-        <TableBody>
         {#each data_array as data, i}
         {#if data[0] != "name"}
             <TableBodyRow>
@@ -225,20 +232,20 @@
             </div>
             </TableBodyRow>
         {/if} 
-        {/each}
-        {#if cmd == "course" && content_info != undefined && content_info.length != 0}
-            <TableBodyRow>
-                <div class="TableBodyRow" >
-                <TableBodyCell><p class="context_menu"></p></TableBodyCell>
-                <TableBodyCell><p class="term-header tablecol">item info</p></TableBodyCell>
-                <TableBodyCell>
-                    <Properties bind:courseinfo={content_info} on:info={infoController}/>
-                </TableBodyCell>
-                </div>
-            </TableBodyRow>
-        {/if}
-        </TableBody> 
-    {/if} 
+        {/each} 
+    {/if}
+    {#if cmd == "course" && content_info != undefined && content_info.length != 0}
+        <TableBodyRow>
+            <div class="TableBodyRow" >
+            <TableBodyCell><p class="context_menu"></p></TableBodyCell>
+            <TableBodyCell><p class="term-header tablecol">item info</p></TableBodyCell>
+            <TableBodyCell>
+                <Properties bind:courseinfo={content_info} on:info={infoController}/>
+            </TableBodyCell>
+            </div>
+        </TableBodyRow>
+    {/if}
+    </TableBody>
 </Table>
 {#if cmd != "assign" && cmd != "bundle"}
     <NewProperty on:message={addedProperty} data={data_array}/>

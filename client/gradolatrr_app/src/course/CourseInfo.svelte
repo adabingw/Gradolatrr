@@ -94,7 +94,8 @@
                     }
                 }
             });
-            navigate(`/course/edit/${term_id}/${term_name}/${id}/${name}`);
+
+            query_result.refetch({ id });
 
             if (name_change != name) {
                 dispatch('message', {
@@ -149,7 +150,7 @@
     }
 
     $: {
-        if ($query_result.data != undefined && (last_info == info)) {
+        if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
         }

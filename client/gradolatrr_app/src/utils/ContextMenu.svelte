@@ -1,21 +1,56 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
 
     export let showMenu = false;
     export let x;
     export let y;
     export let index;
     export let item;
+    export let menuNum;
 
+    let menuItem;
     let menu = { h: 0, w: 0 }
     let browser = { h: 0, w: 0 }
     let pos = { x: 0, y: 0 }
-    let menuItems = [
+    let menuItems1 = [
         {
             'name': 'trash',
             'onClick': menuClick,
             'displayText': "Trash",
             'class': 'fa-solid fa-trash-can'
+        }
+    ]
+
+    let menuItems2 = [
+        {
+            'name': 'trash',
+            'onClick': menuClick,
+            'displayText': "Trash",
+            'class': 'fa-solid fa-trash-can'
+        }, {
+            'name': 'edit',
+            'onClick': menuClick,
+            'displayText': "Edit",
+            'class': 'fa-solid fa-pen'
+        }, {
+            'name': 'duplicate',
+            'onClick': menuClick,
+            'displayText': "Copy",
+            'class': 'fa-solid fa-copy'
+        }
+    ]
+
+    let menuItems3 = [
+        {
+            'name': 'trash',
+            'onClick': menuClick,
+            'displayText': "Trash",
+            'class': 'fa-solid fa-trash-can'
+        }, {
+            'name': 'duplicate',
+            'onClick': menuClick,
+            'displayText': "Copy",
+            'class': 'fa-solid fa-copy'
         }
     ]
     const dispatch = createEventDispatcher();
@@ -46,10 +81,10 @@
         }
     }
 
-    function menuClick() {
+    function menuClick(context) {
         showMenu = false; 
         dispatch('context', {
-            context: "delete",
+            context: context,
             index: index, 
             item: item
         })
@@ -58,6 +93,13 @@
     function onPageClick() {
         showMenu = false;
     }
+
+    onMount(() => {
+        if (menuNum == 1) menuItem = menuItems1;
+        else if (menuNum == 2) menuItem = menuItems2;
+        else menuItem = menuItems3;
+    });
+
 </script>
 
 <div>
@@ -129,11 +171,14 @@ hr{
 <nav use:getContextMenuDimension style="position: absolute; top:{pos.y}px; left:{pos.x}px" on:show={openMenu()}>
     <div class="navbar" id="navbar">
         <ul>
-            {#each menuItems as item}
+            {#each menuItem as item}
                 {#if item.name == "hr"}
                     <hr>
                 {:else}
-                    <li><button on:click={item.onClick}><i class={item.class}></i>{item.displayText}</button></li>
+                    <li><button on:click={() => item.onClick(item.name)}>
+                        <i class={item.class}></i>
+                        {item.displayText}
+                    </button></li>
                 {/if}
             {/each}
         </ul>

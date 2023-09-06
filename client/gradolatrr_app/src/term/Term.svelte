@@ -95,6 +95,8 @@
                     }
                 }
             });
+
+            query_result.refetch({ id });
             navigate(`/term/${id}/${name}`);
 
             if (name != name_change) {
@@ -142,13 +144,19 @@
 
     $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
-            console.log(":/");
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
             courses = info["getTerm"]["courses"];
             grade = info["getTerm"]["grade"];
         }
     }
+
+    $: {
+        id;
+        query_result.refetch({ id });
+        last_info = info;
+    }
+
 </script>
 
 <div>

@@ -171,7 +171,7 @@
                 {/if}
             </td>
             <td>
-                <img src={Close} on:click={() => deleteTag(item)}/>
+                <i class="fa-solid fa-xmark" on:click={() => deleteTag(item)}></i>
             </td>
         </tr>
     {/if}

@@ -52,7 +52,8 @@
             <div class="tag">
                 {tag}
             </div>
-            <img src={Close} on:click={() => deleteTag(tag, i)} alt="close"/>
+            <i class="fa-solid fa-xmark" on:click={() => deleteTag(tag, i)}></i>
+            <!-- <img src={Close} on:click={() => deleteTag(tag, i)} alt="close"/> -->
         </div>
         {/each}
     </div>

@@ -184,6 +184,12 @@
 
 </script>
 
+<div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</div>
+
 <ContextMenu bind:showMenu={showMenu} 
         bind:x={context_bundle[0]} 
         bind:y={context_bundle[1]} 
@@ -203,8 +209,8 @@
                 on:drop={event => dropEvent(event, data[0], i)} on:dragover={dragover}>
                 {#if cmd != "assign" && cmd != "bundle"}
                     <TableBodyCell>
-                        <img src={Context} on:contextmenu={(e) => openMenu(e, i, data[0])} 
-                            alt="context menu" class="context_menu" />
+                        <i class="fa-solid fa-ellipsis-vertical context_menu" 
+                            on:contextmenu={(e) => openMenu(e, i, data[0])}></i>
                     </TableBodyCell>
                 {/if}
                 <TableBodyCell>
@@ -253,8 +259,7 @@
 
 <style>
 .context_menu {
-    width: 40px;
-    height: 40px;
+    margin-left: 20px;
 }
 
 .tablecol {

@@ -171,7 +171,7 @@
 </script>
 
 <div>
-    <p>Create item bundle   {term_name}/{course_name}</p>
+    <span class="header"><p class="title">Create item bundle</p>   <p class="section">{term_name}/{course_name}</p></span>
     <TextField type="number" text="num items" bind:inputText={num} max={10} min={1}  focus={true}/>
 
     <div class="bundle">
@@ -223,5 +223,20 @@
     border-bottom: 1px solid black;
     margin-bottom: 10px;
     width: 60vw;
+}
+
+.header {
+    display: flex; 
+    flex-direction: row; 
+    align-items: center;
+}
+
+.section {
+    font-size: 14px;
+    margin-left: 15px;
+}
+
+.title {
+    font-weight: bold;
 }
 </style>

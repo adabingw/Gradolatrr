@@ -76,7 +76,7 @@
 </script>
 
 <div>
-    <p>Create new term</p>
+    <p style="font-weight: bold">Create new term</p>
     <TextField type="text" text="term name" bind:inputText={name} min="" max=""  focus={true}/>
     {#if info["data"] != undefined}
         <InfoTable cmd="term" bind:info={info} on:message={updateChange} />

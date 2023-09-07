@@ -241,12 +241,17 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div on:click={() => { showModal = true }} class="dates">
+    <i class="fa-regular fa-calendar"></i>
     {#each dates as date}
         <p class="date">{date}</p>
     {/each}
 </div>
 
 <style>
+i {
+    margin-left: 5px;
+}
+
 table {
     width: 100%;
 }    
@@ -282,6 +287,7 @@ tr {
 }
 
 .dates {
+    font-size: 13px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -289,6 +295,7 @@ tr {
     margin-top: 8px;
     margin-bottom: 8px;
     max-width: 350px;
+    align-items: center;
 }
 
 .date {

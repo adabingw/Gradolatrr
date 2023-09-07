@@ -80,7 +80,7 @@
 </script>
 
 <div>
-    <p>Create new course</p>
+    <p style="font-weight: bold">Create new course</p>
     <TextField type="text" text="course name" bind:inputText={name} min="" max="" focus={true} />
     <InfoTable cmd="course" bind:info={info} on:message={updateChange} />
     <CancelOrSave url={`/`} on:message={saveChanges} />

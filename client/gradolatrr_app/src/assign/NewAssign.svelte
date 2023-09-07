@@ -104,7 +104,7 @@
 </script>
 
 <div>
-    <p>Create new item   {term_name}/{course_name}</p>
+    <span class="header"><p class="title">Create new item</p>   <p class="section">{term_name}/{course_name}</p></span>
     <TextField type="text" text="item name" bind:inputText={name} min="" max="" focus={true} />
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info} on:message={dataChange}/>
@@ -113,6 +113,19 @@
 </div>
 
 <style>
+.header {
+    display: flex; 
+    flex-direction: row; 
+    align-items: center;
+}
 
+.section {
+    font-size: 14px;
+    margin-left: 15px;
+}
+
+.title {
+    font-weight: bold;
+}
 
 </style>

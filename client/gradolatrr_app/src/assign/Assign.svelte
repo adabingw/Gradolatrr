@@ -119,8 +119,9 @@
 </script>
 
 <div>
-    <TextField bind:inputText={name} type="text" text="" on:message={nameChange}  focus={true} max="" min=""/>
-    <p>{term_name}/{course_name}</p>
+    <span class="header">
+        <TextField bind:inputText={name} type="text" text="" on:message={nameChange}  focus={true} max="" min=""/>
+        <p class="section">{term_name}/{course_name}</p></span>
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange}/>
     {/if}
@@ -128,7 +129,14 @@
 </div>
 
 <style>
-.assign-style {
-    text-align: left;
+.header {
+    display: flex; 
+    flex-direction: row; 
+    align-items: center;
+}
+
+.section {
+    font-size: 14px;
+    margin-left: 15px;
 }
 </style>

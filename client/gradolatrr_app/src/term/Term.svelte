@@ -160,6 +160,12 @@
 </script>
 
 <div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</div>
+
+<div>
 {#if info != undefined}
     <TextField bind:inputText={name} type="text" text="" min="" max="" focus={true} 
             on:message={(event) => {name_change = event.detail.data;} }/>
@@ -183,13 +189,21 @@
     </div>
     <div class="grade-block">
         <p class="grade">grade: </p> { grade == undefined ? "no grade" : grade}
-        <img src={Reload} alt="reload" on:click={() => regrade()} class="reload" />
+        <i class="fa-solid fa-rotate-right" on:click={() => regrade()}></i>
     </div>
     <CancelOrSave url={`/`} on:message={saveChanges} />
 {/if}
 </div>
 
 <style>
+i {
+    margin-left: 8px;
+}
+
+i:hover {
+    cursor: pointer;
+}
+
 .grade {
     background-color: #C9D2CD;
     border-radius: 12px;

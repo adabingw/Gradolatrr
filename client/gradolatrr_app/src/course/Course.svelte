@@ -253,7 +253,7 @@
         <Grading grading={grading_scheme} variables={content_info} showModal={showModal}
             on:message={changeGradeScheme}/>
     </Modal>
-    <p>{name} <Link to={`/course/edit/${term_id}/${term_name}/${id}/${name}`}>
+    <p style="font-weight: bold">{name} <Link to={`/course/edit/${term_id}/${term_name}/${id}/${name}`}>
         <i class="fa-solid fa-pen-to-square"></i>
         <!-- <img  src={Edit} alt="edit"/>  -->
     </Link></p>    
@@ -320,10 +320,11 @@
     {/if}
     <div class="grade-block">
         <p class="grade">grade: </p> { grade == undefined ? "no grade" : grade}
-        <p class="what" on:click={() => {
+        <i class="fa-regular fa-circle-question" on:click={() => { showModal = true; }}></i>
+        <!-- <p class="what" on:click={() => {
             showModal = true;
-        }}>?</p>
-        <img src={Reload} alt="reload" on:click={() => regrade(true)} />
+        }}>?</p> -->
+        <i class="fa-solid fa-rotate-right" on:click={() => regrade(true)}></i>
     </div>
     <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><Button text="+ add item" /></Link>
     <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><Button text="+ add bundle" /></Link>
@@ -332,6 +333,10 @@
 <style>
 i {
     margin-left: 8px;
+}
+
+i:hover {
+    cursor: pointer;
 }
 
 table {

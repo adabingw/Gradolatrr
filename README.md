@@ -20,3 +20,6 @@ New stack:
   <li>AppSync</li>
   <li>GraphQL</li>
 </ul>
+
+<a href="https://main--transcendent-marigold-f5980e.netlify.app/">check it out</a>
+(please don't break it)

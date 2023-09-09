@@ -16,17 +16,16 @@
     import NewCourse from "./course/NewCourse.svelte";
     import NewAssign from "./assign/NewAssign.svelte";
     import NewAssignBundle from "./assign/NewAssignBundle.svelte";
-    import { APPSYNC_GRAPHQLENDPOINT, APPSYNC_APIKEY, APPSYNC_REGION, APPSYNC_AUTHTYPE } from '$env/static/private';
     // import { APPSYNC_GRAPHQLENDPOINT, APPSYNC_APIKEY, APPSYNC_REGION, APPSYNC_AUTHTYPE} from "./constants/aws_config.js";
 
     let sidebarReload = false;
     let reload = false;
 
-    const url = APPSYNC_GRAPHQLENDPOINT;
-    const region = APPSYNC_REGION;
+    const url = import.meta.env.VITE_APPSYNC_GRAPHQLENDPOINT;
+    const region = import.meta.env.VITE_APPSYNC_REGION;
     const auth = {
-        type: APPSYNC_AUTHTYPE,
-        apiKey: APPSYNC_APIKEY
+        type: import.meta.env.VITE_APPSYNC_AUTHTYPE,
+        apiKey: import.meta.env.VITE_APPSYNC_APIKEY
     };
     const httpLink = new HttpLink({ uri: url });
     const link = ApolloLink.from([

@@ -128,7 +128,7 @@
                         input: {
                             id: id,
                             type: "course", 
-                            grade: result
+                            grade: result.toFixed(2)
                         }
                     } 
                 });

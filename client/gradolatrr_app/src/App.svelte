@@ -21,11 +21,11 @@
     let sidebarReload = false;
     let reload = false;
 
-    const url = process.env.GATSBY_APPSYNC_GRAPHQLENDPOINT;
-    const region = process.env.GATSBY_APPSYNC_REGION;
+    const url = process.env.APPSYNC_GRAPHQLENDPOINT;
+    const region = process.env.APPSYNC_REGION;
     const auth = {
-        type: process.env.GATSBY_APPSYNC_AUTHTYPE,
-        apiKey: process.env.GATSBY_APPSYNC_APIKEY
+        type: process.env.APPSYNC_AUTHTYPE,
+        apiKey: process.env.APPSYNC_APIKEY
     };
     const httpLink = new HttpLink({ uri: url });
     const link = ApolloLink.from([

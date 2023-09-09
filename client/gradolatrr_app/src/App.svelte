@@ -16,7 +16,7 @@
     import NewCourse from "./course/NewCourse.svelte";
     import NewAssign from "./assign/NewAssign.svelte";
     import NewAssignBundle from "./assign/NewAssignBundle.svelte";
-    import { APPSYNC_GRAPHQLENDPOINT, APPSYNC_APIKEY, APPSYNC_REGION, APPSYNC_AUTHTYPE} from "./constants/aws_config.js";
+    // import { APPSYNC_GRAPHQLENDPOINT, APPSYNC_APIKEY, APPSYNC_REGION, APPSYNC_AUTHTYPE} from "./constants/aws_config.js";
 
     let sidebarReload = false;
     let reload = false;

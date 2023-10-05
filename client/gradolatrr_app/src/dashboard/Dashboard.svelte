@@ -31,7 +31,7 @@ i:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 .journey {

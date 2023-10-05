@@ -5,10 +5,7 @@
 </script>
 
 <div class="dashboard">
-    <div class="welcome">
-        <p>welcome to gradolatrr.</p>
-        <a href="https://github.com/adabingw/gradolatrr" target="_blank"><i class="fa-brands fa-github"></i></a>
-    </div>
+    <p>welcome to gradolatrr. <a href="https://github.com/adabingw/gradolatrr" target="_blank"><i class="fa-brands fa-github"></i></a></p>
     <div class="journey">
         this is version 3 of this project. <br />
         version 1: August 2021. written with Java AWT and a MySQL backend. <br />
@@ -37,11 +34,8 @@ i:hover {
     flex-direction: row;
 }
 
-.welcome {
-    display: flex; 
-    flex-direction: col;   
-    justify-content: center;
-    align-items: center;
+.journey {
+    text-align: left;
 }
 
 

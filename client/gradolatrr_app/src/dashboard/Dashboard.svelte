@@ -34,11 +34,14 @@ i:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: row;
 }
 
 .welcome {
     display: flex; 
-    flex-direction: row;   
+    flex-direction: col;   
+    justify-content: center;
+    align-items: center;
 }
 
 

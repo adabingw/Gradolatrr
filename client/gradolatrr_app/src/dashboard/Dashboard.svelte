@@ -25,7 +25,6 @@ i:hover {
 
 p {
     font-weight: bold;
-    margin-bottom: 15px;
 }
 
 .dashboard {
@@ -40,6 +39,7 @@ p {
 }
 
 .journey {
+    margin-top: 30px;
     text-align: left;
 }
 

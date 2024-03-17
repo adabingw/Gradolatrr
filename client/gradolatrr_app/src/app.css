@@ -2,8 +2,17 @@
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap');
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */
+  font-family: "Segoe UI", Arial, sans-serif;
   font-weight: 400;
+  width: 100%;
+}
+
+i {
+  margin-right: 8px;
+  color: #919191 !important;
+  width: 13px;
+  height: 13px;
 }
 
 a {
@@ -71,7 +80,7 @@ img:hover {
 }
 
 table {
-  text-align: center;
+  /* text-align: center; */
   border-collapse: separate;
   border-spacing: 0;
 }
@@ -84,4 +93,8 @@ button {
 
 div.multiselect  {
   max-width: 30vw !important;
+}
+
+*:focus {
+  outline: none;
 }

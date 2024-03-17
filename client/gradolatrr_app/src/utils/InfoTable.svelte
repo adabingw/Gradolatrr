@@ -31,7 +31,7 @@
     for (const key in data) {
         data_array.push([ key, data[key] ])
     }
-    data_array = sortOrder(data_array);
+    // data_array = sortOrder(data_array);
 
     let showMenu = false;
     let context_bundle = [ 0, 0, 0 ];
@@ -43,56 +43,56 @@
 
     const dispatch = createEventDispatcher();
 
-    async function dropEvent(ev, key2, index2) {
-        let return_info = drop(ev, key2, index2, data_array, info);
-        info = return_info[0];
-        data_array = return_info[1];
-        data_array = sortOrder(data_array);
+    // async function dropEvent(ev, key2, index2) {
+    //     let return_info = drop(ev, key2, index2, data_array, info);
+    //     info = return_info[0];
+    //     data_array = return_info[1];
+    //     data_array = sortOrder(data_array);
 
-        if (cmd == "term") {
-            try {
-                await update({
-                    variables: {
-                        input: {
-                            id: info["id"], 
-                            type: cmd, 
-                            data: info["data"]
-                        }
-                    }
-                });
-            } catch(error) {
-                console.error(error);
-            }
-        } else if (cmd == "course") {
-            try {
-                await update({
-                    variables: {
-                        input: {
-                            id: info["id"], 
-                            type: "course", 
-                            data: info["data"]
-                        }
-                    }
-                });
-            } catch(error) {
-                console.error(error);
-            }
-        } else if (cmd == "assign") {
-            try {
-                await update({
-                    variables: {
-                        input: {
-                            id: info["id"], 
-                            type: "item", 
-                            data: info["data"]
-                        }
-                    }
-                });
-            } catch(error) {
-                console.error(error);
-            }
-        }
-    }
+    //     if (cmd == "term") {
+    //         try {
+    //             await update({
+    //                 variables: {
+    //                     input: {
+    //                         id: info["id"], 
+    //                         type: cmd, 
+    //                         data: info["data"]
+    //                     }
+    //                 }
+    //             });
+    //         } catch(error) {
+    //             console.error(error);
+    //         }
+    //     } else if (cmd == "course") {
+    //         try {
+    //             await update({
+    //                 variables: {
+    //                     input: {
+    //                         id: info["id"], 
+    //                         type: "course", 
+    //                         data: info["data"]
+    //                     }
+    //                 }
+    //             });
+    //         } catch(error) {
+    //             console.error(error);
+    //         }
+    //     } else if (cmd == "assign") {
+    //         try {
+    //             await update({
+    //                 variables: {
+    //                     input: {
+    //                         id: info["id"], 
+    //                         type: "item", 
+    //                         data: info["data"]
+    //                     }
+    //                 }
+    //             });
+    //         } catch(error) {
+    //             console.error(error);
+    //         }
+    //     }
+    // }
 
     function infoController(event) {
         if (event.detail.info == "delete") {
@@ -132,7 +132,6 @@
     }
 
     function dataChange() {
-        console.log("hi");
         for (const key of data_array) {
             data[key[0]] = key[1];
         }
@@ -140,6 +139,7 @@
         dispatch('message', {
             data: data_temp
         });
+        console.log(data)
     }
 
     function dataChangeSelect(event, key) {
@@ -159,7 +159,6 @@
     }
 
     function contextController(e) {
-        const context = e.detail.context; 
         const index = e.detail.index;
         const item = e.detail.item;
         data_array.splice(index, 1);
@@ -170,11 +169,12 @@
 
     function updateInfo() {        
         data = JSON.parse(info["data"]);
+        console.log(data)
         if (data_array.length != 0) data_array = [];
         for (const key in data) {
             data_array.push([ key, data[key] ])
         }
-        data_array = sortOrder(data_array);
+        // data_array = sortOrder(data_array);
     }
 
     $: {
@@ -197,84 +197,118 @@
         bind:item={context_bundle[3]}
         menuNum={1}
         on:context={contextController}/>
-<Table>
-    <TableBody>
-    {#if data_array.length > 0 && data_array != undefined}
-        {#each data_array as data, i}
-        {#if data[0] != "name"}
-            <TableBodyRow>
-            <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <div class="TableBodyRow" draggable={true}
-                on:dragstart={event => dragstart(event, data[0] , i)}
-                on:drop={event => dropEvent(event, data[0], i)} on:dragover={dragover}>
-                {#if cmd != "assign" && cmd != "bundle"}
-                    <TableBodyCell>
-                        <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                            on:contextmenu={(e) => openMenu(e, i, data[0])}></i>
-                    </TableBodyCell>
-                {/if}
-                <TableBodyCell>
-                    <p class="term-header tablecol">{data[0]}</p>
-                </TableBodyCell>
-                <TableBodyCell>
-                    {#if data[1]["type"] == "textarea"}
-                        <TextArea bind:inputText={data[1]["content"]} on:message={dataChange}/>
-                    {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
-                        <TextField bind:inputText={data[1]["content"]} 
-                            text={data[1]["content"]} type={data[1]["type"]} on:message={dataChange}
-                            max={100} min={0}  focus={false}/>
-                    {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
-                        <Multiselect bind:properties={data[1]["tag_info"]} 
-                            bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
-                    {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
-                        <Singleselect bind:properties={data[1]["tag_info"]} 
-                            bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
-                    {:else if data[1]["type"] == "date" && cmd == "assign"}
-                        <Date bind:date={data[1]["content"]} on:message={dataChange} />
-                    {:else if data[1]["type"] == "date" && cmd == "bundle"}
-                        <Datepicker bind:dates={data[1]["content"]} bind:num={data[1]["num"]} on:message={dataChange}/>
+<table class="Table">
+<div class="Table">
+    <tbody>
+        {#if data_array.length > 0 && data_array != undefined}
+            {#each data_array as data, i}
+            {#if data[0] != "name"}
+                <tr>
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <div class="TableBodyRow" >
+                    <!-- draggable={true}
+                    on:dragstart={event => dragstart(event, data[0] , i)}
+                    on:drop={event => dropEvent(event, data[0], i)} on:dragover={dragover}> -->
+                    {#if cmd != "assign" && cmd != "bundle"}
                     {/if}
-                </TableBodyCell>
-            </div>
-            </TableBodyRow>
-        {/if} 
-        {/each} 
-    {/if}
-    {#if cmd == "course" && content_info != undefined && content_info.length != 0}
-        <TableBodyRow>
-            <div class="TableBodyRow" >
-            <TableBodyCell><p class="context_menu"></p></TableBodyCell>
-            <TableBodyCell><p class="term-header tablecol">item info</p></TableBodyCell>
-            <TableBodyCell>
-                <Properties bind:courseinfo={content_info} on:info={infoController}/>
-            </TableBodyCell>
-            </div>
-        </TableBodyRow>
-    {/if}
-    </TableBody>
-</Table>
+                    <td>
+                        <span class="bodycellheader tablecol">
+                            <i class="fa-solid fa-ellipsis-vertical context_menu" 
+                            on:click={(e) => openMenu(e, i, data[0])} on:contextmenu={(e) => openMenu(e, i, data[0])}></i>
+                            <p>{data[0]}</p>
+                        </span>
+                    </td>
+                </div>
+                </tr>
+                <tr>
+                    <div class="TableBodyRow TableBodyText">
+                        <td>
+                            {#if data[1]["type"] == "textarea"}
+                                <TextArea bind:inputText={data[1]["content"]} on:message={dataChange}/>
+                            {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
+                                <TextField bind:inputText={data[1]["content"]} 
+                                    text="nothing here yet..." type={data[1]["type"]} on:message={dataChange}
+                                    max={100} min={0}  focus={false}/>
+                            {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
+                                <Multiselect bind:properties={data[1]["tag_info"]} 
+                                    bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
+                            {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
+                                <Singleselect bind:properties={data[1]["tag_info"]} 
+                                    bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
+                            {:else if data[1]["type"] == "date"}
+                                <Date bind:date={data[1]["content"]} on:message={dataChange} />
+                            {:else if data[1]["type"] == "date" && cmd == "bundle"}
+                                <Datepicker bind:dates={data[1]["content"]} bind:num={data[1]["num"]} on:message={dataChange}/>
+                            {/if}
+                        </td>
+                    </div>
+                </tr>
+            {/if} 
+            {/each} 
+        {/if}
+        </tbody>
+</div>
+</table>
 {#if cmd != "assign" && cmd != "bundle"}
     <NewProperty on:message={addedProperty} data={data_array}/>
+{/if}
+{#if cmd == "course"}
+    <p class="subheader">Information about items in this course</p>
+    <Properties bind:courseinfo={content_info} on:info={infoController}/>
 {/if}
 
 <style>
 .context_menu {
-    margin-left: 20px;
+    margin-left: -15px;
+    opacity: 0;
+}
+
+.context_menu:hover {
+    opacity: 1;
+}
+
+.subheader {
+    width: 60vw;
+    font-size: 20px;
+    font-weight: 600;
+    color: #818181;
+    border-bottom: 1px solid #d1d1d1;
+    padding-bottom: 5px;
 }
 
 .tablecol {
-  width: 20vw;
+    width: 100%;
 }
 
 .TableBodyRow {
-  display: flex; 
-  align-items: center;
-  padding-right: 30px;
-  border-radius: 12px;
+    display: flex; 
+    align-items: center;
+    width: 100%;
+}
+
+.bodycellheader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: fit-content;
+    min-width: fit-content;
+}
+
+.TableBodyText {
+    margin-top: -15px;
+    width:100%;
 }
 
 .TableBodyRow:hover {
-    background-color: #C9DECE;
     cursor: pointer;
+}
+
+.Table {
+    width:100%;
+}
+
+table, tbody, tr, td, .TableBodyRow {
+    /* min-width: 100%; */
+    width: 60vw;
 }
 </style>

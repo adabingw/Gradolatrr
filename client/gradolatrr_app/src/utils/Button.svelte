@@ -16,17 +16,17 @@
 
 <style>
 .term-changes {
-    margin-left: 8px;
-    margin-right: 8px;
-    border-radius: 12px;
+    /* margin-left: 8px;
+    margin-right: 8px; */
+    border-radius: 5px;
     width: fit-content;
-    padding: 8px;
-    font-weight: bold;
+    padding: 5px;
+    font-weight: 600;
 }
 
 .term-changes:hover {
   font-weight: bold;
   cursor: pointer;
-  background-color: #D7DBCF;
+  background-color: #e8e5df;
 }
 </style>

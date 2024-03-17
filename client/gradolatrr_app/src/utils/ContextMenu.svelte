@@ -1,23 +1,48 @@
 <script>
     import { createEventDispatcher, onMount } from 'svelte';
 
-    export let showMenu = false;
     export let x;
     export let y;
+    export let showMenu = false;
     export let index;
     export let item;
     export let menuNum;
 
     let menuItem;
-    let menu = { h: 0, w: 0 }
-    let browser = { h: 0, w: 0 }
-    let pos = { x: 0, y: 0 }
     let menuItems1 = [
         {
             'name': 'trash',
             'onClick': menuClick,
             'displayText': "Trash",
-            'class': 'fa-solid fa-trash-can'
+            'class': 'fa-solid fa-trash-can fa-ms'
+        }, 
+        {
+            'name': 'change type', 
+            'onClick': undefined,
+            'displayText': 'Change type', 
+            'class': 'fa-solid fa-sliders fa-ms', 
+            'subClasses': [{
+                'name': 'Text', 
+                'onClick': menuClick,
+                'displayText': 'Text', 
+                'class': '', 
+            }, {
+                'name': 'Number', 
+                'onClick': menuClick,
+                'displayText': 'Number', 
+                'class': ''
+            }, {
+                'name': 'Textarea', 
+                'onClick': menuClick,
+                'displayText': 'Textarea', 
+                'class': ''
+            }, {
+                'name': 'Date', 
+                'onClick': menuClick,
+                'displayText': 'Date', 
+                'class': ''
+            }
+            ]
         }
     ]
 
@@ -26,17 +51,17 @@
             'name': 'trash',
             'onClick': menuClick,
             'displayText': "Trash",
-            'class': 'fa-solid fa-trash-can'
+            'class': 'fa-solid fa-trash-can fa-ms'
         }, {
             'name': 'edit',
             'onClick': menuClick,
             'displayText': "Edit",
-            'class': 'fa-solid fa-pen'
+            'class': 'fa-solid fa-pen fa-ms'
         }, {
             'name': 'duplicate',
             'onClick': menuClick,
             'displayText': "Copy",
-            'class': 'fa-solid fa-copy'
+            'class': 'fa-solid fa-copy fa-ms'
         }
     ]
 
@@ -45,43 +70,18 @@
             'name': 'trash',
             'onClick': menuClick,
             'displayText': "Trash",
-            'class': 'fa-solid fa-trash-can'
+            'class': 'fa-solid fa-trash-can fa-ms'
         }, {
             'name': 'duplicate',
             'onClick': menuClick,
             'displayText': "Copy",
-            'class': 'fa-solid fa-copy'
+            'class': 'fa-solid fa-copy fa-ms'
         }
     ]
     const dispatch = createEventDispatcher();
-    
-    function openMenu() {
-        showMenu = true;
-        pos = {
-            x: x, y: y
-        }
-
-        browser = {
-            w: window.innerWidth,
-            h: window.innerHeight
-        };
-
-        if (browser.h -  pos.y < menu.h)
-            pos.y = pos.y - menu.h
-        if (browser.w -  pos.x < menu.w)
-            pos.x = pos.x - menu.w        
-    }
-    
-    function getContextMenuDimension(node){
-        let height = node.offsetHeight
-        let width = node.offsetWidth
-        menu = {
-            h: height,
-            w: width
-        }
-    }
 
     function menuClick(context) {
+        console.log("menu clicked")
         showMenu = false; 
         dispatch('context', {
             context: context,
@@ -90,8 +90,13 @@
         })
     }
 
-    function onPageClick() {
-        showMenu = false;
+    function onPageClick(e) {
+        let x_1 = e.clientX;
+        let y_1 = e.clientY;
+        console.log(x_1, y_1, x, y)
+        if (Math.abs(x_1 - x) > 30 || Math.abs(y_1 - y) > 200) {
+            showMenu = false;
+        }
     }
 
     onMount(() => {
@@ -102,36 +107,33 @@
 
 </script>
 
-<div>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
-        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</div>
-
 <style>
 * {
     padding: 0;
     margin: 0;
 }
+
 .navbar{
     display: inline-flex;
     border: 1px #999 solid;
     width: 170px;
     background-color: #fff;
-    border-radius: 10px;
+    border-radius: 3px;
     overflow: hidden;
     flex-direction: column;
 }
+
 .navbar ul{
     margin: 6px;
 }
+
 ul li{
     display: block;
     list-style-type: none;
     width: 1fr;
 }
-ul li button{
-    font-size: 1rem;
+
+ul li button {
     color: #222;
     width: 100%;
     height: 30px;
@@ -139,18 +141,22 @@ ul li button{
     border: 0px;
     background-color: #fff;
 }
+
 ul li button:hover{
     color: #000;
     text-align: left;
     border-radius: 5px;
     background-color: #eee;
 }
+
 ul li button i{
     padding: 0px 15px 0px 10px;
 }
+
 ul li button i.fa-square{
     color: #fff;
 }
+
 ul li button:hover > i.fa-square{
     color: #eee;
 }
@@ -165,26 +171,48 @@ hr{
     border-bottom: 1px solid #ccc;
     margin: 5px 0px;
 }
+.subclass {
+    color: #818181;
+    padding-left: 15px;
+}
 </style>
 
 {#if showMenu}
-<nav use:getContextMenuDimension style="position: absolute; top:{pos.y}px; left:{pos.x}px" on:show={openMenu()}>
+<div style="position: absolute; top:{y}px; left:{x}px" class:show={showMenu}>
     <div class="navbar" id="navbar">
         <ul>
             {#each menuItem as item}
                 {#if item.name == "hr"}
                     <hr>
                 {:else}
-                    <li><button on:click={() => item.onClick(item.name)}>
-                        <i class={item.class}></i>
-                        {item.displayText}
-                    </button></li>
+                    <li>
+                        {#if item.onClick == undefined} 
+                            <button> 
+                                <i class={item.class}></i>
+                                {item.displayText}
+                            </button>
+                        {:else}
+                            <button on:click={() => item.onClick(item.name)}> 
+                                <i class={item.class}></i>
+                                {item.displayText}
+                            </button>
+                        {/if}
+                    </li>
+                    {#if item.subClasses}
+                    {#each item.subClasses as subClasses}
+                        <li class="subclass">
+                            <button on:click={() => item.onClick(item.name)} class="subclass"> 
+                                {subClasses.displayText}
+                            </button>
+                        </li>
+                    {/each}
+                    {/if}
                 {/if}
             {/each}
         </ul>
     </div>
-</nav>
+</div>
 {/if}
 
-<svelte:window on:click={onPageClick} />
+<svelte:window on:click={(e) => onPageClick(e)} />
 

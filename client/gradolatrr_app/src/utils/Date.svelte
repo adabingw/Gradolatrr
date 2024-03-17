@@ -16,3 +16,15 @@
 <div>
     <input type="date" bind:value={date} on:select={newDateSelected} on:change={newDateSelected}>
 </div>
+
+<style>
+input {
+    border: 0px solid white;
+    margin-left: 3px;
+}
+
+input:hover {
+    outline: none;
+    border: 0 none #FFF;
+}
+</style>

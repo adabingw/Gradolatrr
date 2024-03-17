@@ -31,7 +31,7 @@
     }
 
     function addInfo() {
-        add = true;
+        add = !add;
     }
 
     function tagChange(event) {
@@ -99,10 +99,6 @@
             new_info: courseinfo[infoname],
             info_name: infoname
         })
-    }
-
-    function cancelInfo() {
-        add = false;
     }
 
     function deleteTag(name) {
@@ -178,31 +174,31 @@
     {/each}
     </div>
     </table>
-    {#if add}
     <div class="add-row">
-        <TextField bind:inputText={info_name} type="text" text="" min="" max="" focus={true} on:enter={saveInfo}/>
-        <Dropdown info={TYPES} bind:selected={info_type}/>
+        <Button text="+" on:message={addInfo} />
+        {#if add}
+        <div class="add-row">
+            <TextField bind:inputText={info_name} text="name" type="text" max="" min="" focus={true} on:enter={saveInfo}/>
+            <Dropdown info={TYPES} bind:selected={info_type}/>
+        </div>
+        <div class="save-div">
+            <i class="fa-solid fa-check" on:click={() => saveInfo()}></i>
+        </div>
+        {/if}
     </div>
-    <div class="save-div">
-        <Button text="cancel" on:message={cancelInfo} />
-        <Button text="save" on:message={saveInfo} />
-    </div>
-    {:else}
-        <Button text="+ add course info" on:click={() => addInfo()} on:message={addInfo} class="add-info"/>
-    {/if}
 </div>
 
 <style>
-
-.property-table {
-  margin-top: 15px;
-}
-
 .add-row {
     display: flex; 
-    flex-direction: row;
     align-items: center;
-    margin-left: 40px;
+    vertical-align: middle;
+    margin-left: 35px;
+    margin-top: -10px;
+}
+
+.fa-solid {
+    margin-right: 30px;
 }
 
 .info-name {
@@ -232,13 +228,24 @@ table {
   padding-right: 18px;
 }
 
+input:checked {
+    accent-color: #818181;
+}
+
 .save-div {
     display: flex;
     flex-direction: row;
+    margin-left: 40px;
+    align-content: center;
+    align-items: center;
 }
 
 td {
     line-height: 0px;
+}
+
+i:hover {
+    cursor:pointer;
 }
 
 </style>

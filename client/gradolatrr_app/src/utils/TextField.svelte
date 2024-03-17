@@ -24,7 +24,7 @@
     }
 </script>
 
-<div class="input-row">
+<div class="input-row ">
   {#if focus}
     {#if type == "text"}
       <input type="text" class="input-text" autofocus placeholder={text} on:keydown={handleKeydown}
@@ -48,14 +48,16 @@
 
 .input-text {
   padding: 5px;
-  margin-bottom: 20px;
   border-left: none;
   border-top: none;
+  border-bottom: none;
   border-right: none;
-  margin-right: 15px;
-  margin-top: 15px;
-  min-width: 120px;
-  max-width: 200px;
+  width:100%
+}
+
+input {
+  width:100%;
+  color: #818181;
 }
 
 .input-text:focus {
@@ -68,6 +70,7 @@
 .input-row {
   display: flex;
   flex-direction: row;
+  width:100%
 }
 
 </style>

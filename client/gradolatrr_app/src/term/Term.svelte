@@ -1,17 +1,16 @@
 <script>    
     import { query, mutation } from "svelte-apollo";
     import { navigate } from "svelte-navigator";
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onDestroy } from "svelte";
 
-    import CancelOrSave from "../utils/CancelOrSave.svelte";
     import Button from "../utils/Button.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
-    import TextField from "../utils/TextField.svelte";
     import Reload from "../assets/reload_icon.png";
     import { DEFAULT_GRADING } from "../constants/constants";
     import { TERM_INFO } from "../constants/queries_get";
     import { DELETE_TERM, DELETE_COURSE, DELETE_ASSIGN } from "../constants/queries_delete";
     import { UPDATE_TERM } from "../constants/queries_put";
+    import HeaderField from "../utils/HeaderField.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -80,15 +79,21 @@
         navigate("/");
     }
 
+    onDestroy(() => {
+        console.log("onDestroy for Term")
+        saveChanges();
+    })
+
     async function saveChanges() {
         console.log(info["getTerm"]);
+        console.log(name_change)
         try {
             await update_term({
                 variables: {
                     input: {
                         id: id, 
                         type: "term", 
-                        name: name, 
+                        name: name_change, 
                         current: info["getTerm"]["current"], 
                         archive: info["getTerm"]["archive"], 
                         data: info["getTerm"]["data"]
@@ -97,7 +102,7 @@
             });
 
             query_result.refetch({ id });
-            navigate(`/term/${id}/${name}`);
+            // navigate(`/term/${id}/${name}`);
 
             if (name != name_change) {
                 dispatch('message', {
@@ -154,24 +159,18 @@
     $: {
         id;
         query_result.refetch({ id });
-        last_info = info;
     }
 
 </script>
 
-<div>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
-        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</div>
-
-<div>
+<div class="term">
 {#if info != undefined}
-    <TextField bind:inputText={name} type="text" text="" min="" max="" focus={true} 
-            on:message={(event) => {name_change = event.detail.data;} }/>
+    <HeaderField bind:inputText={name} text="" on:message={(event) => {name_change = event.detail.data;}}/>
     {#if info != undefined} 
         <InfoTable cmd="term" bind:info={info["getTerm"]} on:message={updateChange} />
     {/if}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="term-op" on:click={deleteTerm}>
         <Button text="delete this term" />
     </div>
@@ -187,11 +186,10 @@
     </tbody>
     </table>
     </div>
-    <div class="grade-block">
+    <!-- <div class="grade-block">
         <p class="grade">grade: </p> { grade == undefined ? "no grade" : grade}
         <i class="fa-solid fa-rotate-right" on:click={() => regrade()}></i>
-    </div>
-    <CancelOrSave url={`/`} on:message={saveChanges} />
+    </div> -->
 {/if}
 </div>
 
@@ -202,6 +200,10 @@ i {
 
 i:hover {
     cursor: pointer;
+}
+
+.term {
+    padding-left: 50px;
 }
 
 .grade {
@@ -242,7 +244,8 @@ table {
 }
 
 .course-block {
-    border-top: 1px solid black;
+    border-top: 1px solid #d1d1d1;
+    margin-left: 3px;
     padding-top: 20px;
     width: 70vw;
 }

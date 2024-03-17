@@ -3,12 +3,12 @@
 
     import { query, mutation } from 'svelte-apollo';
     import { navigate } from 'svelte-navigator';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onDestroy } from 'svelte';
 
     import CancelOrSave from '../utils/CancelOrSave.svelte';
     import Button from '../utils/Button.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
-    import TextField from '../utils/TextField.svelte';
+    import HeaderField from '../utils/HeaderField.svelte';
     import { COURSE_INFO } from "../constants/queries_get";
     import { DELETE_COURSE, DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
@@ -31,6 +31,11 @@
     let delete_assign = mutation(DELETE_ASSIGN);
     let update_course = mutation(UPDATE_COURSE);
     let update_assign = mutation(UPDATE_ASSIGNMENT);
+
+    onDestroy(() => {
+        console.log("onDestroy for Course")
+        saveChanges();
+    })
 
     async function saveChanges() {
         try {
@@ -88,7 +93,7 @@
                         id: id, 
                         type: "course",
                         term_id: term_id, 
-                        name: name, 
+                        name: name_change, 
                         data: info["getCourse"]["data"],
                         content_info: info["getCourse"]["content_info"]
                     }
@@ -169,14 +174,19 @@
 
 </script>
 
-<div>
-    <TextField bind:inputText={name} type="text" text="" min="" max=""  focus={true} 
-        on:message={(event) => { name_change = event.detail.data ; }}/>
+<div class="course">
+    <HeaderField bind:inputText={name} text="" on:message={(event) => {name_change = event.detail.data;}}/>
+
     {#if info != undefined}
         <InfoTable cmd="course" bind:info={info.getCourse} on:message={updateChange} />
     {/if}
     <div class="term-op" on:click={() => deleteCourse()}>
         <Button text="delete this course" />
     </div>
-    <CancelOrSave url={`/course/${term_id}/${term_name}/${id}/${name}`} on:message={saveChanges} />
 </div>
+
+<style>
+.course {
+    padding-left: 50px;
+}
+</style>

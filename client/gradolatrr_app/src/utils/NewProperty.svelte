@@ -2,7 +2,7 @@
     import TextField from "./TextField.svelte";
     import Dropdown from "./Dropdown.svelte";
     import Button from "./Button.svelte";
-    import { TYPES } from "../constants/constants";
+    import { TERM_TYPES } from "../constants/constants";
 
     import { createEventDispatcher } from 'svelte';
 
@@ -13,7 +13,7 @@
     const dispatch = createEventDispatcher();
 
     function addProperty() {
-        add = true;
+        add = !add;
     }
 
     function saveProperty() {
@@ -38,24 +38,18 @@
         name = "";
     }
 
-    function cancelProperty() {
-        add = false;
-    }
-
 </script>
 
-<div>
-    {#if add} 
+<div class="add-row">
+    <Button text="+" on:message={addProperty} />
+    {#if add}
     <div class="add-row">
         <TextField bind:inputText={name} text="name" type="text" max="" min="" focus={true} on:enter={saveProperty}/>
-        <Dropdown info={TYPES} bind:selected={type}/>
+        <Dropdown info={TERM_TYPES} bind:selected={type}/>
     </div>
     <div class="save-div">
-        <Button text="save" on:message={saveProperty} />
-        <Button text="cancel" on:message={cancelProperty} />
+        <i class="fa-solid fa-check" on:click={() => saveProperty()}></i>
     </div>
-    {:else}
-        <Button text="+add properties" on:message={addProperty} />
     {/if}
 </div>
 
@@ -64,11 +58,18 @@
     display: flex; 
     flex-direction: row;
     align-items: center;
-    margin-left: 20px;
+}
+
+.fa-solid {
+    margin-right: 30px;
+}
+
+i:hover {
+    cursor: pointer;
+    color: red;
 }
 
 .save-div {
-    display: flex;
-    flex-direction: row;
+    margin-left: 40px;
 }
 </style>

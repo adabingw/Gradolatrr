@@ -13,6 +13,7 @@
     import { UPDATE_COURSE } from '../constants/queries_put';
     import { DEFAULT_GRADING } from '../constants/constants';
     import { dragover, dragstart, sortOrder } from '../utils/utils.svelte';
+    import HeaderField from '../utils/HeaderField.svelte';
     import { tokenize } from "../utils/utils.svelte";
     import Reload from "../assets/reload_icon.png";
     import Modal from '../utils/Modal.svelte';
@@ -139,73 +140,6 @@
         }
     }
 
-    async function drop (ev, key2, index2) {
-        ev.preventDefault();
-        var key = ev.dataTransfer.getData("key");
-        if (key2 == key) return;
-
-        var index = ev.dataTransfer.getData("index");
-        var order = content_array[index][1]["order"];
-        var order2 = content_array[index2][1]["order"];
-
-        order = order2 + 1;
-        
-        let orders = [order];
-        content_array[index][1]["order"] = order;
-        for (const [i, value] of Object.entries(content_info)) {
-            const o = content_info[i]["order"]
-            if (i == key) continue;
-            if (orders.includes(o)) {
-                orders.push(o + 1);
-                content_info[i]["order"]++;
-            } else {
-                orders.push(o);
-            }
-        }
-
-        for (let i = 0; i < content_array.length; i++) {
-            content_array[i][1]["order"] = content_info[content_array[i][0]]["order"];
-        }
-
-        content_array = sortOrder(content_array);
-        info["getCourse"]["content_info"] = JSON.stringify(content_info);
-        last_info = undefined;
-        try {
-            await update_course({ 
-                variables: { 
-                    input: {
-                        id: id,
-                        type: "course", 
-                        content_info: info["getCourse"]["content_info"]
-                    }
-                } 
-            });
-        } catch (error) {
-            console.error(error);
-        }
-
-        return;
-    }
-
-    function sortTable(key) {
-        if (sortKey === key) sortDirection = -sortDirection;
-        else {
-            sortKey = key;
-            sortDirection = 1;
-        }
-        const sorted = content.sort((a, b) => {
-            let a_arr = JSON.parse(a["data"]);
-            let b_arr = JSON.parse(b["data"]);
-            const aVal = a_arr[key]["content"];
-            const bVal = b_arr[key]["content"];
-
-            if (aVal < bVal) return -sortDirection;
-            else if (aVal > bVal) return sortDirection;
-            return 0;
-        });
-        content = sorted;
-    };
-
     $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
@@ -239,13 +173,7 @@
     
 </script>
 
-<div>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
-        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</div>
-
-<div>
+<div class="course">
     <Modal bind:showModal>
         <h2 slot="header">
             how is this calculated?
@@ -253,10 +181,9 @@
         <Grading grading={grading_scheme} variables={content_info} showModal={showModal}
             on:message={changeGradeScheme}/>
     </Modal>
-    <p style="font-weight: bold">{name} <Link to={`/course/edit/${term_id}/${term_name}/${id}/${name}`}>
+    <p class="header">{name} <Link to={`/course/edit/${term_id}/${term_name}/${id}/${name}`}>
         <i class="fa-solid fa-pen-to-square"></i>
-        <!-- <img  src={Edit} alt="edit"/>  -->
-    </Link></p>    
+    </Link></p>
     {#if content != undefined || content != null}
     <table>
         {#if content_array != undefined || content_array != null}
@@ -331,6 +258,26 @@
 </div>
     
 <style>
+.course {
+    padding-left: 50px;
+}
+
+.header { 
+  padding: 5px;
+  margin-bottom: 20px;
+  font-size: 34px;
+  border-left: none;
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+  margin-right: 15px;
+  margin-top: 100px;
+  min-width: 120px;
+  color: #717171;
+  font-weight: 700;
+  width: 50vw;
+}
+
 i {
     margin-left: 8px;
 }

@@ -462,12 +462,6 @@
 
 </script>
 
-<div>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
-        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</div>
-
 <ContextMenu bind:showMenu={showTerm} 
         bind:x={context_bundle[0]} 
         bind:y={context_bundle[1]} 
@@ -483,8 +477,13 @@
         menuNum={2}
         on:context={contextControllerCourse}/>
 <div class="sidebar">
-    <Link to="/"><h3>GRADROLATRR</h3></Link>
-    <NewButton type="new_term" name="+ new term" />
+    <!-- <Link to="/"><h3>GRADROLATRR</h3></Link> -->
+    <span class="new_term">
+        <Link to={'/new_term'}>
+            <i class="fa-solid fa-circle-plus fa-xs"></i>    
+            New term
+        </Link>
+    </span>
     <div class="content">
     {#if info != undefined}
     {#each Object.keys(info.allTerm["items"]) as i}
@@ -494,19 +493,27 @@
         {#if info.allTerm["items"][i] != undefined} 
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <Link to={`/term/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`}>
             <div class="term-row" on:contextmenu={(e) => openTerm(e, i, info.allTerm["items"][i])} >
-                <p class="term" on:click={() => termClick(info.allTerm["items"][i]["id"])}>{info.allTerm["items"][i]["name"]}</p>
+                <span class="term-row-left">
+                    <p>
+                        {#if info.allTerm["items"][i]["courses"] != undefined && expand[info.allTerm["items"][i]["id"]]}
+                        <i class="fa-solid fa-chevron-down fa-xs" on:click={() => termClick(info.allTerm["items"][i]["id"])}></i>
+                        {:else}
+                        <i class="fa-solid fa-chevron-right fa-xs" on:click={() => termClick(info.allTerm["items"][i]["id"])}></i>
+                        {/if}
+                            <span class="term">
+                                {info.allTerm["items"][i]["name"]}
+                            </span>
+                    </p>
+                </span>
                 <div>
                     <Link to={`/new_course/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`}>
-                        <!-- <img  src={Add} alt="add" class="sidebarimg"/>  -->
                         <i class="fa-solid fa-plus"></i>
-                    </Link>
-                    <Link to={`/term/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`} class="sidebarimg">
-                        <!-- <img  src={Edit} alt="edit"/>  -->
-                        <i class="fa-solid fa-pen-to-square"></i>
                     </Link>
                 </div>
             </div>
+            </Link>
         {/if}
         <div class="courses">
             {#if info.allTerm["items"][i]["courses"] != undefined && 
@@ -536,21 +543,34 @@
 
 <style>
 
-i {
-    margin-right: 5px;
+/* i:hover {
+    background-color: #c9c7c1;
+} */
+
+.new_term {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    /* padding-left: 10px; */
+    padding-right: 10px;
+    border-radius: 0px 8px 8px 0px;
+    width: 100%;
+    height: 15px;
 }
 
-h3 {
-    text-align: center;
-}
+/* .new_term:hover {
+    border-radius: 0px 8px 8px 0px;
+    background-color: #e8e5df; 
+} */
 
 .sidebar {
+    color: #616161;
     padding-top: 25px;
     width: 15vw;
-    margin-left: 25px;
-    padding-right: 25px;
-    border-right: 1px solid black;
+    padding-left: 20px;
+    padding-right: 5px;
+    /* border-right: 1px solid black; */
     height: 100vh;
+    background-color: #F7F6F3;
 }
 
 .term-row {
@@ -561,26 +581,32 @@ h3 {
     align-items: center;
     align-self: center;
     height: 15px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     padding-left: 10px;
     padding-right: 10px;
-    border-radius: 12px;
+    border-radius: 0px 8px 8px 0px;
     margin-left: -18px;
 }
 
 .courses {
-    margin-top: -20px;
+    color: #616161;
+    margin-top: -15px;
     margin-bottom: 20px;
 }
 
 .term-row:hover {
-    background-color: #D8CAD6;
+    background-color: #e8e5df;
     cursor: pointer;
 }
 
+.term-row-left {
+    display: flex; 
+    flex-direction: row;
+}
+
 .term {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .term:hover {
@@ -588,22 +614,24 @@ h3 {
 }
 
 .content {
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .course {
-    margin-left: 8px;
-    padding-left: 15px;
+    /* margin-left: 8px; */
+    padding-left: 23px;
     padding-right: 15px;
     padding-top: 5px;
     padding-bottom: 5px;
-    border-radius: 12px;
+    border-radius: 0px 8px 8px 0px;
     margin-bottom: -20px;
+    margin-left: -15px;
+    color: #616161;
 }
 
 .course:hover {
     cursor: pointer;
-    background-color: #F9D4C2;
+    background-color: #e8e5df;
 }
 
 </style>

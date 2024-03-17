@@ -2,10 +2,10 @@
 // @ts-nocheck
     import { v4 as uuidv4 } from 'uuid';
     import { query, mutation } from 'svelte-apollo';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onDestroy } from 'svelte';
     import { navigate } from 'svelte-navigator';
     
-    import TextField from "../utils/TextField.svelte";
+    import HeaderField from "../utils/HeaderField.svelte";
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
     import new_course from "../constants/new_course.json";
@@ -28,6 +28,11 @@
 
     info["data"] = JSON.stringify(info["data"]);
     info["content_info"] = JSON.stringify(info["content_info"]);
+
+    onDestroy(() => {
+        console.log("onDestroy for Course")
+        saveChanges();
+    })
 
     function updateChange(event) {
         info["getCourse"]["data"] = event.detail.data;
@@ -79,9 +84,14 @@
     
 </script>
 
-<div>
-    <p style="font-weight: bold">Create new course</p>
-    <TextField type="text" text="course name" bind:inputText={name} min="" max="" focus={true} />
+<div class="course">
+    <HeaderField bind:inputText={name} text="Untitled Course"/>    
     <InfoTable cmd="course" bind:info={info} on:message={updateChange} />
-    <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>
+
+<style>
+.course {
+    padding-left: 50px;
+}
+
+</style>

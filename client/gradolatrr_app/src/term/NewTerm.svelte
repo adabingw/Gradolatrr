@@ -2,7 +2,7 @@
     import { query, mutation } from "svelte-apollo";
     import { v4 as uuidv4 } from 'uuid';
     import { navigate } from 'svelte-navigator';
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onDestroy } from "svelte";
 
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import TextField from "../utils/TextField.svelte";
@@ -10,6 +10,7 @@
     import new_term from "../constants/new_term.json";
     import { ADD_TERM } from "../constants/queries_post";
     import { TERM_ORDERS } from "../constants/queries_get";
+    import HeaderField from "../utils/HeaderField.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -23,6 +24,11 @@
 
     let info = JSON.parse(JSON.stringify(new_term));
     info["data"] = JSON.stringify(info["data"]);
+
+    onDestroy(() => {
+        console.log("on destroy on new term")
+        saveChanges();
+    })
 
     async function saveChanges() {
         if (name == "" || name == undefined) {
@@ -75,11 +81,16 @@
 
 </script>
 
-<div>
-    <p style="font-weight: bold">Create new term</p>
-    <TextField type="text" text="term name" bind:inputText={name} min="" max=""  focus={true}/>
+<div class="term">
+    <HeaderField bind:inputText={name} text="Untitled Term"/>    
     {#if info["data"] != undefined}
         <InfoTable cmd="term" bind:info={info} on:message={updateChange} />
     {/if} 
-    <CancelOrSave url={`/`} on:message={saveChanges} />
 </div>
+
+<style>
+.term {
+    padding-left: 50px;
+}
+
+</style>

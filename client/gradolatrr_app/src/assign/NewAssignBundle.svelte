@@ -170,8 +170,9 @@
     }
 </script>
 
-<div>
-    <span class="header"><p class="title">Create item bundle</p>   <p class="section">{term_name}/{course_name}</p></span>
+<div class="assign">
+    <p class="header">New Bundle</p>
+    <!-- <span class="header"><p class="title">Create item bundle</p>   <p class="section">{term_name}/{course_name}</p></span> -->
     <TextField type="number" text="num items" bind:inputText={num} max={10} min={1}  focus={true}/>
 
     <div class="bundle">
@@ -205,6 +206,25 @@
 </div>
 
 <style>
+.header { 
+  padding: 5px;
+  margin-bottom: 20px;
+  font-size: 34px;
+  border-left: none;
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+  margin-right: 15px;
+  margin-top: 100px;
+  min-width: 120px;
+  color: #717171;
+  font-weight: 700;
+  width: 50vw;
+}
+.assign {
+    padding-left: 50px;
+}
+
 .alert {
     color: #C6858D;
 }

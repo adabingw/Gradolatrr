@@ -7,7 +7,6 @@
     import { sortOrder, dragstart, dragover, drop, maxOrder } from "./utils.svelte";
     import TextArea from "./TextArea.svelte";
     import TextField from "./TextField.svelte";
-    import Multiselect from "./Multiselect.svelte";
     import Singleselect from "./Singleselect.svelte";
     import Properties from "./Properties.svelte";
     import NewProperty from "./NewProperty.svelte";
@@ -15,6 +14,7 @@
     import ContextMenu from "./ContextMenu.svelte";
     import Date from "./Date.svelte";
     import Context from "../assets/context_menu_icon.jpg";
+    import Multiselect from "./Multiselect.svelte";
 
     export let cmd;
     export let info;
@@ -143,14 +143,15 @@
     }
 
     function dataChangeSelect(event, key) {
-        data[key]["content"].push(event.detail.data);
-        let data_temp = JSON.stringify(data);
+        console.log(event.detail.data, key)
         dispatch('message', {
-            data: data_temp
+            data: data, 
+            key: key
         });
     }
 
     function openMenu(e, index, item) {
+        console.log(item)
         showMenu = false;
         e.preventDefault();
         context_bundle = [e.clientX, e.clientY, index, item];
@@ -167,8 +168,8 @@
         data_array = data_array;
     }
 
-    function updateInfo() {        
-        data = JSON.parse(info["data"]);
+    function updateInfo() {     
+        if (typeof info["data"] != 'object') data = JSON.parse(info["data"]);
         console.log(data)
         if (data_array.length != 0) data_array = [];
         for (const key in data) {
@@ -180,6 +181,10 @@
     $: {
         info;
         updateInfo();
+    }
+
+    $: {
+        console.log(info)
     }
 
 </script>
@@ -230,8 +235,8 @@
                                     text="nothing here yet..." type={data[1]["type"]} on:message={dataChange}
                                     max={100} min={0}  focus={false}/>
                             {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
-                                <Multiselect bind:properties={data[1]["tag_info"]} 
-                                    bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
+                                <Multiselect bind:properties={data[1]["content"]} bind:selections={data[1]["tag_info"]}
+                                    on:assign={(e) => dataChangeSelect(e, data[0])} on:course={(e) => dataChangeSelect(e, data[0])} />
                             {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
                                 <Singleselect bind:properties={data[1]["tag_info"]} 
                                     bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>

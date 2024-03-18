@@ -5,12 +5,14 @@
     import Open from '../assets/open_icon.png';
     import { create, all } from 'mathjs';
     import { navigate } from 'svelte-navigator';
+    import { Dropdown, DropdownItem, Checkbox, Search } from 'flowbite-svelte';
 
+    import ContextMenu from '../utils/ContextMenu.svelte';
     import Edit from '../assets/edit_icon.png';
     import Button from '../utils/Button.svelte';
     import { COURSE_CONTENT } from "../constants/queries_get";
     import { DELETE_ASSIGN } from '../constants/queries_delete';
-    import { UPDATE_COURSE } from '../constants/queries_put';
+    import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
     import { DEFAULT_GRADING } from '../constants/constants';
     import { dragover, dragstart, sortOrder } from '../utils/utils.svelte';
     import HeaderField from '../utils/HeaderField.svelte';
@@ -18,6 +20,9 @@
     import Reload from "../assets/reload_icon.png";
     import Modal from '../utils/Modal.svelte';
     import Grading from '../utils/Grading.svelte';
+    import Multiselect2 from '../utils/Multiselect2.svelte';
+    import { onDestroy } from 'svelte';
+    import TextField from '../utils/TextField.svelte';
     
     export let term_id;
     export let term_name;
@@ -40,8 +45,13 @@
     let grading_scheme = DEFAULT_GRADING;
     let delete_assign = mutation(DELETE_ASSIGN);
     let update_course = mutation(UPDATE_COURSE);
+    let update_assign = mutation(UPDATE_ASSIGNMENT);
     const config = { };
     const math = create(all, config);
+
+    let showMenu = false;
+    let context_bundle = [ 0, 0, 0 ];
+    
 
     async function deleteAssignment(assign_id) {
         let confirmDelete = confirm("delete this assignment?");
@@ -59,6 +69,47 @@
             console.error(error);
         }
         regrade(true); 
+    }
+
+    async function saveAssignChanges(event) {
+        let i = event.detail.i;
+        let assign_id = event.detail.data.id;
+        let assign_name = event.detail.data.name;
+        console.log(JSON.parse(content[i]["data"]));
+        try {
+            await update_assign({
+                variables: {
+                    input: {
+                        id: assign_id, 
+                        type: "item",
+                        course_id: id,
+                        term_id: term_id, 
+                        name: assign_name, 
+                        data: content[i]["data"],
+                    }
+                }
+            });
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+    async function saveCourseChanges() {
+        try {
+            await update_course({
+                variables: {
+                    input: {
+                        id: id, 
+                        term_id: term_id, 
+                        name: name, 
+                        type: "course",
+                        content_info: JSON.stringify(content_info)
+                    }
+                }
+            });
+        } catch(error) {
+            console.error(error);
+        }
     }
 
     async function changeGradeScheme(e) {
@@ -83,6 +134,25 @@
             }
         }
     }
+
+    function sortTable(key) {
+        if (sortKey === key) sortDirection = -sortDirection;
+        else {
+            sortKey = key;
+            sortDirection = 1;
+        }
+        const sorted = content.sort((a, b) => {
+            let a_arr = JSON.parse(a["data"]);
+            let b_arr = JSON.parse(b["data"]);
+            const aVal = a_arr[key]["content"];
+            const bVal = b_arr[key]["content"];
+
+            if (aVal < bVal) return -sortDirection;
+            else if (aVal > bVal) return sortDirection;
+            return 0;
+        });
+        content = sorted;
+    };
 
     async function regrade(refetch) {
         if (refetch) query_result.refetch({ id });
@@ -116,6 +186,7 @@
                 equation = equation.replaceAll('#', l);
             }
 
+            console.log(equation);
             let result_0 = parser.evaluate(equation);
             result += result_0;
             parser.clear();
@@ -137,6 +208,27 @@
             } catch (error) {
                 console.error(error);
             }
+        }
+    }
+
+    onDestroy(() => {
+        console.log(content);
+    })
+
+    function openMenu(e, index, item) {
+        showMenu = false;
+        e.preventDefault();
+        context_bundle = [e.clientX, e.clientY, index, item];
+        showMenu = true;
+    }
+
+    function contextController(e) {
+        console.log(e.detail.context);
+        console.log(e.detail.item);
+        if (e.detail.context == 'trash') {
+            deleteAssignment(e.detail.index);
+        } else if (e.detail.context == 'edit') {
+            navigate(`/assign/edit/${term_id}/${term_name}/${id}/${name}/${e.detail.item}/${e.detail.index}`)
         }
     }
 
@@ -170,9 +262,20 @@
         query_result.refetch({ id });
         last_info = info;
     }
+
+    $: {
+        // if (content != undefined) console.log("wahh ", JSON.parse(content[0]["data"]))
+    } 
     
 </script>
 
+<ContextMenu bind:showMenu={showMenu} 
+        bind:x={context_bundle[0]} 
+        bind:y={context_bundle[1]} 
+        bind:index={context_bundle[2]}
+        bind:item={context_bundle[3]}
+        menuNum={4}
+        on:context={contextController}/>
 <div class="course">
     <Modal bind:showModal>
         <h2 slot="header">
@@ -184,6 +287,7 @@
     <p class="header">{name} <Link to={`/course/edit/${term_id}/${term_name}/${id}/${name}`}>
         <i class="fa-solid fa-pen-to-square"></i>
     </Link></p>
+
     {#if content != undefined || content != null}
     <table>
         {#if content_array != undefined || content_array != null}
@@ -211,35 +315,34 @@
         {/if}
         <tbody style="display:table-row-group;overflow:auto">
             {#each Object.keys(content) as i}
-            <tr >
-                <td>{JSON.parse(content[i]["data"])["name"]["content"]}</td>
+            <tr id={i} >
+                <td class="name_assignment">
+                    <i class="fa-solid fa-ellipsis-vertical context_menu" 
+                    on:click={(e) => openMenu(e, content[i]["name"], content[i]["id"])}></i>
+                    {JSON.parse(content[i]["data"])["name"]["content"]} 
+                </td>
                 <td>{JSON.parse(content[i]["data"])["mark"]["content"]}</td>
 
                 {#each content_array as j}
                     {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
-                        {#if JSON.parse(content[i]["data"])[j[0]] == undefined} 
-                            <td> </td>
+                        {#if JSON.parse(content[i]["data"])[j[0]] == undefined && 
+                        j[1]["type"] != "multiselect" && j[1]["type"] != "singleselect"} 
+                            <td></td>
                         {:else}
                         <td>
                             {#if j[1]["type"] == "multiselect" || j[1]["type"] == "singleselect"}
-                                {#if JSON.parse(content[i]["data"])[j[0]]["content"].length != 0}
-                                <div class="tags">
-                                    {#each JSON.parse(content[i]["data"])[j[0]]["content"] as thing}
-                                        <p class="tag">{thing}</p>
-                                    {/each}
-                                </div>
-                                {/if}
-                            {:else}
+                                <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
+                                bind:j={j} bind:content={content[i]} bind:i={i}
+                                on:assign={saveAssignChanges} on:course={saveCourseChanges}/>
+                            {:else if j[1]["type"] == "text"}
                                 {JSON.parse(content[i]["data"])[j[0]]["content"]}
                             {/if}
                         </td>
                         {/if}
                     {/if}
                 {/each}
-                <td class="edit" 
-                        on:click={() => navigate(`/assign/edit/${term_id}/${term_name}/${id}/${name}/${content[i]["id"]}/${content[i]["name"]}`)}><img src={Open}/></td>
-                <td class="edit" 
-                        on:click={() => deleteAssignment(content[i]["id"])}>delete</td>
+                <!-- <td class="edit" 
+                        on:click={() => deleteAssignment(content[i]["id"])}>delete</td> -->
             </tr>
             {/each}
         </tbody>
@@ -258,6 +361,19 @@
 </div>
     
 <style>
+table {
+    width: 65vw;
+}
+
+.context_menu {
+    margin-left: -15px;
+    opacity: 0;
+}
+
+.context_menu:hover {
+    opacity: 1;
+}
+
 .course {
     padding-left: 50px;
 }
@@ -293,7 +409,7 @@ table {
 .edit {
    margin-right: 25px;
    padding-right: 10px;
-   height: 100%;
+   /* height: 100%; */
 }
 
 .edit:hover {
@@ -302,11 +418,6 @@ table {
 
 table {
     overflow-y: scroll;
-}
-
-.tablecol {
-  padding-left: 15px;
-  padding-right: 15px;
 }
 
 .grade {
@@ -322,7 +433,7 @@ table {
     border: 1px solid black;
     border-radius: 50%;
     width: 15px;
-    height: 15px;
+    /* height: 15px; */
     text-align: center;
     margin-left: 15px;
     margin-right: 5px;
@@ -338,27 +449,15 @@ table {
     align-items: center;
 }
 
-.tag {
-    background-color: #C9D6DF;
-    border-radius: 12px;
-    padding: 8px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.tags {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-content: flex-start;
+tr {
+    height: 50px;
 }
 
 td {
     width: fit-content;
+    min-height: 50px;
     max-width: 250px;
     min-width: 100px;
-    padding-left: 12px;
-    padding-right: 12px;
     border-bottom: 1px solid grey;
     vertical-align: middle;
 }

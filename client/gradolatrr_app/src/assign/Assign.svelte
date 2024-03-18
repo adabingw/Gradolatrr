@@ -5,8 +5,10 @@
     import CancelOrSave from "../utils/CancelOrSave.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
     import { ASSIGN_INFO } from "../constants/queries_get";
-    import { UPDATE_ASSIGNMENT } from "../constants/queries_put";
+    import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
     import TextField from "../utils/TextField.svelte";
+    import HeaderField from "../utils/HeaderField.svelte";
+    import { onDestroy } from "svelte";
 
     export let id;
     export let name;
@@ -21,7 +23,9 @@
     });
     let info;
     let last_info;
+    let update_course = mutation(UPDATE_COURSE);
     let update_assign = mutation(UPDATE_ASSIGNMENT);
+    let save_course = false;
 
     async function saveChanges() {
         try {
@@ -37,20 +41,44 @@
                     }
                 }
             });
-            navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`);
         } catch(error) {
             console.error(error);
         }
     }
 
-    function nameChange() {
-        let info_temp = JSON.parse(info["getAssignment"]["data"]);
-        info_temp["name"]["content"] = name;
-        info["getAssignment"]["data"] = JSON.stringify(info_temp);
+    // only for multiselect
+    async function saveCourseChanges(content_info) {        
+        try {
+            await update_course({
+                variables: {
+                    input: {
+                        id: course_id, 
+                        term_id: term_id, 
+                        name: course_name, 
+                        type: "course",
+                        content_info: JSON.stringify(content_info)
+                    }
+                }
+            });
+        } catch(error) {
+            console.error(error);
+        }
     }
 
+    onDestroy(() => {
+        saveChanges();
+    })
+
     function updateChange(event) {
-        info["getAssignment"]["data"] = event.detail.data;
+        info["getAssignment"]["data"] = JSON.stringify(event.detail.data);
+        saveChanges()
+            
+        if (event.detail.key != undefined) {
+            let content_info = JSON.parse(info["getAssignment"]["course"]["content_info"])
+            content_info[event.detail.key]["tag_info"] = event.detail.data[event.detail.key]["tag_info"];
+            console.log("OVIUQOWURQOIWRQ ", content_info);
+            saveCourseChanges(content_info);
+        }
     }
 
     function loadData() {
@@ -95,8 +123,9 @@
 
     $: {
         $query_result
-        if ($query_result.data != undefined) {
+        if ($query_result.data != undefined && ( JSON.stringify(last_info) === JSON.stringify(info))) {
             loadData();
+            last_info = JSON.parse(JSON.stringify(info));
         }
     }
 
@@ -108,6 +137,7 @@
 
     $: {
         info;
+        console.log("INFOOO ", info);
         last_info = undefined;
     }
 
@@ -118,17 +148,22 @@
 
 </script>
 
-<div>
-    <span class="header">
+<div class="assign">
+    <HeaderField bind:inputText={name} text="" on:message={(event) => {name = event.detail.data;}}/>    
+    <!-- <span class="header">
         <TextField bind:inputText={name} type="text" text="" on:message={nameChange}  focus={true} max="" min=""/>
-        <p class="section">{term_name}/{course_name}</p></span>
+        <p class="section">{term_name}/{course_name}</p></span> -->
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange}/>
     {/if}
-    <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} />
+    <!-- <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} /> -->
 </div>
 
 <style>
+.assign {
+    padding-left: 50px;
+}
+
 .header {
     display: flex; 
     flex-direction: row; 

@@ -1,10 +1,15 @@
 <script>
     import MultiSelect from 'svelte-multiselect'
     import { createEventDispatcher } from 'svelte';
-    import TextField from './TextField.svelte';
+  import TextField from './TextField.svelte';
+  import { number } from 'mathjs';
 
     export let properties;
     export let selections;
+    export let content;
+    export let j;
+    export let i;
+    let properties_map;
     let showmulti = false;
 	let inputValue = "";
 
@@ -19,27 +24,37 @@
     const onkeydown = (e) => {
         if (e.key == "Enter") {
             if (!inputValue) return;
-            createTag(inputValue);
+
+            createTag(inputValue)
         }
     }
 
     const createTag = (thing) => {
         selections.push(thing);
-        properties.push(thing);
+
         dispatch('course', {
             text: "data changed",
-            data: properties, 
+            data: content, 
             selections: selections
         });
-        inputValue = "";
+
+        addTag(thing);
+
+        inputValue = ""
+
         filteredItems = [];
     }
 
     const deleteTag = (thing) => {
         selections = selections.filter(item => !item.toLowerCase().match(thing.toLowerCase()));
+
+        let new_properties = JSON.parse(properties);
+        new_properties[j[0]]["tag_info"] = selections;
+        properties = JSON.stringify(new_properties);
+
         dispatch('course', {
             text: "data changed",
-            data: properties,
+            data: content,
             selections: selections
         });
 
@@ -47,22 +62,46 @@
     }
 
     const deleteSelectedTag = (thing) => {
-        properties = properties.filter(item => !item.toLowerCase().match(thing.toLowerCase()));	
+        properties_map = properties_map.filter(item => !item.toLowerCase().match(thing.toLowerCase()));	
+
+        let new_properties = JSON.parse(properties);
+        new_properties[j[0]]["content"] = properties_map;
+        properties = JSON.stringify(new_properties);
+
         dispatch('assign', {
             text: "data changed",
-            data: properties,
+            data: content,
+            i: i,
         });
     }
 
     const addTag = (thing) => {
-        if(properties.includes(thing)) return;
-        properties.push(thing);	
+        if(properties_map.includes(thing)) return;
+
+        properties_map.push(thing);	
+
+        let new_properties = JSON.parse(properties);
+        new_properties[j[0]]["content"] = properties_map;
+        properties = JSON.stringify(new_properties);
 
         dispatch('assign', {
             text: "data changed",
-            data: properties,
+            data: content,
+            i: i
         });
     }
+
+    $: {
+        properties;
+        if (properties != undefined) {
+            properties_map = JSON.parse(properties)[j[0]]["content"]
+        }
+    }
+
+    $: console.log(selections)
+
+
+
 
 </script>
 
@@ -70,11 +109,11 @@
 <div class="multiselect">
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="tags" on:click={(e) => {e.stopPropagation(); showmulti = true; } }>
-    {#if properties.length == 0 && !showmulti}
+    {#if properties_map.length == 0 && !showmulti}
         <p class="click_to_add_tags">click to add tags...</p>
     {:else}
-        {#each properties as thing}
-            <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={() => deleteSelectedTag(thing)}></i></p>
+        {#each properties_map as thing}
+            <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={(e) => {e.stopPropagation(); deleteSelectedTag(thing)}}></i></p>
         {/each}
     {/if}
 </div>

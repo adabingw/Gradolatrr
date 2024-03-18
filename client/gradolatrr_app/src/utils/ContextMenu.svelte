@@ -78,6 +78,21 @@
             'class': 'fa-solid fa-copy fa-ms'
         }
     ]
+
+    let menuItems4 = [
+        {
+            'name': 'trash',
+            'onClick': menuClick,
+            'displayText': "Trash",
+            'class': 'fa-solid fa-trash-can fa-ms'
+        }, {
+            'name': 'edit',
+            'onClick': menuClick,
+            'displayText': "Edit",
+            'class': 'fa-solid fa-pen fa-ms'
+        }
+    ]
+
     const dispatch = createEventDispatcher();
 
     function menuClick(context) {
@@ -102,7 +117,8 @@
     onMount(() => {
         if (menuNum == 1) menuItem = menuItems1;
         else if (menuNum == 2) menuItem = menuItems2;
-        else menuItem = menuItems3;
+        else if (menuNum == 3) menuItem = menuItems3;
+        else menuItem = menuItems4;
     });
 
 </script>

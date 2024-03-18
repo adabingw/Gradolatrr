@@ -477,7 +477,7 @@
         menuNum={2}
         on:context={contextControllerCourse}/>
 <div class="sidebar">
-    <!-- <Link to="/"><h3>GRADROLATRR</h3></Link> -->
+    <Link to="/"><h3>GRADROLATRR</h3></Link>
     <span class="new_term">
         <Link to={'/new_term'}>
             <i class="fa-solid fa-circle-plus fa-xs"></i>    

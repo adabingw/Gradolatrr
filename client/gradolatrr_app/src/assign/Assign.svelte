@@ -2,13 +2,14 @@
     import { query, mutation } from "svelte-apollo";
     import { navigate } from "svelte-navigator";
 
-    import CancelOrSave from "../utils/CancelOrSave.svelte";
+    import CancelOrSave from "../utils/deprecated/CancelOrSave.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
     import { ASSIGN_INFO } from "../constants/queries_get";
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
     import TextField from "../utils/TextField.svelte";
     import HeaderField from "../utils/HeaderField.svelte";
     import { onDestroy } from "svelte";
+    import { DELETE_ASSIGN } from "../constants/queries_delete";
 
     export let id;
     export let name;
@@ -25,9 +26,31 @@
     let last_info;
     let update_course = mutation(UPDATE_COURSE);
     let update_assign = mutation(UPDATE_ASSIGNMENT);
-    let save_course = false;
+    let delete_assign = mutation(DELETE_ASSIGN);
+
+    async function deleteAssignment(assign_id) {
+        let confirmDelete = confirm("delete this assignment?");
+        if (!confirmDelete) return;
+        try {
+            await delete_assign({ 
+                variables: { 
+                    input: {
+                        id: id, 
+                        type: "item"
+                    }
+                } 
+            });
+            navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     async function saveChanges() {
+        if (!name) {
+            alert("Name cannot be empty!");
+            return;
+        }
         try {
             await update_assign({
                 variables: {
@@ -76,7 +99,6 @@
         if (event.detail.key != undefined) {
             let content_info = JSON.parse(info["getAssignment"]["course"]["content_info"])
             content_info[event.detail.key]["tag_info"] = event.detail.data[event.detail.key]["tag_info"];
-            console.log("OVIUQOWURQOIWRQ ", content_info);
             saveCourseChanges(content_info);
         }
     }
@@ -137,7 +159,6 @@
 
     $: {
         info;
-        console.log("INFOOO ", info);
         last_info = undefined;
     }
 
@@ -156,22 +177,20 @@
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange}/>
     {/if}
-    <!-- <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} /> -->
+    <div class="term-op">
+        <i class="fa-solid fa-trash-can trash" on:click={() => deleteAssignment()}></i>
+        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+    </div>
 </div>
 
 <style>
 .assign {
-    padding-left: 50px;
+    padding-left: 80px;
 }
 
-.header {
-    display: flex; 
-    flex-direction: row; 
-    align-items: center;
+.trash:hover {
+    cursor: pointer;
+    color: #313131 !important;
 }
 
-.section {
-    font-size: 14px;
-    margin-left: 15px;
-}
 </style>

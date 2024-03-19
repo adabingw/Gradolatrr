@@ -4,7 +4,7 @@
     import { navigate } from 'svelte-navigator';
     import { createEventDispatcher, onDestroy } from "svelte";
 
-    import CancelOrSave from "../utils/CancelOrSave.svelte";
+    import CancelOrSave from "../utils/deprecated/CancelOrSave.svelte";
     import TextField from "../utils/TextField.svelte";
     import InfoTable from "../utils/InfoTable.svelte";
     import new_term from "../constants/new_term.json";
@@ -21,6 +21,7 @@
     let add_term = mutation(ADD_TERM);
     let query_result = query(TERM_ORDERS);
     let max_order = 0;
+    let data_changed = false;
 
     let info = JSON.parse(JSON.stringify(new_term));
     info["data"] = JSON.stringify(info["data"]);
@@ -31,6 +32,8 @@
     })
 
     async function saveChanges() {
+        if (!data_changed && !name) return;
+
         if (name == "" || name == undefined) {
             alert("name is required");
             return;
@@ -66,6 +69,7 @@
     }
 
     function updateChange(event) {
+        data_changed = true;
         info["getTerm"]["data"] = event.detail.data;
     }
 
@@ -86,11 +90,20 @@
     {#if info["data"] != undefined}
         <InfoTable cmd="term" bind:info={info} on:message={updateChange} />
     {/if} 
+
+    <div class="term-op">
+        <i class="fa-solid fa-ban trash" on:click={() => navigate(`/`)}></i>
+        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+    </div>
 </div>
 
 <style>
 .term {
-    padding-left: 50px;
+    padding-left: 80px;
 }
 
+.trash:hover {
+    cursor: pointer;
+    color: #313131 !important;
+}
 </style>

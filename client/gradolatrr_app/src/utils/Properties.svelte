@@ -1,16 +1,9 @@
 <script>
-    // @ts-nocheck
-    // https://svelte.dev/examples/modal
-
     import { createEventDispatcher } from 'svelte';
 
-    import Close from "../assets/delete_icon.png";
-    import Open from "../assets/open_icon.png";
     import Button from './Button.svelte';
     import TextField from './TextField.svelte';
     import Dropdown from './Dropdown.svelte';
-    import Modal from './Modal.svelte';
-    import TagBlock from './TagBlock.svelte';
     import { TYPES } from '../constants/constants';
 
     export let courseinfo;
@@ -18,9 +11,7 @@
     let add = false;
     let info_name;
     let info_type;
-    let showModal = false;
     let modalName = "";
-    let properties = [];
 
     const dispatch = createEventDispatcher();
 
@@ -32,17 +23,6 @@
 
     function addInfo() {
         add = !add;
-    }
-
-    function tagChange(event) {
-        const tags = event.detail.tags;
-        courseinfo[modalName]["tag_info"] = tags;
-        properties = courseinfo[modalName]["tag_info"];
-        dispatch('info', {
-            info: 'tag',
-            tags: tags, 
-            info_name: modalName
-        });
     }
 
     function saveInfo() {
@@ -64,7 +44,10 @@
             "required": false,
             "order": 0
         }
-        if (info_type == "multiselect" || info_type == "singleselect") new_info["tag_info"] = [];
+        if (info_type == "multiselect" || info_type == "singleselect") {
+            new_info["tag_info"] = []
+        }
+
         courseinfo[info_name] = new_info;
         dispatch('info', {
             info: 'saved',
@@ -110,21 +93,9 @@
         info_name = "";
     }
 
-    function openModal(item, item_name) {
-        showModal = true;
-        modalName = item_name;
-        properties = item["tag_info"];
-    }
-
 </script>
 
 <div>
-    <Modal bind:showModal>
-        <h2 slot="header">
-            {modalName}
-        </h2>
-        <TagBlock properties={properties} on:message={tagChange}/>    
-    </Modal>
     <table>
     <div class="property-table">
         <tr>
@@ -153,18 +124,10 @@
                     min="" max=""  focus={true}/>
             </td>
             <td>
-                <!-- <p class="info-type">{courseinfo[item]["type"]}</p> -->
             <div class="change-type">
                 <Dropdown info={TYPES} selected={courseinfo[item]["type"]} 
                         on:message={(e) => changeType(e, item)}/>
             </div>
-            </td>
-            <td class="info-icon">
-                {#if courseinfo[item]["type"] == "multiselect" || courseinfo[item]["type"] == "singleselect"}
-                    <img src={Open} on:click={() => openModal(courseinfo[item], item)} alt="open" class="open-icon" />
-                {:else} 
-                    <p  class="open-icon"></p>
-                {/if}
             </td>
             <td>
                 <i class="fa-solid fa-xmark" on:click={() => deleteTag(item)}></i>

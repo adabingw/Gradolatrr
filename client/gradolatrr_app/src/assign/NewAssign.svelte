@@ -39,10 +39,13 @@
             return;
         }
 
-        new_assign["data"]["name"]["content"] = name;
+        let data = JSON.parse(new_assign["data"])
+        console.log(data)
+
+        data["name"]["content"] = name;
 
         info = JSON.parse(JSON.stringify(new_assign));
-        info["data"] = JSON.stringify(new_assign["data"]);
+        info["data"] = JSON.stringify(data);
 
         try {
             await add_assign({ 
@@ -82,7 +85,7 @@
     }
 
     onDestroy(() => {
-        if (!data_changed) return;
+        if (!data_changed && !name) return;
         saveChanges();
     })
 
@@ -90,7 +93,6 @@
         if ($query_result.data != undefined && ( JSON.stringify(last_assign) === JSON.stringify(new_assign))) {
             new_assign["content_info"] = $query_result["data"]["getCourse"]["content_info"]
             let content_info = JSON.parse(new_assign["content_info"])
-            console.log(content_info)
             for (let i of Object.keys(content_info)) {
                 let value = content_info[i];
                 if (value["type"] == "text" || value["type"] == "textarea") {
@@ -126,16 +128,13 @@
         data_changed = true;
         last_assign = undefined;
         let thing = event.detail.data;
-        console.log("thing ", thing)
         if (event.detail.key != undefined) {
             let content_info = JSON.parse(new_assign["content_info"])
             content_info[event.detail.key]["tag_info"] = event.detail.data[event.detail.key]["tag_info"];
-            console.log(content_info)
             saveCourseChanges(content_info);
         }
         info["data"] = JSON.parse(JSON.stringify(thing));
         new_assign["data"] = JSON.parse(JSON.stringify(thing));
-        console.log(new_assign["data"])
     }
 
 </script>
@@ -148,27 +147,20 @@
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info} on:message={dataChange}/>
     {/if}
-    <!-- <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} /> -->
+    <div class="term-op">
+        <i class="fa-solid fa-ban trash" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}></i>
+        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+    </div>
 </div>
 
 <style>
 .assign {
-    padding-left: 50px;
+    padding-left: 80px;
 }
 
-.header {
-    display: flex; 
-    flex-direction: row; 
-    align-items: center;
-}
-
-.section {
-    font-size: 14px;
-    margin-left: 15px;
-}
-
-.title {
-    font-weight: bold;
+.trash:hover {
+    cursor: pointer;
+    color: #313131 !important;
 }
 
 </style>

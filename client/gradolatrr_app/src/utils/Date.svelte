@@ -5,7 +5,6 @@
     const dispatch = createEventDispatcher();
 
     function newDateSelected() {
-        console.log(date);
         dispatch('message', {
             data: date
         })

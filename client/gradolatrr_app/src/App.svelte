@@ -96,7 +96,7 @@
 
 <style>
 .homepage {
-  margin-left: 50px;
+  /* margin-left: 50px; */
   margin-top: 20px;
   overflow: scroll;
   height: 100vh;

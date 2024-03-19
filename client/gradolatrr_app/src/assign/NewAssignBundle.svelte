@@ -6,13 +6,11 @@
     import { navigate } from 'svelte-navigator';
     
     import TextField from '../utils/TextField.svelte';
-    import CancelOrSave from '../utils/CancelOrSave.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
-    import Button from '../utils/Button.svelte';
-    import course_info from "../constants/course_info.json";
     import new_assign from "../constants/new_assign.json";
     import { GET_CONTENT_INFO } from '../constants/queries_get';
     import { ADD_BUNDLE } from '../constants/queries_post';
+    import { onDestroy } from 'svelte';
 
     export let course_id;
     export let course_name;
@@ -24,8 +22,6 @@
     let num;
     let suffix;
     let names = [];
-    let date = new Date();
-    let dates = [];
     let manual = false;
 
     let query_result = query(GET_CONTENT_INFO, {
@@ -36,13 +32,17 @@
     let last_assign = JSON.parse(JSON.stringify(new_assign));
     let info;
 
+    let data_changed = false;
+
     async function saveChanges() {
+        if (!data_changed) return;
         if ((suffix == "" || suffix == undefined) && !manual) {
-            alert("name is required");
+            alert("Name is required");
             return;
         }
+
         if (num == undefined) {
-            alert("number is required");
+            alert("Number is required");
             return;
         }
         if (num > 10) {
@@ -107,8 +107,13 @@
         }
     }
 
+    onDestroy(() => {
+        saveChanges();
+    })
+
     function dataChange(event) {
         last_assign = undefined;
+        data_changed = true;
         let thing = JSON.parse(event.detail.data);
         new_assign["data"] = JSON.parse(JSON.stringify(thing));
     }
@@ -173,16 +178,31 @@
 <div class="assign">
     <p class="header">New Bundle</p>
     <!-- <span class="header"><p class="title">Create item bundle</p>   <p class="section">{term_name}/{course_name}</p></span> -->
-    <TextField type="number" text="num items" bind:inputText={num} max={10} min={1}  focus={true}/>
-
+    <TextField type="number" text="Number of items in this bundle" bind:inputText={num} max={10} min={1}  focus={true}/>
+    <br/>
+    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <label on:click={() => { manual = true; }} class="label">
+        <input type="radio" name="input_form" value="manual">
+        Manual input
+    </label><br/><br/>
+    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <label on:click={() => { manual = false; }} class="label">
+        <input type="radio" name="input_form" value="prefix" checked>
+        Use prefix
+    </label><br/>
     <div class="bundle">
-    {#if manual}
-        <Button text="enter item suffix" on:message={() => { manual = false; } }/>
+    {#if !manual}
+        <div class="name-div">
+            <p>item suffix  <br/> (ie: ECON ASSGN)</p>
+            <TextField type="text" text="nothing here yet..." bind:inputText={suffix} min="" max=""  focus={false}/>
+        </div>
+    {:else} 
         {#if num != undefined && num <= 10}
             {#each Array(num) as _, i}
             <div class="bundle-name">
-                <TextField type="text" text={`item ${i + 1}`} 
-                    bind:inputText={names[i]} min="" max=""  focus={false} />
+                <TextField type="text" text={`item ${i + 1}`} bind:inputText={names[i]} min="" max=""  focus={false} />
             </div>
             {/each}
         {:else} 
@@ -190,19 +210,18 @@
                 {num > 10 ? "bundle can contain max 10 items" : "please input number of items in the bundle"}
             </p>
         {/if}
-    {:else} 
-        <Button text="manually input names" on:message={() => { manual = true; } }/>
-        <div class="name-div">
-            <p>item suffix (ie: ECON ASSGN)</p>
-            <TextField type="text" text="" bind:inputText={suffix} min="" max=""  focus={false}/>
-        </div>
     {/if}
     </div>
 
     {#if info != undefined}
+        <p class="subheader">Information about items</p>
         <InfoTable cmd="bundle" bind:info={info} on:message={dataChange} />
     {/if}
-    <CancelOrSave url={`/course/${term_id}/${term_name}/${course_id}/${course_name}`} on:message={saveChanges} />
+
+    <div class="term-op">
+        <i class="fa-solid fa-ban trash" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}></i>
+        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+    </div>
 </div>
 
 <style>
@@ -221,8 +240,41 @@
   font-weight: 700;
   width: 50vw;
 }
+
+.subheader {
+    width: 60vw;
+    font-size: 20px;
+    font-weight: 600;
+    color: #818181;
+    border-bottom: 1px solid #d1d1d1;
+    padding-bottom: 5px;
+}
+
+.trash:hover {
+    cursor: pointer;
+    color: #313131 !important;
+}
+
+.label {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+input {
+    accent-color: #717171;
+}
+
+input::after {
+    accent-color: #717171;
+}
+
+input:checked {
+    accent-color: #717171;
+}
+
 .assign {
-    padding-left: 50px;
+    padding-left: 80px;
+    padding-bottom: 100px;
 }
 
 .alert {
@@ -231,16 +283,11 @@
 
 .name-div {
     display: flex;
-    flex-direction: row; 
-}
-
-.bundle-name {
-    margin-top: -15px;
-    margin-bottom: -15px;
+    flex-direction: row;
 }
 
 .bundle {
-    border-bottom: 1px solid black;
+    padding-top: 20px;
     margin-bottom: 10px;
     width: 60vw;
 }

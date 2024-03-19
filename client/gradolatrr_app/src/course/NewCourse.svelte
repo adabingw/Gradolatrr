@@ -6,7 +6,7 @@
     import { navigate } from 'svelte-navigator';
     
     import HeaderField from "../utils/HeaderField.svelte";
-    import CancelOrSave from "../utils/CancelOrSave.svelte";
+    import CancelOrSave from "../utils/deprecated/CancelOrSave.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
     import new_course from "../constants/new_course.json";
     import { ADD_COURSE } from '../constants/queries_post';
@@ -25,6 +25,7 @@
     });
     let info = JSON.parse(JSON.stringify(new_course));
     let max_order = 0;
+    let data_changed = false;
 
     info["data"] = JSON.stringify(info["data"]);
     info["content_info"] = JSON.stringify(info["content_info"]);
@@ -35,10 +36,13 @@
     })
 
     function updateChange(event) {
+        data_changed = true;
         info["getCourse"]["data"] = event.detail.data;
     }
 
     async function saveChanges() {
+        if (!data_changed && !name) return;
+
         if (name == "" || name == undefined) {
             alert("name is required");
             return;
@@ -87,11 +91,20 @@
 <div class="course">
     <HeaderField bind:inputText={name} text="Untitled Course"/>    
     <InfoTable cmd="course" bind:info={info} on:message={updateChange} />
+
+    <div class="term-op">
+        <i class="fa-solid fa-ban trash" on:click={() => navigate(`/term/${term_id}/${term_name}`)}></i>
+        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+    </div>
 </div>
 
 <style>
 .course {
-    padding-left: 50px;
+    padding-left: 80px;
 }
 
+.trash:hover {
+    cursor: pointer;
+    color: #313131 !important;
+}
 </style>

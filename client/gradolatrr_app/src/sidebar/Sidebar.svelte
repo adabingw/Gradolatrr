@@ -6,7 +6,6 @@
     import { navigate } from "svelte-navigator";
     import { v4 as uuidv4 } from 'uuid';
 
-    import NewButton from "../utils/NewButton.svelte";
     import ContextMenu from "../utils/ContextMenu.svelte";
     import { ALL_COURSES } from "../constants/queries_get";
     import { DUPLICATE_TERM } from "../constants/queries_post";
@@ -399,7 +398,6 @@
 
     function openTerm(e, index, item) {
         e.preventDefault();
-        console.log(index, item);
         context_bundle = [e.clientX, e.clientY, index, item];
         showTerm = true;
         showCourse = false;
@@ -409,7 +407,6 @@
         e.preventDefault();
         item["term_id"] = term_id;
         item["term_name"] = term_name;
-        console.log(index, item);
         context_bundle = [e.clientX, e.clientY, index, item];
         showCourse = true;
         showTerm = false;
@@ -419,7 +416,6 @@
         const context = e.detail.context; 
         const index = e.detail.index;
         const item = e.detail.item;
-        console.log(context, index, item);
         if (context == 'trash') {
             deleteTerm(index, item);
         } else if (context == 'duplicate') {
@@ -431,7 +427,6 @@
         const context = e.detail.context; 
         const index = e.detail.index;
         const item = e.detail.item;
-        console.log(context, index, item);
         if (context == 'trash') {
             deleteCourse(index, item);
         } else if (context == 'edit') {

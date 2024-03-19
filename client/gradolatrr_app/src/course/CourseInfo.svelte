@@ -5,8 +5,6 @@
     import { navigate } from 'svelte-navigator';
     import { createEventDispatcher, onDestroy } from 'svelte';
 
-    import CancelOrSave from '../utils/CancelOrSave.svelte';
-    import Button from '../utils/Button.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
     import HeaderField from '../utils/HeaderField.svelte';
     import { COURSE_INFO } from "../constants/queries_get";
@@ -38,6 +36,11 @@
     })
 
     async function saveChanges() {
+        if (!name) {
+            alert("Name cannot be empty!");
+            return;
+        }
+        
         try {
             let content_info = JSON.parse(info["getCourse"]["content_info"]);
             for (let key of Object.keys(content_info)) {
@@ -154,6 +157,48 @@
         info["getCourse"]["data"] = event.detail.data;
     }
 
+    async function newData(event) {
+        let name = event.detail.info_name;
+        let type = event.detail.new_info;
+        let action = event.detail.action;
+
+        let assignments = info["getCourse"]["assignments"];
+
+        for (let i = 0; i < assignments.length; i++) {
+            let assign = assignments[i];
+            let assign_data = JSON.parse(assign["data"]);
+
+            if (action == 'saved') {
+                let new_property = {
+                    "type": type, 
+                }
+
+                if (type == "number") new_property["content"] = 0;
+                else if (type == "text" || type == "textarea") new_property["content"] = "";
+                else if (type == "multiselect" || type == "singleselect") {
+                    new_property["content"] = [];
+                    new_property["tag_info"] = [];
+                } else if (type == "date") {
+                    new_property["content"] = (new Date()).toISOString().split('T')[0]
+                }
+
+                assign_data[name] = new_property;
+            } else if (action == 'delete') {
+                delete assign_data[name]
+            }
+
+            await update_assign({
+                variables: {
+                    input: {
+                        id: assign["id"], 
+                        type: "item", 
+                        data: JSON.stringify(assign_data)
+                    }
+                }
+            })
+        }
+    }
+
     $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
@@ -178,15 +223,21 @@
     <HeaderField bind:inputText={name} text="" on:message={(event) => {name_change = event.detail.data;}}/>
 
     {#if info != undefined}
-        <InfoTable cmd="course" bind:info={info.getCourse} on:message={updateChange} />
+        <InfoTable cmd="course" bind:info={info.getCourse} on:message={updateChange} on:action={newData} />
     {/if}
-    <div class="term-op" on:click={() => deleteCourse()}>
-        <Button text="delete this course" />
+    <div class="term-op">
+        <i class="fa-solid fa-trash-can trash" on:click={() => deleteCourse()}></i>
+        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
     </div>
 </div>
 
 <style>
 .course {
-    padding-left: 50px;
+    padding-left: 80px;
+}
+
+.trash:hover {
+    cursor: pointer;
+    color: #313131 !important;
 }
 </style>

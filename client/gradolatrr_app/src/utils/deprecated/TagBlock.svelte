@@ -5,8 +5,8 @@
 
     import { createEventDispatcher } from 'svelte';
 
-    import Button from "./Button.svelte";
-    import TextField from "./TextField.svelte";
+    import Button from "../Button.svelte";
+    import TextField from "../TextField.svelte";
     import Close from "../assets/delete_icon.png";
 
     const dispatch = createEventDispatcher();

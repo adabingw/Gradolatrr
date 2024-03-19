@@ -5,6 +5,7 @@
 
     export let properties;
     export let selections;
+    export let max;
     let showmulti = false;
 	let inputValue = "";
 
@@ -24,7 +25,11 @@
     }
 
     const createTag = (thing) => {
-        selections.push(thing);
+        if (!selections.includes(thing)) {
+            selections.push(thing);
+        }
+
+        if (max == 1) properties = [];
         properties.push(thing);
         dispatch('course', {
             text: "data changed",
@@ -56,6 +61,8 @@
 
     const addTag = (thing) => {
         if(properties.includes(thing)) return;
+        if (max == 1) properties = [];
+
         properties.push(thing);	
 
         dispatch('assign', {
@@ -105,6 +112,7 @@
 </div>
 
 <style>		
+
 input {
     border: 0px solid white;
     outline: none;
@@ -129,7 +137,7 @@ input:focus {
     flex-direction: row;
     padding-left: 8px;
     padding-bottom: 5px;
-    padding-top: 5px;
+    padding-top: 0px;
     align-items: center;
 }
 
@@ -140,7 +148,8 @@ input:focus {
 
 .multiselect {
     width: 210px;
-    max-width: 300px;
+    padding-left: 5px;
+    max-width: 500px;
 }
 
 .create {
@@ -162,7 +171,7 @@ input:focus {
     flex-direction: row;
     padding-left: 8px;
     padding-bottom: 5px;
-    padding-top: 5px;
+    padding-top: 0px;
     align-items: center;
     justify-content: space-between;
 }
@@ -185,6 +194,9 @@ input:focus {
     align-items: center;
     margin-top: 2px;
     margin-bottom: 2px;
+    text-wrap: wrap;
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 
 .tags {
@@ -192,8 +204,10 @@ input:focus {
     display: flex; 
     flex-direction: row;
     flex-wrap: wrap;
-    padding-top: 8px;
+    padding-top: -5px;
     padding-bottom: 8px;
+    text-wrap: wrap;
+    overflow-wrap: break-word;
 }
 
 .fa-xmark {

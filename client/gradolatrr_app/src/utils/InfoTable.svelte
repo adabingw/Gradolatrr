@@ -7,7 +7,7 @@
     import { sortOrder, dragstart, dragover, drop, maxOrder } from "./utils.svelte";
     import TextArea from "./TextArea.svelte";
     import TextField from "./TextField.svelte";
-    import Singleselect from "./Singleselect.svelte";
+    import Singleselect from "./deprecated/Singleselect.svelte";
     import Properties from "./Properties.svelte";
     import NewProperty from "./NewProperty.svelte";
     import Datepicker from "./Datepicker.svelte";
@@ -95,10 +95,19 @@
     // }
 
     function infoController(event) {
-        if (event.detail.info == "delete") {
+        if (event.detail.info == "delete") {            
             delete content_info[event.detail.data]
+            dispatch('action', {
+                action: 'delete',
+                info_name: event.detail.data, 
+            })
         } else if (event.detail.info == "saved") {
             content_info[event.detail.info_name] = event.detail.new_info;
+            dispatch('action', {
+                'action': 'saved',
+                info_name: event.detail.info_name, 
+                new_info: event.detail.new_info['type']
+            })
         } else if (event.detail.info == "tags") {
             content_info[event.detail.info_name] = event.detail.tags;
         } else if (event.detail.info == "type") {
@@ -139,11 +148,9 @@
         dispatch('message', {
             data: data_temp
         });
-        console.log(data)
     }
 
     function dataChangeSelect(event, key) {
-        console.log(event.detail.data, key)
         dispatch('message', {
             data: data, 
             key: key
@@ -151,11 +158,9 @@
     }
 
     function openMenu(e, index, item) {
-        console.log(item)
         showMenu = false;
         e.preventDefault();
         context_bundle = [e.clientX, e.clientY, index, item];
-        console.log(e.clientX, e.clientY);
         showMenu = true;
     }
 
@@ -170,7 +175,6 @@
 
     function updateInfo() {     
         if (typeof info["data"] != 'object') data = JSON.parse(info["data"]);
-        console.log(data)
         if (data_array.length != 0) data_array = [];
         for (const key in data) {
             data_array.push([ key, data[key] ])
@@ -181,10 +185,6 @@
     $: {
         info;
         updateInfo();
-    }
-
-    $: {
-        console.log(info)
     }
 
 </script>
@@ -236,10 +236,10 @@
                                     max={100} min={0}  focus={false}/>
                             {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
                                 <Multiselect bind:properties={data[1]["content"]} bind:selections={data[1]["tag_info"]}
-                                    on:assign={(e) => dataChangeSelect(e, data[0])} on:course={(e) => dataChangeSelect(e, data[0])} />
+                                    on:assign={(e) => dataChangeSelect(e, data[0])} on:course={(e) => dataChangeSelect(e, data[0])} max=0/>
                             {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
-                                <Singleselect bind:properties={data[1]["tag_info"]} 
-                                    bind:selected={data[1]["content"]} on:message={(e) => dataChangeSelect(e, data[0])}/>
+                                <Multiselect bind:properties={data[1]["content"]} bind:selections={data[1]["tag_info"]}
+                                on:assign={(e) => dataChangeSelect(e, data[0])} on:course={(e) => dataChangeSelect(e, data[0])} max=1/>
                             {:else if data[1]["type"] == "date"}
                                 <Date bind:date={data[1]["content"]} on:message={dataChange} />
                             {:else if data[1]["type"] == "date" && cmd == "bundle"}

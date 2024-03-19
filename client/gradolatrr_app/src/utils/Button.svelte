@@ -25,7 +25,7 @@
 }
 
 .term-changes:hover {
-  font-weight: bold;
+  /* font-weight: bold; */
   cursor: pointer;
   background-color: #e8e5df;
 }

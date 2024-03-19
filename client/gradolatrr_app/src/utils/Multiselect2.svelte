@@ -9,6 +9,7 @@
     export let content;
     export let j;
     export let i;
+    export let max;
     let properties_map;
     let showmulti = false;
 	let inputValue = "";
@@ -30,13 +31,15 @@
     }
 
     const createTag = (thing) => {
-        selections.push(thing);
+        if (!selections.includes(thing)) {
+            selections.push(thing);
 
-        dispatch('course', {
-            text: "data changed",
-            data: content, 
-            selections: selections
-        });
+            dispatch('course', {
+                text: "data changed",
+                data: content, 
+                selections: selections
+            });
+        }
 
         addTag(thing);
 
@@ -78,9 +81,14 @@
     const addTag = (thing) => {
         if(properties_map.includes(thing)) return;
 
+        if (max == 1) properties_map = [];
+
         properties_map.push(thing);	
 
         let new_properties = JSON.parse(properties);
+
+        console.log(new_properties)
+
         new_properties[j[0]]["content"] = properties_map;
         properties = JSON.stringify(new_properties);
 
@@ -94,15 +102,13 @@
     $: {
         properties;
         if (properties != undefined) {
-            properties_map = JSON.parse(properties)[j[0]]["content"]
+            if (JSON.parse(properties)[j[0]] == undefined) {                
+                properties_map = []
+            } else {
+                properties_map = JSON.parse(properties)[j[0]]["content"]
+            }
         }
     }
-
-    $: console.log(selections)
-
-
-
-
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -224,6 +230,9 @@ input:focus {
     align-items: center;
     margin-top: 2px;
     margin-bottom: 2px;
+    text-wrap: wrap;
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 
 .tags {
@@ -233,6 +242,8 @@ input:focus {
     flex-wrap: wrap;
     padding-top: 8px;
     padding-bottom: 8px;
+    text-wrap: wrap;
+    overflow-wrap: break-word;
 }
 
 .fa-xmark {

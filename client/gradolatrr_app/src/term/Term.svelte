@@ -3,7 +3,6 @@
     import { navigate } from "svelte-navigator";
     import { createEventDispatcher, onDestroy } from "svelte";
 
-    import Button from "../utils/Button.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
     import Reload from "../assets/reload_icon.png";
     import { DEFAULT_GRADING } from "../constants/constants";
@@ -85,8 +84,11 @@
     })
 
     async function saveChanges() {
-        console.log(info["getTerm"]);
-        console.log(name_change)
+        if (!name_change) {
+            alert("Name cannot be empty!");
+            return;
+        }
+
         try {
             await update_term({
                 variables: {
@@ -102,7 +104,6 @@
             });
 
             query_result.refetch({ id });
-            // navigate(`/term/${id}/${name}`);
 
             if (name != name_change) {
                 dispatch('message', {
@@ -169,11 +170,6 @@
     {#if info != undefined} 
         <InfoTable cmd="term" bind:info={info["getTerm"]} on:message={updateChange} />
     {/if}
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="term-op" on:click={deleteTerm}>
-        <Button text="delete this term" />
-    </div>
     <div class="course-block">
     <table>
     <tbody>
@@ -185,6 +181,10 @@
         {/each}
     </tbody>
     </table>
+    </div>
+    <div class="term-op">
+        <i class="fa-solid fa-trash-can trash" on:click={() => deleteTerm()}></i>
+        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
     </div>
     <!-- <div class="grade-block">
         <p class="grade">grade: </p> { grade == undefined ? "no grade" : grade}
@@ -203,7 +203,7 @@ i:hover {
 }
 
 .term {
-    padding-left: 50px;
+    padding-left: 80px;
 }
 
 .grade {
@@ -214,19 +214,9 @@ i:hover {
     margin-right: 8px;
 }
 
-.what {
-    font-size: 13px;
-    border: 1px solid black;
-    border-radius: 50%;
-    width: 15px;
-    height: 15px;
-    text-align: center;
-    margin-left: 15px;
-    margin-right: 5px;
-}
-
-.what:hover {
+.trash:hover {
     cursor: pointer;
+    color: #313131 !important;
 }
 
 .grade-block {

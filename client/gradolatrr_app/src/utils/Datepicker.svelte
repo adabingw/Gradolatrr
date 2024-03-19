@@ -104,7 +104,6 @@
 
     function selectDate(y, m, d) {
         let selected_day = dayjs(y + '-' + m + '-' + d).format('YYYY-MM-DD')
-        console.log("selected: ", selected_day);
         // showModal = false;
         if (!dates.includes(selected_day)) {
             if (dates.length >= 10) {

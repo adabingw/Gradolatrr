@@ -2,14 +2,9 @@
     // @ts-nocheck
     import { Link } from 'svelte-navigator';
     import { query, mutation } from 'svelte-apollo';
-    import Open from '../assets/open_icon.png';
     import { create, all } from 'mathjs';
     import { navigate } from 'svelte-navigator';
-    import { Dropdown, DropdownItem, Checkbox, Search } from 'flowbite-svelte';
-
     import ContextMenu from '../utils/ContextMenu.svelte';
-    import Edit from '../assets/edit_icon.png';
-    import Button from '../utils/Button.svelte';
     import { COURSE_CONTENT } from "../constants/queries_get";
     import { DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
@@ -17,7 +12,6 @@
     import { dragover, dragstart, sortOrder } from '../utils/utils.svelte';
     import HeaderField from '../utils/HeaderField.svelte';
     import { tokenize } from "../utils/utils.svelte";
-    import Reload from "../assets/reload_icon.png";
     import Modal from '../utils/Modal.svelte';
     import Grading from '../utils/Grading.svelte';
     import Multiselect2 from '../utils/Multiselect2.svelte';
@@ -65,6 +59,7 @@
                     }
                 } 
             });
+            loadData();
         } catch (error) {
             console.error(error);
         }
@@ -75,7 +70,6 @@
         let i = event.detail.i;
         let assign_id = event.detail.data.id;
         let assign_name = event.detail.data.name;
-        console.log(JSON.parse(content[i]["data"]));
         try {
             await update_assign({
                 variables: {
@@ -186,7 +180,6 @@
                 equation = equation.replaceAll('#', l);
             }
 
-            console.log(equation);
             let result_0 = parser.evaluate(equation);
             result += result_0;
             parser.clear();
@@ -215,7 +208,7 @@
         console.log(content);
     })
 
-    function openMenu(e, index, item) {
+    function openMenu(e, item, index) {
         showMenu = false;
         e.preventDefault();
         context_bundle = [e.clientX, e.clientY, index, item];
@@ -223,33 +216,35 @@
     }
 
     function contextController(e) {
-        console.log(e.detail.context);
-        console.log(e.detail.item);
         if (e.detail.context == 'trash') {
             deleteAssignment(e.detail.index);
         } else if (e.detail.context == 'edit') {
-            navigate(`/assign/edit/${term_id}/${term_name}/${id}/${name}/${e.detail.item}/${e.detail.index}`)
+            navigate(`/assign/edit/${term_id}/${term_name}/${id}/${name}/${e.detail.index}/${e.detail.item}`)
         }
+    }
+
+    function loadData() {
+        info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
+        last_info = JSON.parse(JSON.stringify(info));
+        content = JSON.parse(JSON.stringify($query_result["data"]["getCourse"]["assignments"]))
+        content_info = JSON.parse($query_result["data"]["getCourse"]["content_info"]);
+        if (content_array.length != 0) content_array = [];
+        for (let key of Object.keys(content_info)) {
+            if (key == "name" || key == "mark") continue; 
+            content_array.push([key, content_info[key]]);
+            content_array = sortOrder(content_array);
+        }
+
+        grade = info["getCourse"]["grade"]
+        if (info["getCourse"]["grading_scheme"] != undefined) {
+            grading_scheme = info["getCourse"]["grading_scheme"]
+        }
+        regrade(false);
     }
 
     $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
-            info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
-            last_info = JSON.parse(JSON.stringify(info));
-            content = JSON.parse(JSON.stringify($query_result["data"]["getCourse"]["assignments"]))
-            content_info = JSON.parse($query_result["data"]["getCourse"]["content_info"]);
-            if (content_array.length != 0) content_array = [];
-            for (let key of Object.keys(content_info)) {
-                if (key == "name" || key == "mark") continue; 
-                content_array.push([key, content_info[key]]);
-                content_array = sortOrder(content_array);
-            }
-
-            grade = info["getCourse"]["grade"]
-            if (info["getCourse"]["grading_scheme"] != undefined) {
-                grading_scheme = info["getCourse"]["grading_scheme"]
-            }
-            regrade(false);
+            loadData();
         }
     }
 
@@ -263,10 +258,6 @@
         last_info = info;
     }
 
-    $: {
-        // if (content != undefined) console.log("wahh ", JSON.parse(content[0]["data"]))
-    } 
-    
 </script>
 
 <ContextMenu bind:showMenu={showMenu} 
@@ -325,15 +316,19 @@
 
                 {#each content_array as j}
                     {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
-                        {#if JSON.parse(content[i]["data"])[j[0]] == undefined && 
-                        j[1]["type"] != "multiselect" && j[1]["type"] != "singleselect"} 
+                        
+                        {#if JSON.parse(content[i]["data"])[j[0]] == undefined && j[1]["type"] != "multiselect" && j[1]["type"] != "singleselect"}
                             <td></td>
                         {:else}
                         <td>
-                            {#if j[1]["type"] == "multiselect" || j[1]["type"] == "singleselect"}
+                            {#if j[1]["type"] == "multiselect"}
                                 <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                 bind:j={j} bind:content={content[i]} bind:i={i}
-                                on:assign={saveAssignChanges} on:course={saveCourseChanges}/>
+                                on:assign={saveAssignChanges} on:course={saveCourseChanges} max=0/>
+                            {:else if j[1]["type"] == "singleselect"}
+                                <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
+                                bind:j={j} bind:content={content[i]} bind:i={i}
+                                on:assign={saveAssignChanges} on:course={saveCourseChanges} max=1/>
                             {:else if j[1]["type"] == "text"}
                                 {JSON.parse(content[i]["data"])[j[0]]["content"]}
                             {/if}
@@ -348,25 +343,23 @@
         </tbody>
     </table>
     {/if}
+    <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
+    <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
     <div class="grade-block">
-        <p class="grade">grade: </p> { grade == undefined ? "no grade" : grade}
+        <p class="grade">Grade: </p> { grade == undefined ? "no grade" : grade}
         <i class="fa-regular fa-circle-question" on:click={() => { showModal = true; }}></i>
-        <!-- <p class="what" on:click={() => {
-            showModal = true;
-        }}>?</p> -->
         <i class="fa-solid fa-rotate-right" on:click={() => regrade(true)}></i>
     </div>
-    <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><Button text="+ add item" /></Link>
-    <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><Button text="+ add bundle" /></Link>
 </div>
     
 <style>
 table {
     width: 65vw;
+    margin-bottom: 15px;
 }
 
 .context_menu {
-    margin-left: -15px;
+    margin-left: -27px;
     opacity: 0;
 }
 
@@ -374,8 +367,28 @@ table {
     opacity: 1;
 }
 
+.fa-file-zipper {
+    margin-left: 35px;
+}
+
+i {
+    padding: 1px;
+}
+
 .course {
-    padding-left: 50px;
+    padding-left: 80px;
+    padding-bottom: 100px;
+}
+
+.fa-circle-question {
+    margin-left: 55px;
+}
+
+.add {
+    margin-left: -10px;
+    font-weight: 500;
+    color: #717171;
+    font-size: 15px;
 }
 
 .header { 
@@ -406,41 +419,15 @@ table {
     vertical-align: center;
 }
 
-.edit {
-   margin-right: 25px;
-   padding-right: 10px;
-   /* height: 100%; */
-}
-
-.edit:hover {
-  cursor: pointer;
-}
-
 table {
     overflow-y: scroll;
 }
 
 .grade {
-    background-color: #C9D2CD;
-    border-radius: 12px;
+    font-weight: 500;
     width: fit-content;
     padding: 8px;
     margin-right: 8px;
-}
-
-.what {
-    font-size: 13px;
-    border: 1px solid black;
-    border-radius: 50%;
-    width: 15px;
-    /* height: 15px; */
-    text-align: center;
-    margin-left: 15px;
-    margin-right: 5px;
-}
-
-.what:hover {
-    cursor: pointer;
 }
 
 .grade-block {
@@ -454,12 +441,16 @@ tr {
 }
 
 td {
+    padding-left: 0px;
     width: fit-content;
     min-height: 50px;
     max-width: 250px;
     min-width: 100px;
     border-bottom: 1px solid grey;
     vertical-align: middle;
+    word-wrap: break-word;
+    word-break: break-all;
+    padding-right: 8px;
 }
 
 th:hover {

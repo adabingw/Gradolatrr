@@ -96,7 +96,6 @@
     const dispatch = createEventDispatcher();
 
     function menuClick(context) {
-        console.log("menu clicked")
         showMenu = false; 
         dispatch('context', {
             context: context,
@@ -108,7 +107,6 @@
     function onPageClick(e) {
         let x_1 = e.clientX;
         let y_1 = e.clientY;
-        console.log(x_1, y_1, x, y)
         if (Math.abs(x_1 - x) > 30 || Math.abs(y_1 - y) > 200) {
             showMenu = false;
         }

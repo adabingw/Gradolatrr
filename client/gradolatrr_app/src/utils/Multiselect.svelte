@@ -1,7 +1,5 @@
 <script>
-    import MultiSelect from 'svelte-multiselect'
     import { createEventDispatcher } from 'svelte';
-    import TextField from './TextField.svelte';
 
     export let properties;
     export let selections;

@@ -64,11 +64,6 @@
     margin-right: 30px;
 }
 
-i:hover {
-    cursor: pointer;
-    color: red;
-}
-
 .save-div {
     margin-left: 40px;
 }

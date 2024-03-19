@@ -107,8 +107,8 @@
             <p class="alert">{eq_error}</p>
         {/if}
         <div class="grading-div">
-            <i class="fa-solid fa-ban trash" on:message={cancelVariable}></i>
-            <i class="fa-solid fa-floppy-disk trash" on:message={saveVariable}></i>
+            <i class="fa-solid fa-ban" on:message={cancelVariable}></i>
+            <i class="fa-solid fa-floppy-disk" on:message={saveVariable}></i>
         </div>
     </div>
 {:else} 
@@ -123,12 +123,6 @@
     font-family: 'EB Garamond', serif;
     font-size: 19px;
 }
-
-.trash:hover {
-    cursor: pointer;
-    color: #313131 !important;
-}
-
 
 .new-equation {
     width: 95%;
@@ -150,6 +144,6 @@ textarea {
 }
 
 .alert {
-    color: #C6858D;
+    color: red;
 }
 </style>

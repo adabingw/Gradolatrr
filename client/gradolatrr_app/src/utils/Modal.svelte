@@ -17,48 +17,44 @@
 		<hr />
 		<slot />
 		<hr />
-		<!-- <button on:click={() => dialog.close()}>close</button> -->
 	</div>
 </dialog>
 
 <style>
-	dialog {
-		max-width: 32em;
-        width: 50vw;
-		border-radius: 0.2em;
-		border: none;
-		padding: 0;
-		max-height: 60vh;
+dialog {
+	max-width: 32em;
+	width: 50vw;
+	border-radius: 0.2em;
+	border: none;
+	padding: 0;
+	max-height: 60vh;
+}
+dialog::backdrop {
+	background: rgba(0, 0, 0, 0.3);
+}
+dialog > div {
+	padding: 1em;
+}
+dialog[open] {
+	animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes zoom {
+	from {
+		transform: scale(0.95);
 	}
-	dialog::backdrop {
-		background: rgba(0, 0, 0, 0.3);
+	to {
+		transform: scale(1);
 	}
-	dialog > div {
-		padding: 1em;
+}
+dialog[open]::backdrop {
+	animation: fade 0.2s ease-out;
+}
+@keyframes fade {
+	from {
+		opacity: 0;
 	}
-	dialog[open] {
-		animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+	to {
+		opacity: 1;
 	}
-	@keyframes zoom {
-		from {
-			transform: scale(0.95);
-		}
-		to {
-			transform: scale(1);
-		}
-	}
-	dialog[open]::backdrop {
-		animation: fade 0.2s ease-out;
-	}
-	@keyframes fade {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-	button {
-		display: block;
-	}
+}
 </style>

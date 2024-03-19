@@ -42,6 +42,5 @@ option {
     padding-top: 8px;
     padding-bottom: 8px;
     height: calc(1.2em + 24px);
-
 }
 </style>

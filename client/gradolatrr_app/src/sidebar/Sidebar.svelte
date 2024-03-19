@@ -6,6 +6,7 @@
     import { navigate } from "svelte-navigator";
     import { v4 as uuidv4 } from 'uuid';
 
+    import GRAKU from "../assets/graku.jpg";
     import ContextMenu from "../utils/ContextMenu.svelte";
     import { ALL_COURSES } from "../constants/queries_get";
     import { DUPLICATE_TERM } from "../constants/queries_post";
@@ -472,7 +473,14 @@
         menuNum={2}
         on:context={contextControllerCourse}/>
 <div class="sidebar">
-    <Link to="/"><h3>GRADROLATRR</h3></Link>
+    <Link to="/">
+        <div class="logo">
+            <img src="https://i.redd.it/hi-heres-my-anya-forger-cosplay-waku-waku-swipe-to-see-v0-nfv8yzrxowy81.jpg?width=750&format=pjpg&auto=webp&s=414cb680c43b0b4459f5da01f8e87488ba5df98a"/>
+            GRAKU GRAKU
+            <!-- <h3 class="logo">GRAKU GRAKU</h3> -->
+        </div>
+    </Link>
+    <br />
     <span class="new_term">
         <Link to={'/new_term'}>
             <i class="fa-solid fa-circle-plus fa-xs"></i>    
@@ -489,7 +497,7 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <Link to={`/term/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`}>
-            <div class="term-row" on:contextmenu={(e) => openTerm(e, i, info.allTerm["items"][i])} >
+            <div class="term-row" on:contextmenu={(e) => { e.stopPropagation(); openTerm(e, i, info.allTerm["items"][i])}} >
                 <span class="term-row-left">
                     <p>
                         {#if info.allTerm["items"][i]["courses"] != undefined && expand[info.allTerm["items"][i]["id"]]}
@@ -521,9 +529,9 @@
                         on:drop={event => dropCourse(event, j, i)} on:dragover={dragover}
                         on:click={() => { triggerreload = !triggerreload; }} 
                         on:contextmenu={
-                            (e) => openCourse(
+                            (e) => {e.stopPropagation(); openCourse(
                                 e, j, info.allTerm["items"][i]["courses"][j],
-                                info.allTerm["items"][i]["id"], info.allTerm["items"][i]["name"]) } >
+                                info.allTerm["items"][i]["id"], info.allTerm["items"][i]["name"])} } >
                         {info.allTerm["items"][i]["courses"][j]["name"]}
                     </p>
                 </Link>
@@ -538,24 +546,24 @@
 
 <style>
 
-/* i:hover {
-    background-color: #c9c7c1;
-} */
+.logo {
+    margin-bottom: 30px;
+    display: flex; 
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    margin-right: 35px;
+}
 
 .new_term {
-    padding-top: 8px;
+    padding-top: 38px;
     padding-bottom: 8px;
-    /* padding-left: 10px; */
     padding-right: 10px;
     border-radius: 0px 8px 8px 0px;
     width: 100%;
     height: 15px;
 }
-
-/* .new_term:hover {
-    border-radius: 0px 8px 8px 0px;
-    background-color: #e8e5df; 
-} */
 
 .sidebar {
     color: #616161;
@@ -563,7 +571,6 @@
     width: 15vw;
     padding-left: 20px;
     padding-right: 5px;
-    /* border-right: 1px solid black; */
     height: 100vh;
     background-color: #F7F6F3;
 }
@@ -584,16 +591,17 @@
     margin-left: -18px;
 }
 
+.term-row:hover {
+    background-color: #e8e5df;
+    cursor: pointer;
+}
+
 .courses {
     color: #616161;
     margin-top: -15px;
     margin-bottom: 20px;
 }
 
-.term-row:hover {
-    background-color: #e8e5df;
-    cursor: pointer;
-}
 
 .term-row-left {
     display: flex; 

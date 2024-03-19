@@ -1,15 +1,14 @@
 <script>    
     import { query, mutation } from "svelte-apollo";
-    import { navigate } from "svelte-navigator";
+    import { Link, navigate } from "svelte-navigator";
     import { createEventDispatcher, onDestroy } from "svelte";
 
     import InfoTable from '../utils/InfoTable.svelte';
-    import Reload from "../assets/reload_icon.png";
-    import { DEFAULT_GRADING } from "../constants/constants";
     import { TERM_INFO } from "../constants/queries_get";
     import { DELETE_TERM, DELETE_COURSE, DELETE_ASSIGN } from "../constants/queries_delete";
     import { UPDATE_TERM } from "../constants/queries_put";
     import HeaderField from "../utils/HeaderField.svelte";
+  import Folder from "../utils/Folder.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -22,9 +21,6 @@
     let name_change = name;
     let info;
     let last_info;
-    let grade;
-    let grading_scheme = DEFAULT_GRADING;
-    let showModal = false;
     let courses;
     let delete_term = mutation(DELETE_TERM);
     let delete_course = mutation(DELETE_COURSE);
@@ -115,35 +111,6 @@
         }
     }
 
-    async function regrade() {
-        let result = 0;
-        
-        for (let course of courses) {
-            if (course["grade"] != undefined && course["grade"] != null) {
-                result += course["grade"];
-            }
-        }
-        result /= courses.length;
-        if (result != grade && (result != undefined && result != null)) {
-            grade = result;
-            try {
-                await update_term({ 
-                    variables: { 
-                        input: {
-                            id: id,
-                            type: "term", 
-                            grade: result
-                        }
-                    } 
-                });
-                query_result.refetch({ id });
-                last_info = info;
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    }
-
     function updateChange(event) {
         info["getTerm"]["data"] = event.detail.data;
     }
@@ -153,7 +120,6 @@
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
             courses = info["getTerm"]["courses"];
-            grade = info["getTerm"]["grade"];
         }
     }
 
@@ -164,18 +130,23 @@
 
 </script>
 
-<div class="term">
+<div class="page">
 {#if info != undefined}
+    <Folder term_id={id} term_name={name} course_id={""} course_name={""} assign_name={""} />
     <HeaderField bind:inputText={name} text="" on:message={(event) => {name_change = event.detail.data;}}/>
     {#if info != undefined} 
         <InfoTable cmd="term" bind:info={info["getTerm"]} on:message={updateChange} />
     {/if}
+    <p class="subheader">Courses</p>
+        
     <div class="course-block">
     <table>
     <tbody>
         {#each courses as course}
         <tr>
-            <td class="course">{course["name"]}</td> 
+            <td class="course">{course["name"]}
+                <Link to={`/course/${id}/${name}/${course["id"]}/${course["name"]}`}><i class="fa-solid fa-arrow-up-right-from-square"></i></Link>
+            </td> 
             <td>{(course["grade"] == null || course["grade"] == undefined) ? "no grade" : course["grade"]}</td>
         </tr>
         {/each}
@@ -183,13 +154,9 @@
     </table>
     </div>
     <div class="term-op">
-        <i class="fa-solid fa-trash-can trash" on:click={() => deleteTerm()}></i>
-        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-trash-can" on:click={() => deleteTerm()}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
     </div>
-    <!-- <div class="grade-block">
-        <p class="grade">grade: </p> { grade == undefined ? "no grade" : grade}
-        <i class="fa-solid fa-rotate-right" on:click={() => regrade()}></i>
-    </div> -->
 {/if}
 </div>
 
@@ -202,29 +169,6 @@ i:hover {
     cursor: pointer;
 }
 
-.term {
-    padding-left: 80px;
-}
-
-.grade {
-    background-color: #C9D2CD;
-    border-radius: 12px;
-    width: fit-content;
-    padding: 8px;
-    margin-right: 8px;
-}
-
-.trash:hover {
-    cursor: pointer;
-    color: #313131 !important;
-}
-
-.grade-block {
-    display: flex; 
-    flex-direction: row;
-    align-items: center;
-}
-
 td {
     width: 150px;
 }
@@ -234,13 +178,7 @@ table {
 }
 
 .course-block {
-    border-top: 1px solid #d1d1d1;
-    margin-left: 3px;
-    padding-top: 20px;
     width: 70vw;
 }
 
-.reload {
-    margin-left: 15px;
-}
 </style>

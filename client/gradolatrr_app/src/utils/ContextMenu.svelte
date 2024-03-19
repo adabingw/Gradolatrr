@@ -107,9 +107,7 @@
     function onPageClick(e) {
         let x_1 = e.clientX;
         let y_1 = e.clientY;
-        if (Math.abs(x_1 - x) > 30 || Math.abs(y_1 - y) > 200) {
-            showMenu = false;
-        }
+        showMenu = false;
     }
 
     onMount(() => {
@@ -174,17 +172,21 @@ ul li button i.fa-square{
 ul li button:hover > i.fa-square{
     color: #eee;
 }
+
 ul li button:hover > i.warning{
     color: crimson;
 }
+
 :global(ul li button.info:hover){
     color: navy;
 }
+
 hr{
     border: none;
     border-bottom: 1px solid #ccc;
     margin: 5px 0px;
 }
+
 .subclass {
     color: #818181;
     padding-left: 15px;

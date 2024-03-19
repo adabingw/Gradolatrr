@@ -12,10 +12,10 @@
     }
 </script>
 
-<p class="term-changes" on:click={() => dispatchSave()}>{text}</p>
+<p class="button" on:click={() => dispatchSave()}>{text}</p>
 
 <style>
-.term-changes {
+.button {
     /* margin-left: 8px;
     margin-right: 8px; */
     border-radius: 5px;
@@ -24,7 +24,7 @@
     font-weight: 600;
 }
 
-.term-changes:hover {
+.button:hover {
   /* font-weight: bold; */
   cursor: pointer;
   background-color: #e8e5df;

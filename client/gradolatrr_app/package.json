@@ -1,5 +1,5 @@
 {
-  "name": "gradolatrr_app",
+  "name": "graku",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -26,11 +26,8 @@
     "aws-appsync-subscription-link": "^3.1.2",
     "aws-sdk": "^2.1444.0",
     "axios": "^1.4.0",
-    "carbon-components-svelte": "^0.79.0",
     "date-picker-svelte": "^2.6.0",
     "dayjs": "^1.11.9",
-    "flowbite-svelte": "^0.44.4",
-    "flowbite-svelte-icons": "^0.3.6",
     "graphql": "^16.8.0",
     "just-omit": "^2.2.0",
     "katex": "^0.16.8",

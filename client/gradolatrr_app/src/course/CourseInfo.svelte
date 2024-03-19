@@ -5,6 +5,7 @@
     import { navigate } from 'svelte-navigator';
     import { createEventDispatcher, onDestroy } from 'svelte';
 
+    import Folder from '../utils/Folder.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
     import HeaderField from '../utils/HeaderField.svelte';
     import { COURSE_INFO } from "../constants/queries_get";
@@ -219,25 +220,20 @@
 
 </script>
 
-<div class="course">
+<div class="page">
+    <Folder term_id={term_id} term_name={term_name} course_id={id} course_name={name} assign_name={""} />
+    
     <HeaderField bind:inputText={name} text="" on:message={(event) => {name_change = event.detail.data;}}/>
 
     {#if info != undefined}
         <InfoTable cmd="course" bind:info={info.getCourse} on:message={updateChange} on:action={newData} />
     {/if}
     <div class="term-op">
-        <i class="fa-solid fa-trash-can trash" on:click={() => deleteCourse()}></i>
-        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-trash-can" on:click={() => deleteCourse()}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
     </div>
 </div>
 
 <style>
-.course {
-    padding-left: 80px;
-}
 
-.trash:hover {
-    cursor: pointer;
-    color: #313131 !important;
-}
 </style>

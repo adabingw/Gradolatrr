@@ -1,5 +1,4 @@
 <script>
-    import { Table, TableBody, TableBodyRow, TableBodyCell } from "flowbite-svelte";
     import { createEventDispatcher } from "svelte";
     import { mutation } from "svelte-apollo";
 
@@ -7,13 +6,11 @@
     import { sortOrder, dragstart, dragover, drop, maxOrder } from "./utils.svelte";
     import TextArea from "./TextArea.svelte";
     import TextField from "./TextField.svelte";
-    import Singleselect from "./deprecated/Singleselect.svelte";
     import Properties from "./Properties.svelte";
     import NewProperty from "./NewProperty.svelte";
     import Datepicker from "./Datepicker.svelte";
     import ContextMenu from "./ContextMenu.svelte";
     import Date from "./Date.svelte";
-    import Context from "../assets/context_menu_icon.jpg";
     import Multiselect from "./Multiselect.svelte";
 
     export let cmd;
@@ -219,7 +216,7 @@
                     <td>
                         <span class="bodycellheader tablecol">
                             <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                            on:click={(e) => openMenu(e, i, data[0])} on:contextmenu={(e) => openMenu(e, i, data[0])}></i>
+                            on:click={(e) => { e.stopPropagation(); openMenu(e, i, data[0])}}></i>
                             <p>{data[0]}</p>
                         </span>
                     </td>
@@ -272,15 +269,6 @@
     opacity: 1;
 }
 
-.subheader {
-    width: 60vw;
-    font-size: 20px;
-    font-weight: 600;
-    color: #818181;
-    border-bottom: 1px solid #d1d1d1;
-    padding-bottom: 5px;
-}
-
 .tablecol {
     width: 100%;
 }
@@ -313,7 +301,6 @@
 }
 
 table, tbody, tr, td, .TableBodyRow {
-    /* min-width: 100%; */
     width: 60vw;
 }
 </style>

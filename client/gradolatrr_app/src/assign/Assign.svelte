@@ -2,14 +2,13 @@
     import { query, mutation } from "svelte-apollo";
     import { navigate } from "svelte-navigator";
 
-    import CancelOrSave from "../utils/deprecated/CancelOrSave.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
     import { ASSIGN_INFO } from "../constants/queries_get";
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
-    import TextField from "../utils/TextField.svelte";
     import HeaderField from "../utils/HeaderField.svelte";
     import { onDestroy } from "svelte";
     import { DELETE_ASSIGN } from "../constants/queries_delete";
+  import Folder from "../utils/Folder.svelte";
 
     export let id;
     export let name;
@@ -94,7 +93,7 @@
 
     function updateChange(event) {
         info["getAssignment"]["data"] = JSON.stringify(event.detail.data);
-        saveChanges()
+        saveChanges();
             
         if (event.detail.key != undefined) {
             let content_info = JSON.parse(info["getAssignment"]["course"]["content_info"])
@@ -169,28 +168,18 @@
 
 </script>
 
-<div class="assign">
+<div class="page">
+    <Folder term_id={term_id} term_name={term_name} course_id={course_id} course_name={course_name} assign_name={name} />
     <HeaderField bind:inputText={name} text="" on:message={(event) => {name = event.detail.data;}}/>    
-    <!-- <span class="header">
-        <TextField bind:inputText={name} type="text" text="" on:message={nameChange}  focus={true} max="" min=""/>
-        <p class="section">{term_name}/{course_name}</p></span> -->
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange}/>
     {/if}
     <div class="term-op">
-        <i class="fa-solid fa-trash-can trash" on:click={() => deleteAssignment()}></i>
-        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-trash-can" on:click={() => deleteAssignment()}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
     </div>
 </div>
 
 <style>
-.assign {
-    padding-left: 80px;
-}
-
-.trash:hover {
-    cursor: pointer;
-    color: #313131 !important;
-}
 
 </style>

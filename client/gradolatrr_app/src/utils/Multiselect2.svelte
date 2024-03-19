@@ -1,8 +1,5 @@
 <script>
-    import MultiSelect from 'svelte-multiselect'
     import { createEventDispatcher } from 'svelte';
-  import TextField from './TextField.svelte';
-  import { number } from 'mathjs';
 
     export let properties;
     export let selections;
@@ -42,15 +39,13 @@
         }
 
         addTag(thing);
-
         inputValue = ""
-
         filteredItems = [];
     }
 
     const deleteTag = (thing) => {
         selections = selections.filter(item => !item.toLowerCase().match(thing.toLowerCase()));
-
+        
         let new_properties = JSON.parse(properties);
         new_properties[j[0]]["tag_info"] = selections;
         properties = JSON.stringify(new_properties);

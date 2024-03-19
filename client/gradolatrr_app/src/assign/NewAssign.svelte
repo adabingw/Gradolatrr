@@ -6,6 +6,7 @@
     import { navigate } from 'svelte-navigator';
     import { onDestroy } from 'svelte';
 
+    import Folder from '../utils/Folder.svelte';
     import HeaderField from '../utils/HeaderField.svelte';
     import new_assign from "../constants/new_assign.json";
     import InfoTable from '../utils/InfoTable.svelte';
@@ -139,28 +140,18 @@
 
 </script>
 
-<div class="assign">
-    <HeaderField bind:inputText={name} text="Untitled item" on:message={(event) => {data_changed = true; name = event.detail.data;}}/>
-    
-    <!-- <span class="header"><p class="title">Create new item</p>   <p class="section">{term_name}/{course_name}</p></span> -->
-    <!-- <TextField type="text" text="item name" bind:inputText={name} min="" max="" focus={true} /> -->
+<div class="page">
+    <Folder term_id={term_id} term_name={term_name} course_id={course_id} course_name={course_name} assign_name={name} />
+    <HeaderField bind:inputText={name} text="Untitled item" on:message={(event) => {data_changed = true; name = event.detail.data;}}/>    
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info} on:message={dataChange}/>
     {/if}
     <div class="term-op">
-        <i class="fa-solid fa-ban trash" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}></i>
-        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-ban" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
     </div>
 </div>
 
 <style>
-.assign {
-    padding-left: 80px;
-}
-
-.trash:hover {
-    cursor: pointer;
-    color: #313131 !important;
-}
 
 </style>

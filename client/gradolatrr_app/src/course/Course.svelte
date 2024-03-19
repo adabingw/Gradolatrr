@@ -10,13 +10,12 @@
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
     import { DEFAULT_GRADING } from '../constants/constants';
     import { dragover, dragstart, sortOrder } from '../utils/utils.svelte';
-    import HeaderField from '../utils/HeaderField.svelte';
     import { tokenize } from "../utils/utils.svelte";
     import Modal from '../utils/Modal.svelte';
     import Grading from '../utils/Grading.svelte';
     import Multiselect2 from '../utils/Multiselect2.svelte';
     import { onDestroy } from 'svelte';
-    import TextField from '../utils/TextField.svelte';
+  import Folder from '../utils/Folder.svelte';
     
     export let term_id;
     export let term_name;
@@ -267,7 +266,7 @@
         bind:item={context_bundle[3]}
         menuNum={4}
         on:context={contextController}/>
-<div class="course">
+<div class="page">
     <Modal bind:showModal>
         <h2 slot="header">
             how is this calculated?
@@ -275,6 +274,7 @@
         <Grading grading={grading_scheme} variables={content_info} showModal={showModal}
             on:message={changeGradeScheme}/>
     </Modal>
+    <Folder term_id={term_id} term_name={term_name} course_id={id} course_name={name} assign_name={""} />
     <p class="header">{name} <Link to={`/course/edit/${term_id}/${term_name}/${id}/${name}`}>
         <i class="fa-solid fa-pen-to-square"></i>
     </Link></p>
@@ -309,7 +309,7 @@
             <tr id={i} >
                 <td class="name_assignment">
                     <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                    on:click={(e) => openMenu(e, content[i]["name"], content[i]["id"])}></i>
+                    on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
                     {JSON.parse(content[i]["data"])["name"]["content"]} 
                 </td>
                 <td>{JSON.parse(content[i]["data"])["mark"]["content"]}</td>
@@ -336,8 +336,6 @@
                         {/if}
                     {/if}
                 {/each}
-                <!-- <td class="edit" 
-                        on:click={() => deleteAssignment(content[i]["id"])}>delete</td> -->
             </tr>
             {/each}
         </tbody>
@@ -356,84 +354,8 @@
 table {
     width: 65vw;
     margin-bottom: 15px;
-}
-
-.context_menu {
-    margin-left: -27px;
-    opacity: 0;
-}
-
-.context_menu:hover {
-    opacity: 1;
-}
-
-.fa-file-zipper {
-    margin-left: 35px;
-}
-
-i {
-    padding: 1px;
-}
-
-.course {
-    padding-left: 80px;
-    padding-bottom: 100px;
-}
-
-.fa-circle-question {
-    margin-left: 55px;
-}
-
-.add {
-    margin-left: -10px;
-    font-weight: 500;
-    color: #717171;
-    font-size: 15px;
-}
-
-.header { 
-  padding: 5px;
-  margin-bottom: 20px;
-  font-size: 34px;
-  border-left: none;
-  border-top: none;
-  border-bottom: none;
-  border-right: none;
-  margin-right: 15px;
-  margin-top: 100px;
-  min-width: 120px;
-  color: #717171;
-  font-weight: 700;
-  width: 50vw;
-}
-
-i {
-    margin-left: 8px;
-}
-
-i:hover {
-    cursor: pointer;
-}
-
-table {
     vertical-align: center;
-}
-
-table {
     overflow-y: scroll;
-}
-
-.grade {
-    font-weight: 500;
-    width: fit-content;
-    padding: 8px;
-    margin-right: 8px;
-}
-
-.grade-block {
-    display: flex; 
-    flex-direction: row;
-    align-items: center;
 }
 
 tr {
@@ -455,5 +377,51 @@ td {
 
 th:hover {
     cursor: pointer;
+}
+
+i {
+    padding: 1px;
+    margin-left: 8px;
+}
+
+i:hover {
+    cursor: pointer;
+}
+
+.context_menu {
+    margin-left: -27px;
+    opacity: 0;
+}
+
+.context_menu:hover {
+    opacity: 1;
+}
+
+.fa-file-zipper {
+    margin-left: 35px;
+}
+
+.fa-circle-question {
+    margin-left: 55px;
+}
+
+.add {
+    margin-left: -10px;
+    font-weight: 500;
+    color: #717171;
+    font-size: 15px;
+}
+
+.grade {
+    font-weight: 500;
+    width: fit-content;
+    padding: 8px;
+    margin-right: 8px;
+}
+
+.grade-block {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
 }
 </style>

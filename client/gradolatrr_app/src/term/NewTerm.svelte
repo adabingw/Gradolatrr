@@ -4,13 +4,12 @@
     import { navigate } from 'svelte-navigator';
     import { createEventDispatcher, onDestroy } from "svelte";
 
-    import CancelOrSave from "../utils/deprecated/CancelOrSave.svelte";
-    import TextField from "../utils/TextField.svelte";
     import InfoTable from "../utils/InfoTable.svelte";
     import new_term from "../constants/new_term.json";
     import { ADD_TERM } from "../constants/queries_post";
     import { TERM_ORDERS } from "../constants/queries_get";
     import HeaderField from "../utils/HeaderField.svelte";
+  import Folder from "../utils/Folder.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -85,25 +84,20 @@
 
 </script>
 
-<div class="term">
+<div class="page">
+    <Folder term_id={id} term_name={name} course_id={""} course_name={""} assign_name={""} />
+    
     <HeaderField bind:inputText={name} text="Untitled Term"/>    
     {#if info["data"] != undefined}
         <InfoTable cmd="term" bind:info={info} on:message={updateChange} />
     {/if} 
 
     <div class="term-op">
-        <i class="fa-solid fa-ban trash" on:click={() => navigate(`/`)}></i>
-        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-ban" on:click={() => navigate(`/`)}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
     </div>
 </div>
 
 <style>
-.term {
-    padding-left: 80px;
-}
 
-.trash:hover {
-    cursor: pointer;
-    color: #313131 !important;
-}
 </style>

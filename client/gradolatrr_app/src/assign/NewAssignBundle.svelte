@@ -5,6 +5,7 @@
     import { v4 as uuidv4 } from 'uuid';
     import { navigate } from 'svelte-navigator';
     
+    import Folder from '../utils/Folder.svelte';
     import TextField from '../utils/TextField.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
     import new_assign from "../constants/new_assign.json";
@@ -175,7 +176,8 @@
     }
 </script>
 
-<div class="assign">
+<div class="page">
+    <Folder term_id={term_id} term_name={term_name} course_id={course_id} course_name={course_name} assign_name={""} />
     <p class="header">New Bundle</p>
     <!-- <span class="header"><p class="title">Create item bundle</p>   <p class="section">{term_name}/{course_name}</p></span> -->
     <TextField type="number" text="Number of items in this bundle" bind:inputText={num} max={10} min={1}  focus={true}/>
@@ -206,8 +208,8 @@
             </div>
             {/each}
         {:else} 
-            <p class="alert">
-                {num > 10 ? "bundle can contain max 10 items" : "please input number of items in the bundle"}
+        <p class="alert">
+                {num > 10 ? "Bundle can contain max 10 items" : "Please input number of items in the bundle"}
             </p>
         {/if}
     {/if}
@@ -219,66 +221,19 @@
     {/if}
 
     <div class="term-op">
-        <i class="fa-solid fa-ban trash" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}></i>
-        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-ban" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
     </div>
 </div>
 
 <style>
-.header { 
-  padding: 5px;
-  margin-bottom: 20px;
-  font-size: 34px;
-  border-left: none;
-  border-top: none;
-  border-bottom: none;
-  border-right: none;
-  margin-right: 15px;
-  margin-top: 100px;
-  min-width: 120px;
-  color: #717171;
-  font-weight: 700;
-  width: 50vw;
-}
-
-.subheader {
-    width: 60vw;
-    font-size: 20px;
-    font-weight: 600;
-    color: #818181;
-    border-bottom: 1px solid #d1d1d1;
-    padding-bottom: 5px;
-}
-
-.trash:hover {
-    cursor: pointer;
-    color: #313131 !important;
-}
-
 .label {
     margin-top: 3px;
     margin-bottom: 3px;
 }
 
-input {
-    accent-color: #717171;
-}
-
-input::after {
-    accent-color: #717171;
-}
-
-input:checked {
-    accent-color: #717171;
-}
-
-.assign {
-    padding-left: 80px;
-    padding-bottom: 100px;
-}
-
 .alert {
-    color: #C6858D;
+    color: red;
 }
 
 .name-div {
@@ -290,20 +245,5 @@ input:checked {
     padding-top: 20px;
     margin-bottom: 10px;
     width: 60vw;
-}
-
-.header {
-    display: flex; 
-    flex-direction: row; 
-    align-items: center;
-}
-
-.section {
-    font-size: 14px;
-    margin-left: 15px;
-}
-
-.title {
-    font-weight: bold;
 }
 </style>

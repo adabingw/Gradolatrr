@@ -5,8 +5,8 @@
     import { createEventDispatcher, onDestroy } from 'svelte';
     import { navigate } from 'svelte-navigator';
     
+    import Folder from '../utils/Folder.svelte';
     import HeaderField from "../utils/HeaderField.svelte";
-    import CancelOrSave from "../utils/deprecated/CancelOrSave.svelte";
     import InfoTable from '../utils/InfoTable.svelte';
     import new_course from "../constants/new_course.json";
     import { ADD_COURSE } from '../constants/queries_post';
@@ -88,23 +88,17 @@
     
 </script>
 
-<div class="course">
+<div class="page">
+    <Folder term_id={term_id} term_name={term_name} course_id={id} course_name={name} assign_name={""} />
     <HeaderField bind:inputText={name} text="Untitled Course"/>    
     <InfoTable cmd="course" bind:info={info} on:message={updateChange} />
 
     <div class="term-op">
-        <i class="fa-solid fa-ban trash" on:click={() => navigate(`/term/${term_id}/${term_name}`)}></i>
-        <i class="fa-solid fa-floppy-disk trash" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-ban" on:click={() => navigate(`/term/${term_id}/${term_name}`)}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
     </div>
 </div>
 
 <style>
-.course {
-    padding-left: 80px;
-}
 
-.trash:hover {
-    cursor: pointer;
-    color: #313131 !important;
-}
 </style>

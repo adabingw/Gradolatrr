@@ -55,6 +55,7 @@
   <Router>
       <div class="flex-row">
           <Sidebar class="sidebar" bind:reload={sidebarReload} bind:triggerreload={reload}/>
+          <div class="divider"></div>
           <div class="homepage">
             <Route path="/*">
                 <Dashboard text="dashboard" />
@@ -96,8 +97,6 @@
 
 <style>
 .homepage {
-  /* margin-left: 50px; */
-  margin-top: 20px;
   overflow: scroll;
   height: 100vh;
   width: 83vw;

@@ -11,7 +11,6 @@
     let add = false;
     let info_name;
     let info_type;
-    let modalName = "";
 
     const dispatch = createEventDispatcher();
 
@@ -173,17 +172,8 @@
     width: fit-content;
 }
 
-.info-icon {
-    margin-left: 80px;
-}
-
 table {
     text-align: left;
-}
-
-.open-icon {
-  padding-left: 10px;
-  padding-right: 10px;
 }
 
 .check-icon {

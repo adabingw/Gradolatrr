@@ -10,7 +10,7 @@
     export let term_name;
 
     const clickTerm = () => {
-        if (course_name == "") { // we are in a term folder
+        if (!course_name) { // we are in a term folder
             window.scrollTo(0, 0);
         } else {
             console.log("hi")
@@ -19,7 +19,7 @@
     }
 
     const clickCourse = () => {
-        if (assign_name == "") { // we are in a term folder
+        if (!assign_name && !course_name) { // we are in a term folder
             window.scrollTo(0, 0);
         } else {
             navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`);
@@ -47,7 +47,7 @@
 <style>
 
 .path {
-    margin-top: 15px;
+    margin-top: 35px;
     font-size: 15px;
 }
 

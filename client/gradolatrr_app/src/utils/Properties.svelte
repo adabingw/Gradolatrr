@@ -115,7 +115,7 @@
     {#if item != "name" && item != "mark"}
         <tr>
             <td class="tag-check">
-                <input type="checkbox"bind:checked={courseinfo[item]["checked"]} 
+                <input type="checkbox" bind:checked={courseinfo[item]["checked"]} 
                     on:change={() => {checkInfo(item)}}/>
             </td>
             <td class="info-name">

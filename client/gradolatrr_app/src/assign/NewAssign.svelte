@@ -35,16 +35,10 @@
             alert("name is required");
             return;
         }
-
-        if (id == -1) {
-            return;
-        }
+        if (id == -1) return;
 
         let data = JSON.parse(new_assign["data"])
-        console.log(data)
-
         data["name"]["content"] = name;
-
         info = JSON.parse(JSON.stringify(new_assign));
         info["data"] = JSON.stringify(data);
 
@@ -93,6 +87,7 @@
     $: {
         if ($query_result.data != undefined && ( JSON.stringify(last_assign) === JSON.stringify(new_assign))) {
             new_assign["content_info"] = $query_result["data"]["getCourse"]["content_info"]
+            if (typeof new_assign["data"] != Object) new_assign["data"] = {}
             let content_info = JSON.parse(new_assign["content_info"])
             for (let i of Object.keys(content_info)) {
                 let value = content_info[i];

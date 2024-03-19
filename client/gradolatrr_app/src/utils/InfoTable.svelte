@@ -10,7 +10,7 @@
     import NewProperty from "./NewProperty.svelte";
     import Datepicker from "./Datepicker.svelte";
     import ContextMenu from "./ContextMenu.svelte";
-    import Date from "./Date.svelte";
+    import DateComp from "./Date.svelte";
     import Multiselect from "./Multiselect.svelte";
 
     export let cmd;
@@ -162,12 +162,28 @@
     }
 
     function contextController(e) {
+        const context = e.detail.context; 
+        const subcontext = e.detail.subcontext;
         const index = e.detail.index;
         const item = e.detail.item;
-        data_array.splice(index, 1);
-        delete data[item];
-        info["data"] = JSON.stringify(data);
-        data_array = data_array;
+            
+        if (context == "change_type" && subcontext) {
+            if (subcontext == data[item]['type']) return;
+            data[item]['type'] = subcontext;
+            if (subcontext == "number") {
+                data[item]['content'] = parseInt(data[item]['content'])
+            } else if (subcontext == "date") {
+                data[item]['content'] = (new Date()).toISOString().split('T')[0]
+            } else {
+                data[item]['content'] = data[item]['content'].toString();
+            }
+            info["data"] = JSON.stringify(data);
+        } else {
+            data_array.splice(index, 1);
+            delete data[item];
+            info["data"] = JSON.stringify(data);
+            data_array = data_array;
+        }
     }
 
     function updateInfo() {     
@@ -185,12 +201,6 @@
     }
 
 </script>
-
-<div>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
-        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" 
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</div>
 
 <ContextMenu bind:showMenu={showMenu} 
         bind:x={context_bundle[0]} 
@@ -215,8 +225,25 @@
                     {/if}
                     <td>
                         <span class="bodycellheader tablecol">
+                        {#if cmd != "assign" && cmd != "bundle"}
                             <i class="fa-solid fa-ellipsis-vertical context_menu" 
                             on:click={(e) => { e.stopPropagation(); openMenu(e, i, data[0])}}></i>
+                        {/if}
+                        {#if data[1]["type"] == "textarea"}
+                            <i class="fa-solid fa-align-justify component"></i>
+                        {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
+                            {#if data[1]["type"] == "text"}
+                                <i class="fa-solid fa-font component"></i>
+                            {:else}
+                                <i class="fa-solid fa-hashtag component"></i>
+                            {/if}
+                        {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
+                            <i class="fa-solid fa-list component"></i>
+                        {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
+                            <i class="fa-regular fa-circle-check component"></i>
+                        {:else if data[1]["type"] == "date"}
+                            <i class="fa-regular fa-calendar component"></i>
+                        {/if}
                             <p>{data[0]}</p>
                         </span>
                     </td>
@@ -228,7 +255,7 @@
                             {#if data[1]["type"] == "textarea"}
                                 <TextArea bind:inputText={data[1]["content"]} on:message={dataChange}/>
                             {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
-                                <TextField bind:inputText={data[1]["content"]} 
+                                 <TextField bind:inputText={data[1]["content"]} 
                                     text="nothing here yet..." type={data[1]["type"]} on:message={dataChange}
                                     max={100} min={0}  focus={false}/>
                             {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
@@ -237,9 +264,14 @@
                             {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
                                 <Multiselect bind:properties={data[1]["content"]} bind:selections={data[1]["tag_info"]}
                                 on:assign={(e) => dataChangeSelect(e, data[0])} on:course={(e) => dataChangeSelect(e, data[0])} max=1/>
-                            {:else if data[1]["type"] == "date"}
-                                <Date bind:date={data[1]["content"]} on:message={dataChange} />
+                            {:else if data[1]["type"] == "date" && cmd != "bundle"}
+                                <DateComp bind:date={data[1]["content"]} on:message={dataChange} />
                             {:else if data[1]["type"] == "date" && cmd == "bundle"}
+                                <span class="details">
+                                    You can pick multiple days here. The days will be applied in chronological order. <br/>
+                                    If you pick more than the number of items (n), only the n dates picked will be applied. <br/>
+                                    If you pick less than the number of items, the last day will be applied for the remaining items.
+                                </span>
                                 <Datepicker bind:dates={data[1]["content"]} bind:num={data[1]["num"]} on:message={dataChange}/>
                             {/if}
                         </td>
@@ -260,6 +292,11 @@
 {/if}
 
 <style>
+.details {
+    color: #818181;
+    font-size: 15px;
+}
+
 .context_menu {
     margin-left: -15px;
     opacity: 0;
@@ -288,6 +325,9 @@
 }
 
 .TableBodyText {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin-top: -15px;
     width:100%;
 }

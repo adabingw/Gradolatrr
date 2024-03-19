@@ -110,17 +110,6 @@
 </div>
 
 <style>		
-
-input {
-    border: 0px solid white;
-    outline: none;
-}
-
-input:focus {
-    border: 0px solid white; 
-    outline: none;
-}
-    
 .dropdown-content {
     margin-top: 5px;
     position: absolute;

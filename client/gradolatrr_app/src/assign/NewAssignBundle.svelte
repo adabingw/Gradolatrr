@@ -47,7 +47,7 @@
             return;
         }
         if (num > 10) {
-            alert("bundle can contain at most 10 items");
+            alert("Bundle can contain at most 10 items");
             return;
         }
         let bundle = [];

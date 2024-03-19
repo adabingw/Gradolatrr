@@ -60,13 +60,6 @@ input {
   color: #818181;
 }
 
-.input-text:focus {
-  border-left: none;
-  border-top: none;
-  border-right: none;
-  outline: none;
-}
-
 .input-row {
   display: flex;
   flex-direction: row;

@@ -136,15 +136,11 @@
 </script>
 
 <Modal bind:showModal>
-    <h2 slot="header">
-        pick day
-    </h2>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div bind:this={elModal}
         on:click={handleClickModal} >
-
-        <div>
+        <div class="calendar">
             <div>
             <div>
                 <span>
@@ -153,36 +149,10 @@
 
                 <div >
                 <span on:click={previousMonth} aria-label="calendar backward">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="icon icon-tabler icon-tabler-chevron-left"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <polyline points="15 6 9 12 15 18" />
-                    </svg>
+                    <i class="fa-solid fa-chevron-left"></i>
                 </span>
                 <span on:click={nextMonth} aria-label="calendar forward">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="icon icon-tabler  icon-tabler-chevron-right"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round" >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <polyline points="9 6 15 12 9 18" />
-                    </svg>
+                    <i class="fa-solid fa-chevron-right"></i>
                 </span>
                 </div>
             </div>
@@ -205,17 +175,17 @@
                                 {#if isInSelected(selectedYear, selectedMonth, i)}
                                 <span on:click={() => {
                                         selectDate(selectedYear, selectedMonth, i)
-                                    }} class="selected-day">
+                                    }} class="day selected-day">
                                     {i}
                                 </span>
                                 {:else if i === currentDay && selectedMonth === currentMonth && selectedYear === currentYear}
                                 <span on:click={() => {
                                         selectDate(selectedYear, selectedMonth, i)
-                                    }} class="today">
+                                    }} class="day today">
                                     {i}
                                 </span>
                                 {:else}
-                                <span class="text-base text-gray-500 font-medium">
+                                <span class="day text-base text-gray-500 font-medium">
                                     <span class="border-none"
                                     on:click={() => {
                                         selectDate(selectedYear, selectedMonth, i)
@@ -240,19 +210,26 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div on:click={() => { showModal = true }} class="dates">
-    <i class="fa-regular fa-calendar"></i>
     {#each dates as date}
         <p class="date">{date}</p>
     {/each}
 </div>
 
 <style>
+span {
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
 i {
     margin-left: 5px;
 }
 
 table {
+    margin-top: 18px;
     width: 100%;
+    text-align: center;
 }    
 
 td {
@@ -261,24 +238,24 @@ td {
 
 th {
     width: 15px;
+    text-align: center;
+}
+
+.day {
+    padding: 5px;
 }
 
 .selected-day {
-    background-color: #ADC4CE;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    border-radius: 12px;
+    padding:4px;
+    color: #968b6b;
+    border: 1px solid #968b6b;
 }
 
 .today {
-    background-color: #DBE5F1;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    border-radius: 12px;
+    padding:4px;
+    background-color: #968b6b;
+    color: white;
+    border: 1px solid #968b6b;
 }
 
 tr {
@@ -295,10 +272,15 @@ tr {
     margin-bottom: 8px;
     max-width: 350px;
     align-items: center;
+    min-height: 50px;
 }
 
 .date {
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.calendar {
+    text-align: center;
 }
 </style>

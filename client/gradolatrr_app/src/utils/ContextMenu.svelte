@@ -17,27 +17,27 @@
             'class': 'fa-solid fa-trash-can fa-ms'
         }, 
         {
-            'name': 'change type', 
+            'name': 'change_type', 
             'onClick': undefined,
             'displayText': 'Change type', 
             'class': 'fa-solid fa-sliders fa-ms', 
             'subClasses': [{
-                'name': 'Text', 
+                'name': 'text', 
                 'onClick': menuClick,
                 'displayText': 'Text', 
                 'class': '', 
             }, {
-                'name': 'Number', 
+                'name': 'number', 
                 'onClick': menuClick,
                 'displayText': 'Number', 
                 'class': ''
             }, {
-                'name': 'Textarea', 
+                'name': 'textarea', 
                 'onClick': menuClick,
                 'displayText': 'Textarea', 
                 'class': ''
             }, {
-                'name': 'Date', 
+                'name': 'date', 
                 'onClick': menuClick,
                 'displayText': 'Date', 
                 'class': ''
@@ -95,18 +95,17 @@
 
     const dispatch = createEventDispatcher();
 
-    function menuClick(context) {
+    function menuClick(context, subcontext) {
         showMenu = false; 
         dispatch('context', {
             context: context,
+            subcontext: subcontext,
             index: index, 
             item: item
         })
     }
 
     function onPageClick(e) {
-        let x_1 = e.clientX;
-        let y_1 = e.clientY;
         showMenu = false;
     }
 
@@ -208,7 +207,7 @@ hr{
                                 {item.displayText}
                             </button>
                         {:else}
-                            <button on:click={() => item.onClick(item.name)}> 
+                            <button on:click={() => item.onClick(item.name, undefined)}> 
                                 <i class={item.class}></i>
                                 {item.displayText}
                             </button>
@@ -217,7 +216,7 @@ hr{
                     {#if item.subClasses}
                     {#each item.subClasses as subClasses}
                         <li class="subclass">
-                            <button on:click={() => item.onClick(item.name)} class="subclass"> 
+                            <button on:click={() => subClasses.onClick(item.name, subClasses.name)} class="subclass"> 
                                 {subClasses.displayText}
                             </button>
                         </li>

@@ -15,7 +15,8 @@
     import Grading from '../utils/Grading.svelte';
     import Multiselect2 from '../utils/Multiselect2.svelte';
     import { onDestroy } from 'svelte';
-  import Folder from '../utils/Folder.svelte';
+    import Folder from '../utils/Folder.svelte';
+    import DateComp from "../utils/Date.svelte";
     
     export let term_id;
     export let term_name;
@@ -184,15 +185,17 @@
             parser.clear();
         }
 
+
+
         if (result != grade && (result != undefined && result != null)) {
-            grade = result;
+            grade = Math.round(result * 100) / 100;
             try {
                 await update_course({ 
                     variables: { 
                         input: {
                             id: id,
                             type: "course", 
-                            grade: result.toFixed(2)
+                            grade: grade
                         }
                     } 
                 });
@@ -219,6 +222,29 @@
             deleteAssignment(e.detail.index);
         } else if (e.detail.context == 'edit') {
             navigate(`/assign/edit/${term_id}/${term_name}/${id}/${name}/${e.detail.index}/${e.detail.item}`)
+        }
+    }
+
+    async function textChange(i, key, value, assign_id) {
+        let new_content = JSON.parse(content[i]["data"])
+        new_content[key]["content"] = value;
+        content[i]["data"] = JSON.stringify(new_content)
+        if (key == "name") content[i]["name"] = value;
+        try {
+            await update_assign({
+                variables: {
+                    input: {
+                        id: assign_id, 
+                        type: "item",
+                        course_id: id,
+                        term_id: term_id, 
+                        name: content[i]["name"], 
+                        data: content[i]["data"],
+                    }
+                }
+            });
+        } catch(error) {
+            console.error(error);
         }
     }
 
@@ -285,10 +311,10 @@
         <thead>
         <tr style="position:relative;display:table-row">
             <th on:click={() => sortTable("name")}>
-                <p class="term-header tablecol">name</p>
+                <p class="term-header tablecol"><i class="fa-solid fa-font component"></i> name</p>
             </th>
             <th on:click={() => sortTable("mark")}>
-                <p class="term-header tablecol">mark</p>
+                <p class="term-header tablecol"><i class="fa-solid fa-hashtag component"></i> mark</p>
             </th>
             
             {#each content_array as item, index}
@@ -296,7 +322,24 @@
                     <th on:click={() => sortTable(item[0])} draggable={true}
                         on:dragstart={event => dragstart(event, item[0] , index)}
                         on:drop={event => drop(event, item[0], index)} on:dragover={dragover}>
-                            <p class="term-header tablecol">{item[0]}</p>
+                            <p class="term-header tablecol">
+                                {#if item[1]["type"] == "textarea"}
+                                    <i class="fa-solid fa-align-justify component fa-xs"></i>
+                                {:else if item[1]["type"] == "text" || item[1]["type"] == "number"}
+                                    {#if item[1]["type"] == "text"}
+                                        <i class="fa-solid fa-font component"></i>
+                                    {:else}
+                                        <i class="fa-solid fa-hashtag component"></i>
+                                    {/if}
+                                {:else if item[1]["type"] == "multiselect"}
+                                    <i class="fa-solid fa-list component"></i>
+                                {:else if item[1]["type"] == "singleselect"}
+                                    <i class="fa-regular fa-circle-check component"></i>
+                                {:else if item[1]["type"] == "date"}
+                                    <i class="fa-regular fa-calendar component"></i>
+                                {/if}
+                                {item[0]}
+                            </p>
                     </th>
                 {/if}
             {/each}
@@ -310,18 +353,30 @@
                 <td class="name_assignment">
                     <i class="fa-solid fa-ellipsis-vertical context_menu" 
                     on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
-                    {JSON.parse(content[i]["data"])["name"]["content"]} 
+                    <input type="text" value={JSON.parse(content[i]["data"])["name"]["content"]} 
+                        on:change={(e) => textChange(i, "name", e.target.value, content[i]["id"])} />
                 </td>
-                <td>{JSON.parse(content[i]["data"])["mark"]["content"]}</td>
-
+                <td>
+                    <input type="number" value={JSON.parse(content[i]["data"])["mark"]["content"]} 
+                        on:change={(e) => textChange(i, "mark", e.target.value, content[i]["id"])} />
+                </td>
                 {#each content_array as j}
                     {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
-                        
-                        {#if JSON.parse(content[i]["data"])[j[0]] == undefined && j[1]["type"] != "multiselect" && j[1]["type"] != "singleselect"}
-                            <td></td>
-                        {:else}
                         <td>
-                            {#if j[1]["type"] == "multiselect"}
+                            {#if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "text"}
+                                <input type="text" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
+                                on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} />
+                            {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "textarea"}
+                                <span contenteditable on:input={e => textChange(i, j[0], e.currentTarget.textContent, content[i]["id"])}>
+                                    {JSON.parse(content[i]["data"])[j[0]]["content"]}
+                                </span>
+                            {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "number"}
+                                <input type="number" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
+                                on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} />
+                            {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "date"}
+                                <DateComp date={JSON.parse(content[i]["data"])[j[0]]["content"]} 
+                                on:message={(e) => textChange(i, j[0], e.detail.data, content[i]["id"])} />
+                            {:else if j[1]["type"] == "multiselect"}
                                 <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                 bind:j={j} bind:content={content[i]} bind:i={i}
                                 on:assign={saveAssignChanges} on:course={saveCourseChanges} max=0/>
@@ -329,11 +384,8 @@
                                 <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                 bind:j={j} bind:content={content[i]} bind:i={i}
                                 on:assign={saveAssignChanges} on:course={saveCourseChanges} max=1/>
-                            {:else if j[1]["type"] == "text"}
-                                {JSON.parse(content[i]["data"])[j[0]]["content"]}
                             {/if}
                         </td>
-                        {/if}
                     {/if}
                 {/each}
             </tr>
@@ -356,6 +408,7 @@ table {
     margin-bottom: 15px;
     vertical-align: center;
     overflow-y: scroll;
+    margin-right: 80px;
 }
 
 tr {
@@ -367,12 +420,14 @@ td {
     width: fit-content;
     min-height: 50px;
     max-width: 250px;
-    min-width: 100px;
+    min-width: 200px;
     border-bottom: 1px solid grey;
     vertical-align: middle;
     word-wrap: break-word;
     word-break: break-all;
-    padding-right: 8px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 th:hover {

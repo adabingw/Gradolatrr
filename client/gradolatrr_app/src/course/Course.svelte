@@ -24,6 +24,8 @@
     export let name;
     export let reload;
 
+    let showmulti = -1;
+
     let query_result = query(COURSE_CONTENT, {
         variables: { id }
     });
@@ -48,7 +50,7 @@
     
 
     async function deleteAssignment(assign_id) {
-        let confirmDelete = confirm("delete this assignment?");
+        let confirmDelete = confirm("Delete this assignment?");
         if (!confirmDelete) return;
         try {
             await delete_assign({ 
@@ -226,8 +228,10 @@
     }
 
     async function textChange(i, key, value, assign_id) {
+        console.log(value)
         let new_content = JSON.parse(content[i]["data"])
         new_content[key]["content"] = value;
+        if (key == "mark" && !value) new_content[key]["content"] = 0; 
         content[i]["data"] = JSON.stringify(new_content)
         if (key == "name") content[i]["name"] = value;
         try {
@@ -351,10 +355,17 @@
             {#each Object.keys(content) as i}
             <tr id={i} >
                 <td class="name_assignment">
-                    <i class="fa-solid fa-ellipsis-vertical context_menu" 
+                    <span>
+                        <i class="fa-solid fa-ellipsis-vertical context_menu" 
+                            on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
+                        <span contenteditable on:input={textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}>
+                            {JSON.parse(content[i]["data"])["name"]["content"]}
+                        </span>
+                    </span>
+                    <!-- <i class="fa-solid fa-ellipsis-vertical context_menu" 
                     on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
                     <input type="text" value={JSON.parse(content[i]["data"])["name"]["content"]} 
-                        on:change={(e) => textChange(i, "name", e.target.value, content[i]["id"])} />
+                        on:change={(e) => textChange(i, "name", e.target.value, content[i]["id"])} /> -->
                 </td>
                 <td>
                     <input type="number" value={JSON.parse(content[i]["data"])["mark"]["content"]} 
@@ -365,21 +376,23 @@
                         <td>
                             {#if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "text"}
                                 <input type="text" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
-                                on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} />
+                                on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} maxlength="20" />
                             {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "textarea"}
                                 <span contenteditable on:input={e => textChange(i, j[0], e.currentTarget.textContent, content[i]["id"])}>
                                     {JSON.parse(content[i]["data"])[j[0]]["content"]}
                                 </span>
                             {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "number"}
                                 <input type="number" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
-                                on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} />
+                                on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} max="100" min="0" />
                             {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "date"}
                                 <DateComp date={JSON.parse(content[i]["data"])[j[0]]["content"]} 
                                 on:message={(e) => textChange(i, j[0], e.detail.data, content[i]["id"])} />
+                            {:else if JSON.parse(content[i]["data"])[j[0]] == undefined}
+                                something has gone wrong
                             {:else if j[1]["type"] == "multiselect"}
                                 <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
-                                bind:j={j} bind:content={content[i]} bind:i={i}
-                                on:assign={saveAssignChanges} on:course={saveCourseChanges} max=0/>
+                                bind:j={j} bind:content={content[i]} bind:i={i} bind:extshowmulti={showmulti}
+                                on:assign={saveAssignChanges} on:course={saveCourseChanges} max=0 on:press={() => { showmulti = i;}}/>
                             {:else if j[1]["type"] == "singleselect"}
                                 <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                 bind:j={j} bind:content={content[i]} bind:i={i}
@@ -403,25 +416,31 @@
 </div>
     
 <style>
+
+.name_assignment {
+    margin-left: -10px;
+}
+
+
 table {
-    width: 65vw;
+    width: 70vw;
     margin-bottom: 15px;
     vertical-align: center;
-    overflow-y: scroll;
-    margin-right: 80px;
+    overflow-x: auto;
 }
 
 tr {
-    height: 50px;
+    min-height: 55px;
 }
 
 td {
+    border-bottom: 1px solid grey;
+    min-height: 55px;
     padding-left: 0px;
     width: fit-content;
-    min-height: 50px;
+    min-height: 55px;
     max-width: 250px;
     min-width: 200px;
-    border-bottom: 1px solid grey;
     vertical-align: middle;
     word-wrap: break-word;
     word-break: break-all;
@@ -444,7 +463,7 @@ i:hover {
 }
 
 .context_menu {
-    margin-left: -27px;
+    margin-left: 0px;
     opacity: 0;
 }
 

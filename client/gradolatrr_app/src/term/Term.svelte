@@ -28,7 +28,7 @@
     let update_term = mutation(UPDATE_TERM);
 
     async function deleteTerm() {
-        let confirmDelete = confirm("delete this term?");
+        let confirmDelete = confirm("Delete this term?");
         if (!confirmDelete) return;
 
         try {

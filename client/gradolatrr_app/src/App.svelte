@@ -97,7 +97,8 @@
 
 <style>
 .homepage {
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 100vh;
   width: 83vw;
 }    

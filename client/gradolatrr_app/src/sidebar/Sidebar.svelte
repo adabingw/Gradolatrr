@@ -243,7 +243,7 @@
     }
 
     async function deleteTerm(index, item) {
-        let confirmDelete = confirm("delete this term?");
+        let confirmDelete = confirm("Delete this term?");
         if (!confirmDelete) return;
         try {
             await delete_term({ 
@@ -286,7 +286,7 @@
     }
 
     async function deleteCourse(index, item) {
-        let confirmDelete = confirm("delete this course?");
+        let confirmDelete = confirm("Delete this course?");
         if (!confirmDelete) return;
 
         try {

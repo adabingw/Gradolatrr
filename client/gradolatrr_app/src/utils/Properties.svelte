@@ -26,13 +26,13 @@
 
     function saveInfo() {
         if (info_name == undefined) {
-            alert("name is required");
+            alert("Name is required");
             return;
         }
 
         for (let item of Object.keys(courseinfo)) {
             if (item == info_name) {
-                alert("name already exists");
+                alert("Name already exists");
                 return;
             }
         }
@@ -43,11 +43,13 @@
             "required": false,
             "order": 0
         }
+
         if (info_type == "multiselect" || info_type == "singleselect") {
             new_info["tag_info"] = []
         }
 
         courseinfo[info_name] = new_info;
+
         dispatch('info', {
             info: 'saved',
             new_info: new_info, 

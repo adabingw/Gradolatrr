@@ -18,7 +18,7 @@
     function saveTag(e) {
         for (let p of properties) {
             if (tag_name == p) {
-                alert("tag already exists");
+                alert("Tag already exists");
                 return;
             }
         }

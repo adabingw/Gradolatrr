@@ -44,12 +44,12 @@
         if (!data_changed && !name) return;
 
         if (name == "" || name == undefined) {
-            alert("name is required");
+            alert("Name is required");
             return;
         }
 
         if (id == -1) {
-            alert("something went wrong. please try again.")
+            alert("Something went wrong. please try again.")
             return;
         }
 

@@ -18,13 +18,13 @@
 
     function saveProperty() {
         if (name == undefined) {
-            alert("name is required");
+            alert("Name is required");
             return;
         }
 
         for (let d of data) {
             if (d[0] == name) {
-                alert("name already exists");
+                alert("Name already exists");
                 return;
             }
         }

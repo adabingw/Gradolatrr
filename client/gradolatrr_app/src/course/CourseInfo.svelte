@@ -120,7 +120,7 @@
     }
 
     async function deleteCourse() {
-        let confirmDelete = confirm("delete this course?");
+        let confirmDelete = confirm("Delete this course?");
         if (!confirmDelete) return;
 
         try {

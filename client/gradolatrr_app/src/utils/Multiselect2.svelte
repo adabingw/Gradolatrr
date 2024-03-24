@@ -7,6 +7,8 @@
     export let j;
     export let i;
     export let max;
+    export let extshowmulti;
+
     let properties_map;
     let showmulti = false;
 	let inputValue = "";
@@ -82,8 +84,6 @@
 
         let new_properties = JSON.parse(properties);
 
-        console.log(new_properties)
-
         new_properties[j[0]]["content"] = properties_map;
         properties = JSON.stringify(new_properties);
 
@@ -92,6 +92,12 @@
             data: content,
             i: i
         });
+    }
+
+    const bubbleUp = () => {
+        dispatch('press', {
+            text: "clicked"
+        })
     }
 
     $: {
@@ -104,52 +110,57 @@
             }
         }
     }
+
+    $: {
+        extshowmulti;
+        showmulti = extshowmulti == i;
+    }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="multiselect">
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="tags" on:click={(e) => {e.stopPropagation(); showmulti = true; } }>
+<div class="tags" on:click={(e) => {e.stopPropagation(); bubbleUp(); } }>
     {#if properties_map.length == 0 && !showmulti}
-        <p class="click_to_add_tags">click to add tags...</p>
+        <input type="text" placeholder="Click to add tag..." readonly bind:value={inputValue} autofocus on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
+    
     {:else}
         {#each properties_map as thing}
             <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={(e) => {e.stopPropagation(); deleteSelectedTag(thing)}}></i></p>
         {/each}
     {/if}
-</div>
-{#if showmulti}
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="multiselect_search" on:click={(e) => e.stopPropagation()}>
-    <input type="text" placeholder="Search/create a tag" bind:value={inputValue} autofocus on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
-    <div id="myDropdown" class="dropdown-content">		
-        {#if filteredItems.length > 0}
-            {#each filteredItems as item}
-                <p class="item" on:click={() => addTag(item)}>{item} 
-                    <i class="fa-solid fa-xmark" on:click={() => deleteTag(item)}></i>
-                </p>
-            {/each}
-        {:else if filteredItems.length == 0 && inputValue != ""}
-            <span class="create_tag" on:click={() => createTag(inputValue)}>Create<p class="create">&nbsp;{inputValue}</p></span>
-        {:else if selections != undefined}
-            {#each selections as item}
-                <p class="item" on:click={() => addTag(item)}>{item} 
-                    <i class="fa-solid fa-xmark" on:click={() => deleteTag(item)}></i>
-                </p>
-            {/each}
-        {/if}		
-    </div>	
-</div>
-{/if}
+    {#if showmulti }
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div class="multiselect_search" on:click={(e) => e.stopPropagation()}>
+        <input type="text" placeholder="Search/create a tag" bind:value={inputValue} autofocus on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
+        <div id="myDropdown" class="dropdown-content">		
+            {#if filteredItems.length > 0}
+                {#each filteredItems as item}
+                    <p class="item" on:click={() => addTag(item)}>{item} 
+                        <i class="fa-solid fa-xmark" on:click={() => deleteTag(item)}></i>
+                    </p>
+                {/each}
+            {:else if filteredItems.length == 0 && inputValue != ""}
+                <span class="create_tag" on:click={() => createTag(inputValue)}>Create<p class="create">&nbsp;{inputValue}</p></span>
+            {:else if selections != undefined}
+                {#each selections as item}
+                    <p class="item" on:click={() => addTag(item)}>{item} 
+                        <i class="fa-solid fa-xmark" on:click={() => deleteTag(item)}></i>
+                    </p>
+                {/each}
+            {/if}		
+        </div>	
+    </div>
+    {/if}
+    </div>
 </div>
 
 <style>		
 .dropdown-content {
-    margin-top: 5px;
     position: absolute;
+    left: 0;
     background-color: #ffffff;
-    min-width: 200px;
     border: 1px solid #ddd;
     z-index: 1;
 }
@@ -171,6 +182,9 @@
 .multiselect {
     width: 210px;
     max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
 }
 
 .create {
@@ -178,9 +192,7 @@
 }
 
 .multiselect_search {
-    margin-top: -10px;
-    margin-left: -3px;
-    margin-bottom: 3px;
+    position: relative;
 }
 
 .click_to_add_tags {
@@ -221,12 +233,9 @@
 }
 
 .tags {
-    min-height: 15px;
     display: flex; 
     flex-direction: row;
     flex-wrap: wrap;
-    padding-top: 8px;
-    padding-bottom: 8px;
     text-wrap: wrap;
     overflow-wrap: break-word;
 }

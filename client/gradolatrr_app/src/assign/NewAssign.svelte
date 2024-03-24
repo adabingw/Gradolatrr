@@ -32,7 +32,7 @@
 
     async function saveChanges() {        
         if (name == "" || name == undefined) {
-            alert("name is required");
+            alert("Name is required");
             return;
         }
         if (id == -1) return;

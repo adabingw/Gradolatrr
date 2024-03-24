@@ -28,7 +28,7 @@
     let delete_assign = mutation(DELETE_ASSIGN);
 
     async function deleteAssignment(assign_id) {
-        let confirmDelete = confirm("delete this assignment?");
+        let confirmDelete = confirm("Delete this assignment?");
         if (!confirmDelete) return;
         try {
             await delete_assign({ 

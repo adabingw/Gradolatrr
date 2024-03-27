@@ -1,9 +1,5 @@
 <script>
 // @ts-nocheck
-	const options = [{ title: 'Eaiqowieuqowiruqoweiqowriquoweuqowriquoweiquwroqiuweoqiuwroqiwueoqiwruqowieuqowiurqowrt' }, { title: 'Sleep' }, { title: 'Code' }];
-
-    export let text;
-
 </script>
 
 <div class="dashboard">

@@ -32,7 +32,7 @@
             <a href="https://github.com/adabingw/graku" target="_blank"><i class="fa-brands fa-github"></i></a> Where the code lives.
         </div>
         <div class="social">
-            <a href="linkedin.com/in/adabingw" target="_blank"><i class="fa-brands fa-linkedin"></i></a> Where I am.
+            <a href="https://linkedin.com/in/adabingw" target="_blank"><i class="fa-brands fa-linkedin"></i></a> Where I am.
         </div>
     </div>
 

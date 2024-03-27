@@ -19,7 +19,7 @@
     let archived = false;
     let add_term = mutation(ADD_TERM);
     let query_result = query(TERM_ORDERS);
-    let max_order = 0;
+    let max_order = 1;
     let data_changed = false;
 
     let info = JSON.parse(JSON.stringify(new_term));

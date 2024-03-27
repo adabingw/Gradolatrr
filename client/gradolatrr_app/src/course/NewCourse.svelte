@@ -24,7 +24,7 @@
         variables: { id: term_id }
     });
     let info = JSON.parse(JSON.stringify(new_course));
-    let max_order = 0;
+    let max_order = 1;
     let data_changed = false;
 
     info["data"] = JSON.stringify(info["data"]);

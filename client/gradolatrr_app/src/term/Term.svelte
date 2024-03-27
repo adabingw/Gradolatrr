@@ -147,7 +147,7 @@
             <td class="course">{course["name"]}
                 <Link to={`/course/${id}/${name}/${course["id"]}/${course["name"]}`}><i class="fa-solid fa-arrow-up-right-from-square"></i></Link>
             </td> 
-            <td>{(course["grade"] == null || course["grade"] == undefined) ? "no grade" : course["grade"]}</td>
+            <td class="grade">{(course["grade"] == null || course["grade"] == undefined) ? "no grade" : course["grade"]}</td>
         </tr>
         {/each}
     </tbody>
@@ -169,16 +169,16 @@ i:hover {
     cursor: pointer;
 }
 
-td {
-    width: 150px;
-}
-
 table {
     text-align: left;
 }
 
 .course-block {
     width: 100vw;
+}
+
+.grade {
+    padding-left: 30px;
 }
 
 </style>

@@ -10,7 +10,7 @@ const UPDATE_TERM = gql`
 
 const UPDATE_COURSE = gql`
     mutation UpdateCourse($input: UpdateCourseInput!) {
-        updateCourse(input: $input) { id }
+        updateCourse(input: $input) { id, order }
     }
 `;
 

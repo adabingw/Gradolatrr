@@ -51,17 +51,20 @@
             'name': 'trash',
             'onClick': menuClick,
             'displayText': "Trash",
-            'class': 'fa-solid fa-trash-can fa-ms'
+            'class': 'fa-solid fa-trash-can fa-ms',
+            'disable': false
         }, {
             'name': 'edit',
             'onClick': menuClick,
             'displayText': "Edit",
-            'class': 'fa-solid fa-pen fa-ms'
+            'class': 'fa-solid fa-pen fa-ms',
+            'disable': false
         }, {
             'name': 'duplicate',
             'onClick': menuClick,
             'displayText': "Copy",
-            'class': 'fa-solid fa-copy fa-ms'
+            'class': 'fa-solid fa-copy fa-ms',
+            'disable': true
         }
     ]
 
@@ -138,6 +141,21 @@
     margin: 6px;
 }
 
+button:disabled,
+button[disabled]{
+  color: #919191;
+}
+
+button:disabled:hover,
+button[disabled]:hover{
+  background-color: white !important;
+  cursor: not-allowed;
+}
+
+#disabled:hover {
+    cursor: not-allowed;
+}
+
 ul li{
     display: block;
     list-style-type: none;
@@ -193,7 +211,7 @@ hr{
 </style>
 
 {#if showMenu}
-<div style="position: absolute; top:{y}px; left:{x}px" class:show={showMenu}>
+<div style="position: absolute; top:{y}px; left:{x}px; z-index: 1;" class:show={showMenu}>
     <div class="navbar" id="navbar">
         <ul>
             {#each menuItem as item}
@@ -207,8 +225,8 @@ hr{
                                 {item.displayText}
                             </button>
                         {:else}
-                            <button on:click={() => item.onClick(item.name, undefined)}> 
-                                <i class={item.class}></i>
+                            <button on:click={() => item.onClick(item.name, undefined)} disabled={item.disable == true}> 
+                                <i class={`${item.class}`} id={item.disable ? "disabled" : ""}></i>
                                 {item.displayText}
                             </button>
                         {/if}

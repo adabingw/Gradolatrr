@@ -100,6 +100,13 @@
         })
     }
 
+    const unshow = () => {
+        dispatch('close', {
+            text: "clicked"
+        });
+        showmulti = false;
+    }
+
     $: {
         properties;
         if (properties != undefined) {
@@ -114,6 +121,7 @@
     $: {
         extshowmulti;
         showmulti = extshowmulti == i;
+        console.log(extshowmulti);
     }
 </script>
 
@@ -123,7 +131,6 @@
 <div class="tags" on:click={(e) => {e.stopPropagation(); bubbleUp(); } }>
     {#if properties_map.length == 0 && !showmulti}
         <input type="text" placeholder="Click to add tag..." readonly bind:value={inputValue} autofocus on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
-    
     {:else}
         {#each properties_map as thing}
             <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={(e) => {e.stopPropagation(); deleteSelectedTag(thing)}}></i></p>
@@ -246,4 +253,4 @@
 
 </style>
 
-<svelte:window on:click={(e) => showmulti = false} />
+<svelte:window on:click={(e) => unshow()} />

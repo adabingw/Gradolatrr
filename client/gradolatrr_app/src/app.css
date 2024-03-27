@@ -11,8 +11,8 @@
 i {
   margin-right: 8px;
   color: #919191 !important;
-  width: 13px;
-  height: 13px;
+  /* width: 13px;
+  height: 13px; */
 }
 
 a {
@@ -74,6 +74,13 @@ input[type=number]::-webkit-outer-spin-button {
   flex-direction: row;
 }
 
+.context_menu {
+  opacity: 0.0;
+}
+
+.context_menu:hover {
+  opacity: 1.0;
+}
 
 .component {
   color: #313131 !important;
@@ -106,7 +113,7 @@ img:hover {
 }
 
 .subheader {
-  width: 60vw;
+  width: 100%;
   font-size: 20px;
   font-weight: 600;
   color: #818181;

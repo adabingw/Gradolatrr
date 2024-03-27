@@ -178,7 +178,7 @@ table {
 }
 
 .course-block {
-    width: 70vw;
+    width: 100vw;
 }
 
 </style>

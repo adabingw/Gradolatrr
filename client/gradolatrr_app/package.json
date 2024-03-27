@@ -28,6 +28,7 @@
     "axios": "^1.4.0",
     "date-picker-svelte": "^2.6.0",
     "dayjs": "^1.11.9",
+    "flowbite-svelte": "^0.44.24",
     "graphql": "^16.8.0",
     "just-omit": "^2.2.0",
     "katex": "^0.16.8",

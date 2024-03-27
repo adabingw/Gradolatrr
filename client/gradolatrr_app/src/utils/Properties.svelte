@@ -167,15 +167,18 @@
 
 .info-name {
     margin-left: 15px;
-    width: 200px;
+    min-width: 25vw;
+    width: fit-content;
 }
 
 .info-type {
     width: fit-content;
+    min-width: 15vw;
 }
 
 table {
     text-align: left;
+    width: 100%;
 }
 
 .check-icon {
@@ -201,6 +204,10 @@ td {
 
 i:hover {
     cursor:pointer;
+}
+
+div {
+    width: 100%;
 }
 
 </style>

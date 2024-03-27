@@ -221,8 +221,6 @@
                     <!-- draggable={true}
                     on:dragstart={event => dragstart(event, data[0] , i)}
                     on:drop={event => dropEvent(event, data[0], i)} on:dragover={dragover}> -->
-                    {#if cmd != "assign" && cmd != "bundle"}
-                    {/if}
                     <td>
                         <span class="bodycellheader tablecol">
                         {#if cmd != "assign" && cmd != "bundle"}
@@ -298,12 +296,11 @@
 }
 
 .context_menu {
-    margin-left: -15px;
-    opacity: 0;
+    opacity: 0.0;
 }
 
 .context_menu:hover {
-    opacity: 1;
+    opacity: 1.0;
 }
 
 .tablecol {
@@ -329,6 +326,7 @@
     flex-direction: row;
     align-items: center;
     margin-top: -15px;
+    margin-left: 15px;
     width:100%;
 }
 
@@ -341,6 +339,6 @@
 }
 
 table, tbody, tr, td, .TableBodyRow {
-    width: 60vw;
+    width: 100%;
 }
 </style>

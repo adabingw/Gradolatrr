@@ -13,8 +13,13 @@
     import { UPDATE_TERM, UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
     import { DELETE_TERM, DELETE_COURSE, DELETE_ASSIGN } from "../constants/queries_delete";
 
+    import { createEventDispatcher } from 'svelte';
+
+    const dispatch = createEventDispatcher();
+
     export let reload;
     export let triggerreload;
+    export let w;
 
     const query_result = query(ALL_COURSES);
     const update_term = mutation(UPDATE_TERM);
@@ -472,7 +477,14 @@
         bind:item={context_bundle[3]}
         menuNum={2}
         on:context={contextControllerCourse}/>
-<div class="sidebar">
+<div id="sidebar" style={`width:${w}`}>
+    <i class="fa-solid fa-angles-left"
+    on:click={() => {
+        dispatch('collapse', {
+            text: "clicked"
+        });
+    }}
+    ></i>
     <Link to="/">
         <div class="logo">
             <img src="https://i.redd.it/hi-heres-my-anya-forger-cosplay-waku-waku-swipe-to-see-v0-nfv8yzrxowy81.jpg?width=750&format=pjpg&auto=webp&s=414cb680c43b0b4459f5da01f8e87488ba5df98a"/>
@@ -546,36 +558,45 @@
 
 <style>
 
-.logo {
+.fa-angles-left {
+    position: absolute;
+    top: 15px;
+    right: 8px;
+}
+
+#sidebar .logo {
     margin-bottom: 30px;
     display: flex; 
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-top: 15px;
+    margin-top: 35px;
     margin-right: 35px;
 }
 
-.new_term {
+#sidebar .new_term {
     padding-top: 38px;
     padding-bottom: 8px;
     padding-right: 10px;
     border-radius: 0px 8px 8px 0px;
+    transition: 0.5s;
     width: 100%;
     height: 15px;
 }
 
-.sidebar {
+#sidebar {
+    position: relative;
     color: #616161;
     padding-top: 25px;
     width: 15vw;
     padding-left: 20px;
     padding-right: 5px;
+    transition: 0.5s;
     height: 100vh;
     background-color: #F7F6F3;
 }
 
-.term-row {
+#sidebar .term-row {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -591,36 +612,35 @@
     margin-left: -18px;
 }
 
-.term-row:hover {
+#sidebar .term-row:hover {
     background-color: #e8e5df;
     cursor: pointer;
 }
 
-.courses {
+#sidebar .courses {
     color: #616161;
     margin-top: -15px;
     margin-bottom: 20px;
 }
 
-
-.term-row-left {
+#sidebar .term-row-left {
     display: flex; 
     flex-direction: row;
 }
 
-.term {
+#sidebar .term {
     font-weight: 600;
 }
 
-.term:hover {
+#sidebar .term:hover {
     cursor: pointer;
 }
 
-.content {
+#sidebar .content {
     margin-top: 20px;
 }
 
-.course {
+#sidebar .course {
     /* margin-left: 8px; */
     padding-left: 23px;
     padding-right: 15px;
@@ -632,7 +652,7 @@
     color: #616161;
 }
 
-.course:hover {
+#sidebar .course:hover {
     cursor: pointer;
     background-color: #e8e5df;
 }

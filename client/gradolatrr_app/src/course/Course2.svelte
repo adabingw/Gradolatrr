@@ -1,4 +1,6 @@
 <script>
+    // DEPRECATED COURSE TEMPLATE USING TABLES INSTEAD OF GRID!!!
+    
     // @ts-nocheck
     import { Link } from 'svelte-navigator';
     import { query, mutation } from 'svelte-apollo';
@@ -25,7 +27,6 @@
     export let reload;
 
     let showmulti = -1;
-    let cols = 2;
 
     let query_result = query(COURSE_CONTENT, {
         variables: { id }
@@ -269,12 +270,6 @@
         if (info["getCourse"]["grading_scheme"] != undefined) {
             grading_scheme = info["getCourse"]["grading_scheme"]
         }
-
-        cols = 2;
-        for (let i = 0; i < content_array.length; i++) {
-            if (content_array[i][1]["checked"]) cols += 1;
-        }
-        console.log(cols)
         regrade(false);
     }
 
@@ -282,6 +277,11 @@
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
             loadData();
         }
+    }
+
+    $: {
+        query_result.refetch({ id });
+        last_info = info;
     }
 
     $: {
@@ -312,19 +312,20 @@
     </Link></p>
 
     {#if content != undefined || content != null}
-    <div class="wrapper" style={`grid-template-columns: repeat(${cols}, minmax(200px, 1fr));`}>
+    <table>
         {#if content_array != undefined || content_array != null}
-        <div class="row">
-            <div class="box" on:click={() => sortTable("name")}>
+        <thead>
+        <tr style="position:relative;display:table-row">
+            <th on:click={() => sortTable("name")}>
                 <p class="term-header tablecol"><i class="fa-solid fa-font component"></i> name</p>
-            </div>
-            <div class="box" on:click={() => sortTable("mark")}>
+            </th>
+            <th on:click={() => sortTable("mark")}>
                 <p class="term-header tablecol"><i class="fa-solid fa-hashtag component"></i> mark</p>
-            </div>
+            </th>
             
             {#each content_array as item, index}
                 {#if item[1]["checked"] && item[0] != "name" && item[0] != "mark"}
-                    <div class="box" on:click={() => sortTable(item[0])} draggable={true}
+                    <th on:click={() => sortTable(item[0])} draggable={true}
                         on:dragstart={event => dragstart(event, item[0] , index)}
                         on:drop={event => drop(event, item[0], index)} on:dragover={dragover}>
                             <p class="term-header tablecol">
@@ -345,14 +346,17 @@
                                 {/if}
                                 {item[0]}
                             </p>
-                    </div>
+                    </th>
                 {/if}
             {/each}
-        </div>
+            <th> </th>
+        </tr>
+        </thead>
         {/if}
-        {#each Object.keys(content) as i}
-            <div  class="row" id={i} >
-                <div class="box name_assignment">
+        <tbody style="display:table-row-group;overflow:auto">
+            {#each Object.keys(content) as i}
+            <tr id={i} >
+                <td class="name_assignment">
                     <span>
                         <i class="fa-solid fa-ellipsis-vertical context_menu" 
                             on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
@@ -360,14 +364,18 @@
                             {JSON.parse(content[i]["data"])["name"]["content"]}
                         </span>
                     </span>
-                </div>
-                <div class="box">
+                    <!-- <i class="fa-solid fa-ellipsis-vertical context_menu" 
+                    on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
+                    <input type="text" value={JSON.parse(content[i]["data"])["name"]["content"]} 
+                        on:change={(e) => textChange(i, "name", e.target.value, content[i]["id"])} /> -->
+                </td>
+                <td>
                     <input type="number" value={JSON.parse(content[i]["data"])["mark"]["content"]} 
                         on:change={(e) => textChange(i, "mark", e.target.value, content[i]["id"])} />
-                </div>
+                </td>
                 {#each content_array as j}
                     {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
-                        <div class="box">
+                        <td>
                             {#if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "text"}
                                 <input type="text" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
                                 on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} maxlength="20" />
@@ -385,22 +393,20 @@
                                 something has gone wrong
                             {:else if j[1]["type"] == "multiselect"}
                                 <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
-                                    bind:j={j} bind:content={content[i]} bind:i={i} bind:extshowmulti={showmulti}
-                                    on:assign={saveAssignChanges} on:course={saveCourseChanges} max=0 
-                                    on:press={() => { showmulti = i;}} on:close={() => { showmulti = -1; }}
-                                />
+                                bind:j={j} bind:content={content[i]} bind:i={i} bind:extshowmulti={showmulti}
+                                on:assign={saveAssignChanges} on:course={saveCourseChanges} max=0 on:press={() => { showmulti = i;}}/>
                             {:else if j[1]["type"] == "singleselect"}
                                 <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                 bind:j={j} bind:content={content[i]} bind:i={i}
                                 on:assign={saveAssignChanges} on:course={saveCourseChanges} max=1/>
                             {/if}
-                        </div>
+                        </td>
                     {/if}
                 {/each}
-            </div>
+            </tr>
             {/each}
-        <!-- </tbody> -->
-    </div>
+        </tbody>
+    </table>
     {/if}
     <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
     <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
@@ -413,33 +419,40 @@
     
 <style>
 
-.wrapper {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(200px, 1fr));
-  max-width: 100vw;
-  margin-bottom: 15px;
-  vertical-align: center;
-  overflow-x: auto;
+.name_assignment {
+    margin-left: -10px;
 }
 
-.row {
-    display: contents;
+
+table {
+    width: 70vw;
+    margin-bottom: 15px;
     vertical-align: center;
+    overflow-x: auto;
 }
 
-.box {
-    min-height: fit-content;
+tr {
+    min-height: 55px;
+}
+
+td {
     border-bottom: 1px solid grey;
+    min-height: 55px;
     padding-left: 0px;
-    min-width: fit-content;
-    vertical-align: center;
-    display: flex;
-    align-items: center;
+    width: fit-content;
+    min-height: 55px;
+    max-width: 250px;
+    min-width: 200px;
+    vertical-align: middle;
     word-wrap: break-word;
     word-break: break-all;
     padding-right: 10px;
-    padding-top: 18px;
-    padding-bottom: 18px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+th:hover {
+    cursor: pointer;
 }
 
 i {

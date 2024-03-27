@@ -20,6 +20,7 @@
 
     let sidebarReload = false;
     let reload = false;
+    let w = '15vw';
 
     const url = import.meta.env.VITE_APPSYNC_GRAPHQLENDPOINT;
     const region = import.meta.env.VITE_APPSYNC_REGION;
@@ -42,6 +43,18 @@
     function triggerReload() {
         sidebarReload = true;
     }
+
+    function collapseNav() {
+        document.getElementById("navbar").style.display = "none";
+        document.getElementById('navbar_show').style.display = 'block';
+        document.getElementById("homepage").style.width = "100vw";
+    }
+
+    function showNav() {
+        document.getElementById("navbar").style.display = "block";
+        document.getElementById('navbar_show').style.display = 'none';
+        document.getElementById("homepage").style.width = "83vw";
+    }
     
 </script>
 
@@ -54,9 +67,15 @@
 <div>
   <Router>
       <div class="flex-row">
-          <Sidebar class="sidebar" bind:reload={sidebarReload} bind:triggerreload={reload}/>
-          <div class="divider"></div>
-          <div class="homepage">
+          <div id="navbar">
+            <Sidebar class="sidebar" bind:w={w} bind:reload={sidebarReload} bind:triggerreload={reload} on:collapse={() => collapseNav()}/>
+          </div>
+          <div class="divider">
+            
+          </div>
+          <div id="homepage">
+            <i class="fa-solid fa-angles-right" id="navbar_show" on:click={() => showNav()}></i>
+            
             <Route path="/*">
                 <Dashboard text="dashboard" />
             </Route>
@@ -96,10 +115,27 @@
 </div>  
 
 <style>
-.homepage {
+#homepage {
   overflow-y: auto;
   overflow-x: hidden;
   height: 100vh;
   width: 83vw;
 }    
+
+#navbar_show {
+    position: fixed;
+    left: 15px;
+    top: 15px;
+    display: none;
+}
+
+.divider {
+    width: 3px;
+    background-color: #F7F6F3;
+}
+
+.divider:hover {
+    background-color: #e8e5df;
+    cursor: col-resize;
+}
 </style>

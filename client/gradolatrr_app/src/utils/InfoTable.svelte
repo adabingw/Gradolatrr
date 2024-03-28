@@ -3,7 +3,7 @@
     import { mutation } from "svelte-apollo";
 
     import { UPDATE_ASSIGNMENT, UPDATE_COURSE, UPDATE_TERM } from "../constants/queries_put";
-    import { sortOrder, dragstart, dragover, drop, maxOrder } from "./utils.svelte";
+    import { sortOrder, dragstart, drop, maxOrder } from "./utils.svelte";
     import TextArea from "./TextArea.svelte";
     import TextField from "./TextField.svelte";
     import Properties from "./Properties.svelte";
@@ -28,7 +28,7 @@
     for (const key in data) {
         data_array.push([ key, data[key] ])
     }
-    // data_array = sortOrder(data_array);
+    data_array = sortOrder(data_array);
 
     let showMenu = false;
     let context_bundle = [ 0, 0, 0 ];
@@ -40,56 +40,83 @@
 
     const dispatch = createEventDispatcher();
 
-    // async function dropEvent(ev, key2, index2) {
-    //     let return_info = drop(ev, key2, index2, data_array, info);
-    //     info = return_info[0];
-    //     data_array = return_info[1];
-    //     data_array = sortOrder(data_array);
+    function dragover (ev, i) {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = 'move';
 
-    //     if (cmd == "term") {
-    //         try {
-    //             await update({
-    //                 variables: {
-    //                     input: {
-    //                         id: info["id"], 
-    //                         type: cmd, 
-    //                         data: info["data"]
-    //                     }
-    //                 }
-    //             });
-    //         } catch(error) {
-    //             console.error(error);
-    //         }
-    //     } else if (cmd == "course") {
-    //         try {
-    //             await update({
-    //                 variables: {
-    //                     input: {
-    //                         id: info["id"], 
-    //                         type: "course", 
-    //                         data: info["data"]
-    //                     }
-    //                 }
-    //             });
-    //         } catch(error) {
-    //             console.error(error);
-    //         }
-    //     } else if (cmd == "assign") {
-    //         try {
-    //             await update({
-    //                 variables: {
-    //                     input: {
-    //                         id: info["id"], 
-    //                         type: "item", 
-    //                         data: info["data"]
-    //                     }
-    //                 }
-    //             });
-    //         } catch(error) {
-    //             console.error(error);
-    //         }
-    //     }
-    // }
+        let target = document.getElementById(`${data_array[i][0]}`);
+        if (target) {
+            target.style.borderTop = '1px solid blue';
+        }
+    }
+
+    function dragleave (ev, i) {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = 'move';
+
+        let target = document.getElementById(`${data_array[i][0]}`);
+        if (target) {
+            target.style.borderTop = '0px solid blue';
+        }
+    }
+
+    async function dropEvent(ev, key2, index2) {
+        let target = document.getElementById(`${data_array[index2][0]}`);
+        if (target) {
+            target.style.borderTop = '0px solid blue';
+        }
+
+        let return_info = drop(ev, key2, index2, data_array, info);
+        if (!return_info) return;
+
+        info = return_info[0];
+        data_array = return_info[1];
+        data_array = sortOrder(data_array);
+
+        if (cmd == "term") {
+            try {
+                await update({
+                    variables: {
+                        input: {
+                            id: info["id"], 
+                            type: "term", 
+                            data: info["data"]
+                        }
+                    }
+                });
+            } catch(error) {
+                console.error(error);
+            }
+        } else if (cmd == "course") {
+            try {
+                await update({
+                    variables: {
+                        input: {
+                            id: info["id"], 
+                            type: "course", 
+                            data: info["data"]
+                        }
+                    }
+                });
+            } catch(error) {
+                console.error(error);
+            }
+        } else if (cmd == "assign") {
+            try {
+                await update({
+                    variables: {
+                        input: {
+                            id: info["id"], 
+                            type: "item", 
+                            data: info["data"]
+                        }
+                    }
+                });
+            } catch(error) {
+                console.error(error);
+            }
+        }
+    }
 
     function infoController(event) {
         if (event.detail.info == "delete") {            
@@ -192,7 +219,7 @@
         for (const key in data) {
             data_array.push([ key, data[key] ])
         }
-        // data_array = sortOrder(data_array);
+        data_array = sortOrder(data_array);
     }
 
     $: {
@@ -215,12 +242,14 @@
         {#if data_array.length > 0 && data_array != undefined}
             {#each data_array as data, i}
             {#if data[0] != "name"}
-                <tr>
+                <tr id={`${data[0]}`}>
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
-                <div class="TableBodyRow" >
-                    <!-- draggable={true}
+                <div class="TableBodyRow"
+                    draggable={true}
                     on:dragstart={event => dragstart(event, data[0] , i)}
-                    on:drop={event => dropEvent(event, data[0], i)} on:dragover={dragover}> -->
+                    on:drop={event => dropEvent(event, data[0], i)} on:dragover={(event) => dragover(event, i)}
+                    on:dragleave={(event) => dragleave(event, i)}
+                    >
                     <td>
                         <span class="bodycellheader tablecol">
                         {#if cmd != "assign" && cmd != "bundle"}

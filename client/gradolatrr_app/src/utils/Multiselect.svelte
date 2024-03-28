@@ -88,7 +88,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="multiselect_search" on:click={(e) => e.stopPropagation()}>
-    <input type="text" placeholder="Search/create a tag" bind:value={inputValue} autofocus on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
+    <input type="text" placeholder="Search/create a tag" bind:value={inputValue} on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
     <div id="myDropdown" class="dropdown-content">		
         {#if filteredItems.length > 0}
             {#each filteredItems as item}

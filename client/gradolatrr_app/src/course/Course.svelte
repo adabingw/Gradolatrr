@@ -9,7 +9,7 @@
     import { DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
     import { DEFAULT_GRADING } from '../constants/constants';
-    import { dragover, dragstart, sortOrder } from '../utils/utils.svelte';
+    import { dragstart, sortOrder } from '../utils/utils.svelte';
     import { tokenize } from "../utils/utils.svelte";
     import Modal from '../utils/Modal.svelte';
     import Grading from '../utils/Grading.svelte';
@@ -130,6 +130,52 @@
                 console.error(error);
             }
         }
+    }
+
+    async function drop (ev, key2, index2) {
+        ev.preventDefault();
+        let target = document.getElementById(`${content_array[index2][0]}`);
+        if (target) {
+            target.style.borderLeft = '0px solid blue';
+        }
+
+        var key = ev.dataTransfer.getData("key");
+        if (key2 == key) return;
+        var index = ev.dataTransfer.getData("index");
+        var order2 = content_array[index2][1]["order"];
+        
+        let orders = [order2];
+        content_array[index][1]["order"] = order2;
+        for (const [i, value] of Object.entries(content_info)) {
+            const o = content_info[i]["order"]
+            if (i == key) continue;
+            if (orders.includes(o)) {
+                orders.push(o + 1);
+                content_info[i]["order"]++;
+            } else {
+                orders.push(o);
+            }
+        }
+        for (let i = 0; i < content_array.length; i++) {
+            content_array[i][1]["order"] = content_info[content_array[i][0]]["order"];
+        }
+        content_array = sortOrder(content_array);
+        info["getCourse"]["content_info"] = JSON.stringify(content_info);
+        last_info = undefined;
+        try {
+            await update_course({ 
+                variables: { 
+                    input: {
+                        id: id,
+                        type: "course", 
+                        content_info: info["getCourse"]["content_info"]
+                    }
+                } 
+            });
+        } catch (error) {
+            console.error(error);
+        }
+        return;
     }
 
     function sortTable(key) {
@@ -278,6 +324,26 @@
         regrade(false);
     }
 
+    function dragover (ev, i) {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = 'move';
+
+        let target = document.getElementById(`${content_array[i][0]}`);
+        if (target) {
+            target.style.borderLeft = '1px solid blue';
+        }
+    }
+
+    function dragleave (ev, i) {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = 'move';
+
+        let target = document.getElementById(`${content_array[i][0]}`);
+        if (target) {
+            target.style.borderLeft = '0px solid blue';
+        }
+    }
+
     $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
             loadData();
@@ -315,18 +381,21 @@
     <div class="wrapper" style={`grid-template-columns: repeat(${cols}, minmax(200px, 1fr));`}>
         {#if content_array != undefined || content_array != null}
         <div class="row">
-            <div class="box" on:click={() => sortTable("name")}>
+            <div class="box tablehead" on:click={() => sortTable("name")}>
                 <p class="term-header tablecol"><i class="fa-solid fa-font component"></i> name</p>
             </div>
-            <div class="box" on:click={() => sortTable("mark")}>
+            <div class="box tablehead" on:click={() => sortTable("mark")}>
                 <p class="term-header tablecol"><i class="fa-solid fa-hashtag component"></i> mark</p>
             </div>
             
             {#each content_array as item, index}
                 {#if item[1]["checked"] && item[0] != "name" && item[0] != "mark"}
-                    <div class="box" on:click={() => sortTable(item[0])} draggable={true}
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <div class="box tablehead" on:click={() => sortTable(item[0])} draggable={true}
                         on:dragstart={event => dragstart(event, item[0] , index)}
-                        on:drop={event => drop(event, item[0], index)} on:dragover={dragover}>
+                        on:drop={event => drop(event, item[0], index)} on:dragover={event => dragover(event, index)}
+                        on:dragleave={event => dragleave(event, index)} id={`${item[0]}`}>
                             <p class="term-header tablecol">
                                 {#if item[1]["type"] == "textarea"}
                                     <i class="fa-solid fa-align-justify component fa-xs"></i>
@@ -412,6 +481,10 @@
 </div>
     
 <style>
+
+.tablehead:hover {
+    cursor: pointer;
+}
 
 .wrapper {
   display: grid;

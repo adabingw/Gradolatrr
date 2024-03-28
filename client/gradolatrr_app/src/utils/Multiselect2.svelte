@@ -121,7 +121,6 @@
     $: {
         extshowmulti;
         showmulti = extshowmulti == i;
-        console.log(extshowmulti);
     }
 </script>
 
@@ -130,7 +129,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="tags" on:click={(e) => {e.stopPropagation(); bubbleUp(); } }>
     {#if properties_map.length == 0 && !showmulti}
-        <input type="text" placeholder="Click to add tag..." readonly bind:value={inputValue} autofocus on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
+        <input type="text" placeholder="Click to add tag..." readonly bind:value={inputValue} on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
     {:else}
         {#each properties_map as thing}
             <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={(e) => {e.stopPropagation(); deleteSelectedTag(thing)}}></i></p>
@@ -140,7 +139,7 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="multiselect_search" on:click={(e) => e.stopPropagation()}>
-        <input type="text" placeholder="Search/create a tag" bind:value={inputValue} autofocus on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
+        <input type="text" placeholder="Search/create a tag" bind:value={inputValue} on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
         <div id="myDropdown" class="dropdown-content">		
             {#if filteredItems.length > 0}
                 {#each filteredItems as item}

@@ -153,16 +153,15 @@
             target2.style.borderTop = '0px solid red';
         }
 
-        // if (type == "course") {
-        //     console.log("meep")
-        //     let course_index = ev.dataTransfer.getData("courseIndex");
-        //     let original_term = info["allTerm"]["items"][index];
-        //     let new_term = info["allTerm"]["items"][index2];
-        //     let course = info["allTerm"]["items"][index]["courses"][course_index];
-        //     switchCourse(course, original_term, new_term);
-        //     reload = true;
-        //     return;
-        // }
+        if (type == "course") {
+            let course_index = ev.dataTransfer.getData("courseIndex");
+            let original_term = info["allTerm"]["items"][index];
+            let new_term = info["allTerm"]["items"][index2];
+            let course = info["allTerm"]["items"][index]["courses"][course_index];
+            switchCourse(course, original_term, new_term);
+            reload = true;
+            return;
+        }
 
         if (index == index2) return;
         let order2 = info["allTerm"]["items"][index2]["order"];
@@ -419,7 +418,6 @@
 
     function loadData() {
         info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
-        console.log(info);
         last_info = JSON.parse(JSON.stringify(info));
         info["allTerm"]["items"] = sortOrder(info["allTerm"]["items"]);
         expand = JSON.parse(localStorage.getItem("expand"));
@@ -492,7 +490,6 @@
 
     $: {
         $query_result;
-        console.log("goiquwoeiqwueoq")
         if ($query_result.data != undefined && !lock) {
             loadData();
         }

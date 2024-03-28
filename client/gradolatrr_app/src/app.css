@@ -178,7 +178,8 @@ input:checked {
 
 table {
   /* text-align: center; */
-  border-collapse: separate;
+  /* border-collapse: separate; */
+  border-collapse: collapse;
   border-spacing: 0;
   display: block;
   overflow-x: auto;

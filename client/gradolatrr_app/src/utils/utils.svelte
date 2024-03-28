@@ -28,14 +28,12 @@ export function drop (ev, key2, index2, content_array, info) {
     if (key2 == key) return;
 
     var index = ev.dataTransfer.getData("index");
-    var order = content_array[index][1]["order"];
     var order2 = content_array[index2][1]["order"];
-    order = order2 + 1;
     
-    let orders = [order];
+    let orders = [order2];
     let info_arr = JSON.parse(info["data"]);
-    info_arr[key]["order"] = order;
-    content_array[index][1]["order"] = order;
+    info_arr[key]["order"] = order2;
+    content_array[index][1]["order"] = order2;
     for (const [i, value] of Object.entries(info_arr)) {
         const o = info_arr[i]["order"]
         if (i == key) continue;

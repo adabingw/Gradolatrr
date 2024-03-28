@@ -27,10 +27,10 @@
 <div class="input-row ">
   {#if focus}
     {#if type == "text"}
-      <input type="text" class="input-text" autofocus placeholder={text} on:keydown={handleKeydown}
+      <input type="text" class="input-text" placeholder={text} on:keydown={handleKeydown}
           bind:value={inputText} on:input={dataChange} />
     {:else if type == "number"}
-      <input type="number" class="input-text" autofocus placeholder={text} on:keydown={handleKeydown}
+      <input type="number" class="input-text" placeholder={text} on:keydown={handleKeydown}
           max={max} min={min} bind:value={inputText} on:input={dataChange} />
     {/if}
   {:else} 

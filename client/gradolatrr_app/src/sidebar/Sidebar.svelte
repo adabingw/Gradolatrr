@@ -19,6 +19,7 @@
     export let reload;
     export let triggerreload;
     export let w;
+    let width = w - innerWidth * 0.02;
 
     const query_result = query(ALL_COURSES);
     const update_term = mutation(UPDATE_TERM);
@@ -495,6 +496,13 @@
         }
     }
 
+    $: {
+        w;
+        if (w) {
+            width = w - 2;
+        }
+    }
+
 </script>
 
 <ContextMenu bind:showMenu={showTerm} 
@@ -511,7 +519,7 @@
         bind:item={context_bundle[3]}
         menuNum={2}
         on:context={contextControllerCourse}/>
-<div id="sidebar" style={`width:${w}`}>
+<div id="sidebar" style={`width: ${w}vw`}>
     <i class="fa-solid fa-angles-left"
     on:click={() => {
         dispatch('collapse', {
@@ -520,18 +528,32 @@
     }}
     ></i>
     <Link to="/">
-        <div class="logo">
-            <img src="https://i.redd.it/hi-heres-my-anya-forger-cosplay-waku-waku-swipe-to-see-v0-nfv8yzrxowy81.jpg?width=750&format=pjpg&auto=webp&s=414cb680c43b0b4459f5da01f8e87488ba5df98a"/>
-            GRAKU GRAKU
-        </div>
+        <div class="name">graku</div>
     </Link>
+    <div class="workspace">
+        <!-- <Link to="/">
+            <div class="logo">
+                <img src="https://i.redd.it/hi-heres-my-anya-forger-cosplay-waku-waku-swipe-to-see-v0-nfv8yzrxowy81.jpg?width=750&format=pjpg&auto=webp&s=414cb680c43b0b4459f5da01f8e87488ba5df98a"/>
+                <div class="user">
+                    demo
+                </div>
+                <i class="fa-solid fa-arrows-up-down"></i>
+            </div>
+        </Link> -->
+    </div>
     <br />
-    <span class="new_term">
+    <div class="new_term">
         <Link to={'/new_term'}>
-            <i class="fa-solid fa-circle-plus fa-xs"></i>    
+            <i class="fa-solid fa-circle-plus"></i>    
             New term
         </Link>
-    </span>
+    </div>
+    <div class="new_term">
+        <Link to={'/settings'}>
+            <i class="fa-solid fa-gear"></i>
+            Settings
+        </Link>
+    </div>
     <div class="content">
     {#if info != undefined}
     {#each Object.keys(info.allTerm["items"]) as i}
@@ -542,7 +564,6 @@
         {#if info.allTerm["items"][i] != undefined} 
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <Link to={`/term/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`}>
             <div id={`term-${info.allTerm['items'][i]['id']}`} on:dragover={event => dragover(event, 'term', i)}
                 on:dragleave={event => dragleave(event, 'term', i)}>
                 <div class="term-row" on:contextmenu={(e) => { e.stopPropagation(); openTerm(e, i, info.allTerm["items"][i])}}  >
@@ -553,9 +574,11 @@
                             {:else}
                             <i class="fa-solid fa-chevron-right fa-xs" on:click={() => termClick(info.allTerm["items"][i]["id"])}></i>
                             {/if}
+                            <Link to={`/term/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`}>
                                 <span class="term">
                                     {info.allTerm["items"][i]["name"]}
                                 </span>
+                            </Link>
                         </p>
                     </span>
                     <div>
@@ -565,7 +588,6 @@
                     </div>
                 </div>
             </div>
-            </Link>
         {/if}
         <div class="courses">
             {#if info.allTerm["items"][i]["courses"] != undefined && 
@@ -583,7 +605,8 @@
                             on:contextmenu={
                                 (e) => {e.stopPropagation(); openCourse(
                                     e, j, info.allTerm["items"][i]["courses"][j],
-                                    info.allTerm["items"][i]["id"], info.allTerm["items"][i]["name"])} } >
+                                    info.allTerm["items"][i]["id"], info.allTerm["items"][i]["name"])} } 
+                            style={`width: ${width}vw`} >
                             {info.allTerm["items"][i]["courses"][j]["name"]}
                         </p>
                     </span>
@@ -606,28 +629,56 @@
     display: block;
 }
 
+.name {
+    position: absolute;
+    top: 15px;
+    left: 13px;
+    font-weight: 500;
+    color: #717171;
+}
+
+.workspace:hover {
+    background-color: #e8e5df;
+    cursor: pointer;
+}
+
 .fa-angles-left {
     position: absolute;
     top: 15px;
     right: 8px;
 }
 
-#sidebar .logo {
-    margin-bottom: 30px;
+.logo {
+    margin-top: 50px;
     display: flex; 
     flex-direction: row;
-    justify-content: center;
+    font-weight: 500;
+    font-size: 15px;
+    /* justify-content: center; */
     align-items: center;
-    margin-top: 35px;
     margin-right: 35px;
 }
 
-#sidebar .new_term {
-    padding-top: 38px;
-    padding-bottom: 8px;
-    padding-right: 10px;
+.user {
+    font-weight: 500;
+    color: #717171;
+    margin-right: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.workspace {
+    width: 100%;
     border-radius: 0px 8px 8px 0px;
-    transition: 0.5s;
+    margin-left: -18px;
+    padding-left: 15px;
+    margin-bottom: 15px;
+}
+
+.new_term {
+    padding-bottom: 15px;
+    padding-right: 10px;
+    /* transition: 0.5s; */
     width: 100%;
     height: 15px;
 }
@@ -639,7 +690,7 @@
     width: 15vw;
     padding-left: 20px;
     padding-right: 5px;
-    transition: 0.5s;
+    /* transition: 0.5s; */
     height: 100vh;
     background-color: #F7F6F3;
 }
@@ -668,7 +719,7 @@
 #sidebar .courses {
     color: #616161;
     margin-top: 5px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
 }
 
 #sidebar .term-row-left {
@@ -689,15 +740,20 @@
 }
 
 #sidebar .course {
-    padding-left: 23px;
+    width: 13vw;
+    padding-left: 27px;
     padding-right: 15px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     margin-bottom: 0px;
     margin-left: -15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     margin-top: 0px;
     border-radius: 0px 8px 8px 0px;
     color: #616161;
+    overflow:hidden;
+    display:inline-block;
 }
 
 #sidebar .course:hover {

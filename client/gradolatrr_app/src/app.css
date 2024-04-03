@@ -17,12 +17,12 @@ i {
 
 a {
   font-weight: 500;
-  color: black;
+  color: #717171;
   text-decoration: none;
 }
 
 a:hover {
-  color: black;
+  color: #717171;
 }
 
 html {
@@ -87,9 +87,10 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 img {
-  width: 20px;
-  height: 20px;
+  width: 21px;
+  height: 21px;
   margin-right: 10px;
+  border-radius: 5px;
 }
 
 img:hover {
@@ -109,21 +110,32 @@ img:hover {
   min-width: 120px;
   color: #717171;
   font-weight: 700;
-  width: 50vw;
+  width: 80%;
 }
 
 .subheader {
   width: 100%;
   font-size: 20px;
   font-weight: 600;
-  color: #818181;
+  color: #717171;
   border-bottom: 1px solid #d1d1d1;
   padding-bottom: 5px;
+}
+
+.alert {
+  color: red;
 }
 
 .fa-solid:hover {
   cursor: pointer;
   color: #313131 !important;
+}
+
+.empty {
+  color: #919191;
+  margin-left: 5px;
+  margin-bottom: 25px;
+  margin-top: 25px;
 }
 
 .fa-regular:hover {
@@ -159,10 +171,10 @@ input:checked {
 }
 
 .page {
+  width: calc(100vw-var(--left-width));
   padding-top: 0px;
   padding-left: 80px;
   padding-bottom: 30px;
-  padding-right: 80px;
 }
 
 .term-op {

@@ -16,11 +16,14 @@
     import NewCourse from "./course/NewCourse.svelte";
     import NewAssign from "./assign/NewAssign.svelte";
     import NewAssignBundle from "./assign/NewAssignBundle.svelte";
-    // import { APPSYNC_GRAPHQLENDPOINT, APPSYNC_APIKEY, APPSYNC_REGION, APPSYNC_AUTHTYPE} from "./constants/aws_config.js";
+  import Settings from "./settings/Settings.svelte";
 
     let sidebarReload = false;
     let reload = false;
-    let w = '15vw';
+    let w = '15';
+    let dragging = false;
+    let body = document.body;
+    let sidebar;
 
     const url = import.meta.env.VITE_APPSYNC_GRAPHQLENDPOINT;
     const region = import.meta.env.VITE_APPSYNC_REGION;
@@ -55,6 +58,27 @@
         document.getElementById('navbar_show').style.display = 'none';
         document.getElementById("homepage").style.width = "83vw";
     }
+
+    function clearJSEvents() {
+        dragging = false;
+        body.removeEventListener("mousemove", resize);
+    }
+
+    function resize(e) {
+        if (e.pageX > 350 || e.pageX < window.innerWidth * 0.15) return;
+        w = (e.pageX / window.innerWidth) * 100;
+    }
+
+    function dividerMousedown(e) {
+        e.preventDefault();
+        dragging = true;
+        body.addEventListener('mousemove', resize);
+        body.style.setProperty("--left-width", e.pageX + 'px');
+    }
+
+    document.onmouseup = function() {
+        dragging ? clearJSEvents() : '';
+    };
     
 </script>
 
@@ -70,14 +94,14 @@
           <div id="navbar">
             <Sidebar class="sidebar" bind:w={w} bind:reload={sidebarReload} bind:triggerreload={reload} on:collapse={() => collapseNav()}/>
           </div>
-          <div class="divider">
+          <div class="divider" on:mousedown={dividerMousedown}>
             
           </div>
-          <div id="homepage">
+          <div id="homepage" style={`width: ${100-w}vw`}>
             <i class="fa-solid fa-angles-right" id="navbar_show" on:click={() => showNav()}></i>
             
             <Route path="/*">
-                <Dashboard text="dashboard" />
+                <Dashboard text="dashboard" bind:w={w} />
             </Route>
             <Route path="/new_course/:id/:name" let:params>
                 <NewCourse term_id={params.id} term_name={params.name} 
@@ -109,6 +133,9 @@
                 <Assign id={params.id} name={params.name} course_id={params.course_id} course_name={params.course_name}
                         term_id={params.term_id} term_name={params.term_name} reload={reload} />
             </Route>
+            <Route path="/settings" let:params>
+                <Settings />
+            </Route>
           </div>
       </div>
   </Router>
@@ -119,7 +146,6 @@
   overflow-y: auto;
   overflow-x: hidden;
   height: 100vh;
-  width: 83vw;
 }    
 
 #navbar_show {

@@ -1,9 +1,10 @@
 <script>
 // @ts-nocheck
+    export let w;
 </script>
 
-<div class="dashboard">
-    <p class="head">Welcome to Graku Graku</p>
+<div class="dashboard" style={`width: ${70-w}vw`}>
+    <p class="head">Welcome to graku</p>
     <p>A grade calculator system on your fingertips! (Waku Waku, so cool!!)</p>
 
     <p>Itty bitty <strong>timeline</strong> of how this project was built:</p>
@@ -75,12 +76,10 @@ p {
 }
 
 .dashboard {
-    width: 80%;
     height: 100%;
     text-align: left;
     display: flex;
     justify-content: left;
-    align-items: top;
     flex-direction: column;
     margin: 130px 130px 130px 130px;
 }

@@ -8,7 +8,7 @@
     import HeaderField from "../utils/HeaderField.svelte";
     import { onDestroy } from "svelte";
     import { DELETE_ASSIGN } from "../constants/queries_delete";
-  import Folder from "../utils/Folder.svelte";
+    import Folder from "../utils/Folder.svelte";
 
     export let id;
     export let name;

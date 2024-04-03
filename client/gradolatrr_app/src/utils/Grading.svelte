@@ -112,7 +112,7 @@
         </div>
     </div>
 {:else} 
-    <Button text="change grading scheme" on:message={editGrading} />
+    <Button text="change grading scheme" on:message={editGrading} icon=""/>
 {/if}
 
 <style>

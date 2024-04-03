@@ -378,106 +378,113 @@
     </Link></p>
 
     {#if content != undefined || content != null}
-    <div class="wrapper" style={`grid-template-columns: repeat(${cols}, minmax(200px, 1fr));`}>
         {#if content_array != undefined || content_array != null}
-        <div class="row">
-            <div class="box tablehead" on:click={() => sortTable("name")}>
-                <p class="term-header tablecol"><i class="fa-solid fa-font component"></i> name</p>
+            {#if content_array.length == 0}
+            <div class="empty">
+                nothing in here yet...
             </div>
-            <div class="box tablehead" on:click={() => sortTable("mark")}>
-                <p class="term-header tablecol"><i class="fa-solid fa-hashtag component"></i> mark</p>
-            </div>
-            
-            {#each content_array as item, index}
-                {#if item[1]["checked"] && item[0] != "name" && item[0] != "mark"}
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div class="box tablehead" on:click={() => sortTable(item[0])} draggable={true}
-                        on:dragstart={event => dragstart(event, item[0] , index)}
-                        on:drop={event => drop(event, item[0], index)} on:dragover={event => dragover(event, index)}
-                        on:dragleave={event => dragleave(event, index)} id={`${item[0]}`}>
-                            <p class="term-header tablecol">
-                                {#if item[1]["type"] == "textarea"}
-                                    <i class="fa-solid fa-align-justify component fa-xs"></i>
-                                {:else if item[1]["type"] == "text" || item[1]["type"] == "number"}
-                                    {#if item[1]["type"] == "text"}
-                                        <i class="fa-solid fa-font component"></i>
-                                    {:else}
-                                        <i class="fa-solid fa-hashtag component"></i>
-                                    {/if}
-                                {:else if item[1]["type"] == "multiselect"}
-                                    <i class="fa-solid fa-list component"></i>
-                                {:else if item[1]["type"] == "singleselect"}
-                                    <i class="fa-regular fa-circle-check component"></i>
-                                {:else if item[1]["type"] == "date"}
-                                    <i class="fa-regular fa-calendar component"></i>
-                                {/if}
-                                {item[0]}
-                            </p>
+                <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
+                <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
+            {:else}
+            <div class="wrapper" style={`grid-template-columns: repeat(${cols}, minmax(200px, 1fr));`}>
+                <div class="row">
+                    <div class="box tablehead" on:click={() => sortTable("name")}>
+                        <p class="term-header tablecol"><i class="fa-solid fa-font component"></i> name</p>
                     </div>
-                {/if}
-            {/each}
-        </div>
-        {/if}
-        {#each Object.keys(content) as i}
-            <div  class="row" id={i} >
-                <div class="box name_assignment">
-                    <span>
-                        <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                            on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
-                        <span contenteditable on:input={textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}>
-                            {JSON.parse(content[i]["data"])["name"]["content"]}
-                        </span>
-                    </span>
+                    <div class="box tablehead" on:click={() => sortTable("mark")}>
+                        <p class="term-header tablecol"><i class="fa-solid fa-hashtag component"></i> mark</p>
+                    </div>
+                    
+                    {#each content_array as item, index}
+                        {#if item[1]["checked"] && item[0] != "name" && item[0] != "mark"}
+                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                            <!-- svelte-ignore a11y-no-static-element-interactions -->
+                            <div class="box tablehead" on:click={() => sortTable(item[0])} draggable={true}
+                                on:dragstart={event => dragstart(event, item[0] , index)}
+                                on:drop={event => drop(event, item[0], index)} on:dragover={event => dragover(event, index)}
+                                on:dragleave={event => dragleave(event, index)} id={`${item[0]}`}>
+                                    <p class="term-header tablecol">
+                                        {#if item[1]["type"] == "textarea"}
+                                            <i class="fa-solid fa-align-justify component fa-xs"></i>
+                                        {:else if item[1]["type"] == "text" || item[1]["type"] == "number"}
+                                            {#if item[1]["type"] == "text"}
+                                                <i class="fa-solid fa-font component"></i>
+                                            {:else}
+                                                <i class="fa-solid fa-hashtag component"></i>
+                                            {/if}
+                                        {:else if item[1]["type"] == "multiselect"}
+                                            <i class="fa-solid fa-list component"></i>
+                                        {:else if item[1]["type"] == "singleselect"}
+                                            <i class="fa-regular fa-circle-check component"></i>
+                                        {:else if item[1]["type"] == "date"}
+                                            <i class="fa-regular fa-calendar component"></i>
+                                        {/if}
+                                        {item[0]}
+                                    </p>
+                            </div>
+                        {/if}
+                    {/each}
                 </div>
-                <div class="box">
-                    <input type="number" value={JSON.parse(content[i]["data"])["mark"]["content"]} 
-                        on:change={(e) => textChange(i, "mark", e.target.value, content[i]["id"])} />
-                </div>
-                {#each content_array as j}
-                    {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
-                        <div class="box">
-                            {#if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "text"}
-                                <input type="text" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
-                                on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} maxlength="20" />
-                            {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "textarea"}
-                                <span contenteditable on:input={e => textChange(i, j[0], e.currentTarget.textContent, content[i]["id"])}>
-                                    {JSON.parse(content[i]["data"])[j[0]]["content"]}
+                {#each Object.keys(content) as i}
+                    <div  class="row" id={i} >
+                        <div class="box name_assignment">
+                            <span>
+                                <i class="fa-solid fa-ellipsis-vertical context_menu" 
+                                    on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
+                                <span contenteditable on:input={textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}>
+                                    {JSON.parse(content[i]["data"])["name"]["content"]}
                                 </span>
-                            {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "number"}
-                                <input type="number" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
-                                on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} max="100" min="0" />
-                            {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "date"}
-                                <DateComp date={JSON.parse(content[i]["data"])[j[0]]["content"]} 
-                                on:message={(e) => textChange(i, j[0], e.detail.data, content[i]["id"])} />
-                            {:else if JSON.parse(content[i]["data"])[j[0]] == undefined}
-                                something has gone wrong
-                            {:else if j[1]["type"] == "multiselect"}
-                                <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
-                                    bind:j={j} bind:content={content[i]} bind:i={i} bind:extshowmulti={showmulti}
-                                    on:assign={saveAssignChanges} on:course={saveCourseChanges} max=0 
-                                    on:press={() => { showmulti = i;}} on:close={() => { showmulti = -1; }}
-                                />
-                            {:else if j[1]["type"] == "singleselect"}
-                                <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
-                                bind:j={j} bind:content={content[i]} bind:i={i}
-                                on:assign={saveAssignChanges} on:course={saveCourseChanges} max=1/>
-                            {/if}
+                            </span>
                         </div>
-                    {/if}
-                {/each}
-            </div>
-            {/each}
-        <!-- </tbody> -->
-    </div>
+                        <div class="box">
+                            <input type="number" value={JSON.parse(content[i]["data"])["mark"]["content"]} 
+                                on:change={(e) => textChange(i, "mark", e.target.value, content[i]["id"])} />
+                        </div>
+                        {#each content_array as j}
+                            {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
+                                <div class="box">
+                                    {#if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "text"}
+                                        <input type="text" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
+                                        on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} maxlength="20" />
+                                    {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "textarea"}
+                                        <span contenteditable on:input={e => textChange(i, j[0], e.currentTarget.textContent, content[i]["id"])}>
+                                            {JSON.parse(content[i]["data"])[j[0]]["content"]}
+                                        </span>
+                                    {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "number"}
+                                        <input type="number" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
+                                        on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} max="100" min="0" />
+                                    {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "date"}
+                                        <DateComp date={JSON.parse(content[i]["data"])[j[0]]["content"]} 
+                                        on:message={(e) => textChange(i, j[0], e.detail.data, content[i]["id"])} />
+                                    {:else if JSON.parse(content[i]["data"])[j[0]] == undefined}
+                                        something has gone wrong
+                                    {:else if j[1]["type"] == "multiselect"}
+                                        <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
+                                            bind:j={j} bind:content={content[i]} bind:i={i} bind:extshowmulti={showmulti}
+                                            on:assign={saveAssignChanges} on:course={saveCourseChanges} max=0 
+                                            on:press={() => { showmulti = i;}} on:close={() => { showmulti = -1; }}
+                                        />
+                                    {:else if j[1]["type"] == "singleselect"}
+                                        <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
+                                        bind:j={j} bind:content={content[i]} bind:i={i}
+                                        on:assign={saveAssignChanges} on:course={saveCourseChanges} max=1/>
+                                    {/if}
+                                </div>
+                            {/if}
+                        {/each}
+                    </div>
+                    {/each}
+                </div>
+                <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
+                <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
+                <div class="grade-block">
+                    <p class="grade">Grade: </p> { grade == undefined ? "no grade" : grade}
+                    <i class="fa-regular fa-circle-question" on:click={() => { showModal = true; }}></i>
+                    <i class="fa-solid fa-rotate-right" on:click={() => regrade(true)}></i>
+                </div>
+            {/if}
+        {/if}
     {/if}
-    <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
-    <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
-    <div class="grade-block">
-        <p class="grade">Grade: </p> { grade == undefined ? "no grade" : grade}
-        <i class="fa-regular fa-circle-question" on:click={() => { showModal = true; }}></i>
-        <i class="fa-solid fa-rotate-right" on:click={() => regrade(true)}></i>
-    </div>
 </div>
     
 <style>
@@ -493,6 +500,7 @@
   margin-bottom: 15px;
   vertical-align: center;
   overflow-x: auto;
+  margin-right: 30px;
 }
 
 .row {

@@ -17,6 +17,7 @@
     export let term_id; 
     export let term_name;
     export let reload;
+    let del = false;
 
     const dispatch = createEventDispatcher();
 
@@ -37,6 +38,8 @@
     })
 
     async function saveChanges() {
+        if (del) return;
+
         if (!name) {
             alert("Name cannot be empty!");
             return;
@@ -122,6 +125,8 @@
     async function deleteCourse() {
         let confirmDelete = confirm("Delete this course?");
         if (!confirmDelete) return;
+
+        del = true;
 
         try {
             await delete_course({ 

@@ -16,7 +16,7 @@
     import NewCourse from "./course/NewCourse.svelte";
     import NewAssign from "./assign/NewAssign.svelte";
     import NewAssignBundle from "./assign/NewAssignBundle.svelte";
-  import Settings from "./settings/Settings.svelte";
+    import Settings from "./settings/Settings.svelte";
 
     let sidebarReload = false;
     let reload = false;
@@ -44,7 +44,7 @@
     setClient(client);
 
     function triggerReload() {
-        sidebarReload = true;
+        sidebarReload = !sidebarReload;
     }
 
     function collapseNav() {
@@ -65,8 +65,8 @@
     }
 
     function resize(e) {
-        if (e.pageX > 350 || e.pageX < window.innerWidth * 0.15) return;
-        w = (e.pageX / window.innerWidth) * 100;
+        if (e.pageX > 350 || e.pageX < window.innerWidth * 0.15) return;        
+        w = (e.pageX / window.innerWidth) * 100 - 3;
     }
 
     function dividerMousedown(e) {

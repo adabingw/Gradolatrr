@@ -13,7 +13,6 @@
         if (!course_name) { // we are in a term folder
             window.scrollTo(0, 0);
         } else {
-            console.log("hi")
             navigate(`/term/${term_id}/${term_name}`);
         }
     }

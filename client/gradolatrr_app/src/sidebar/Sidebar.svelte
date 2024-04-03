@@ -37,6 +37,7 @@
     let context_bundle = [ 0, 0, 0 ];
     let dragged = undefined;
     let lock = false;
+    let droppingcourse = false;
 
     function termClick(k) {
         expand[k] = !expand[k];
@@ -87,7 +88,12 @@
         } else if (source == 'term') {
             let target = document.getElementById(`term-${info.allTerm['items'][i]['id']}`);
             if (target) {
-                target.style.borderTop = '1px solid blue';
+                if (dragged != "course") target.style.borderTop = '1px solid blue';
+                if (dragged == "course") {
+                    target.style.backgroundColor = '#e8e5df';
+                    target.style.borderRadius = "0px 8px 8px 0px";
+                    target.style.width = "100%";
+                }
             }
         }
     }
@@ -103,13 +109,16 @@
             let target = document.getElementById(`term-${info.allTerm['items'][i]['id']}`);
             if (target) {
                 target.style.borderTop = '0px solid red';
+                target.style.backgroundColor = '#F7F6F3';
             }
         }
         ev.dataTransfer.dropEffect = 'move';
     }
 
-    async function switchCourse(course, old_term, new_term) {
+    async function switchCourse(course, old_term, new_term, old_term_index, new_term_index, course_index) {
         let max_order = maxOrder(new_term["courses"]) + 1;
+        lock = true;
+        course["order"] = max_order;
         try {
             await update_course({
                 variables: {
@@ -120,8 +129,18 @@
                         order: max_order
                     }
                 }
+            }).then((response) => {
+                // lock = false;
             });
 
+            info["allTerm"]["items"][old_term_index]["courses"].splice(course_index, 1);
+            info["allTerm"]["items"][new_term_index]["courses"].push(course);
+
+            info["allTerm"]["items"][old_term_index]["courses"] = sortOrder(info["allTerm"]["items"][old_term_index]["courses"]);                
+            info["allTerm"]["items"][new_term_index]["courses"] = sortOrder(info["allTerm"]["items"][new_term_index]["courses"]);                
+        
+
+            lock = true;
             for (let i = 0; i < course["assignments"].length; i++) {
                 await update_assign({
                     variables: {
@@ -131,7 +150,11 @@
                             term_id: new_term["id"]
                         }
                     }
-                })
+                }).then((response) => {
+                    if (i == course["assignments"].length - 1) {
+                        // lock = false;
+                    }
+                });
             }
         } catch(error) {
             console.error(error);
@@ -140,6 +163,7 @@
 
     async function drop (ev, index2) {
         ev.preventDefault();
+        if (droppingcourse) return;
         dragged = undefined;
         var index = ev.dataTransfer.getData("termIndex");
         var type = ev.dataTransfer.getData("type");
@@ -147,11 +171,13 @@
         let target = document.getElementById(`term-${info.allTerm['items'][index]['id']}`);
         if (target) {
             target.style.borderTop = '0px solid red';
+            target.style.backgroundColor = '#F7F6F3';
         }
 
         let target2 = document.getElementById(`term-${info.allTerm['items'][index2]['id']}`);
         if (target2) {
             target2.style.borderTop = '0px solid red';
+            target.style.backgroundColor = '#F7F6F3';
         }
 
         if (type == "course") {
@@ -159,8 +185,8 @@
             let original_term = info["allTerm"]["items"][index];
             let new_term = info["allTerm"]["items"][index2];
             let course = info["allTerm"]["items"][index]["courses"][course_index];
-            switchCourse(course, original_term, new_term);
-            reload = true;
+            switchCourse(course, original_term, new_term, index, index2, course_index);
+            droppingcourse = false;
             return;
         }
 
@@ -197,7 +223,8 @@
                 console.error(error);
             }
         }
-        lock = false;
+        droppingcourse = false;
+        // reload = true;
 
         info["allTerm"]["items"] = sortOrder(info["allTerm"]["items"]);        
         return;
@@ -212,10 +239,14 @@
 
     async function dropCourse (ev, index2, termIndex2) {
         ev.preventDefault();
-        var index = ev.dataTransfer.getData("courseIndex");
-        var termIndex = ev.dataTransfer.getData("termIndex");
+        droppingcourse = true;
+        var index = parseInt(ev.dataTransfer.getData("courseIndex"));
+        var termIndex = parseInt(ev.dataTransfer.getData("termIndex"));
 
         dragged = undefined;
+
+        index2 = parseInt(index2);
+        termIndex2 = parseInt(termIndex2)
 
         let target = document.getElementById(`course-${info.allTerm['items'][termIndex]['courses'][index]['id']}`);
         if (target) {
@@ -233,28 +264,29 @@
             let original_term = info["allTerm"]["items"][termIndex];
             let new_term = info["allTerm"]["items"][termIndex2];
             let course = info["allTerm"]["items"][termIndex]["courses"][index];
-            switchCourse(course, original_term, new_term);
-            reload = true;
+            switchCourse(course, original_term, new_term, termIndex, termIndex2, courseIndex);
             return;
         }
 
         let order2 = info["allTerm"]["items"][termIndex]["courses"][index2]["order"];
-
         last_info = JSON.parse(JSON.stringify(info));
 
         info["allTerm"]["items"][termIndex]["courses"][index]["order"] = order2;
         
-        let orders = [order2];
+        let orders = [ order2 ]
         for (let i = 0; i < info["allTerm"]["items"][termIndex]["courses"].length; i++) {
-            if (i == index) continue;
+            if (i == parseInt(index)) continue;
             const o = info["allTerm"]["items"][termIndex]["courses"][i]["order"];
+            console.log("order ", i, info["allTerm"]["items"][termIndex]["courses"][i]);
             if (orders.includes(o)) {
                 orders.push(o + 1);
                 info["allTerm"]["items"][termIndex]["courses"][i]["order"] = o + 1;
             } else {
                 orders.push(o);
             }
+            
         }
+        info["allTerm"]["items"][termIndex]["courses"][index]["order"] = order2;
 
         lock = true;
         for (let i = 0; i < info["allTerm"]["items"][termIndex]["courses"].length; i++) {
@@ -270,15 +302,17 @@
                         }
                     }
                 }).then((response) => {
-                    console.log(response);
+                    if (i == info["allTerm"]["items"][termIndex]["courses"].length - 1) {
+                        // lock = false;
+                    }
                 });
             } catch (error) {
                 console.error(error);
             }
         }
-        lock = false;
 
-        info["allTerm"]["items"][termIndex]["courses"] = sortOrder(info["allTerm"]["items"][termIndex]["courses"]);                
+        info["allTerm"]["items"][termIndex]["courses"] = sortOrder(info["allTerm"]["items"][termIndex]["courses"]);    
+        droppingcourse = false;
         return;
     }
 
@@ -418,10 +452,13 @@
     }
 
     function loadData() {
+        console.log("meep")
         info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
         last_info = JSON.parse(JSON.stringify(info));
         info["allTerm"]["items"] = sortOrder(info["allTerm"]["items"]);
+        console.log(info);
         expand = JSON.parse(localStorage.getItem("expand"));
+
         if (expand == null || expand == undefined) expand = {};
 
         for (let i = 0; i < info["allTerm"]["items"].length; i++) {
@@ -478,15 +515,18 @@
     }
 
     $: {
+        reload;
         if (reload) {
+            console.log("bruh")
             query_result.refetch();
             if (info != undefined) {
                 last_info = JSON.parse(JSON.stringify(info));
             } else {
                 last_info = undefined; 
                 info = undefined;
-            }
-        }        
+            }    
+            reload = false;
+        }
     }
 
     $: {
@@ -531,15 +571,6 @@
         <div class="name">graku</div>
     </Link>
     <div class="workspace">
-        <!-- <Link to="/">
-            <div class="logo">
-                <img src="https://i.redd.it/hi-heres-my-anya-forger-cosplay-waku-waku-swipe-to-see-v0-nfv8yzrxowy81.jpg?width=750&format=pjpg&auto=webp&s=414cb680c43b0b4459f5da01f8e87488ba5df98a"/>
-                <div class="user">
-                    demo
-                </div>
-                <i class="fa-solid fa-arrows-up-down"></i>
-            </div>
-        </Link> -->
     </div>
     <br />
     <div class="new_term">
@@ -565,8 +596,8 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div id={`term-${info.allTerm['items'][i]['id']}`} on:dragover={event => dragover(event, 'term', i)}
-                on:dragleave={event => dragleave(event, 'term', i)}>
-                <div class="term-row" on:contextmenu={(e) => { e.stopPropagation(); openTerm(e, i, info.allTerm["items"][i])}}  >
+                on:dragleave={event => dragleave(event, 'term', i)} div class="term-row" 
+                on:contextmenu={(e) => { e.stopPropagation(); openTerm(e, i, info.allTerm["items"][i])}}  >
                     <span class="term-row-left">
                         <p>
                             {#if info.allTerm["items"][i]["courses"] != undefined && expand[info.allTerm["items"][i]["id"]]}
@@ -586,7 +617,6 @@
                             <i class="fa-solid fa-plus"></i>
                         </Link>
                     </div>
-                </div>
             </div>
         {/if}
         <div class="courses">
@@ -598,8 +628,7 @@
                     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <span class="course_wrapper" id={`course-${info.allTerm['items'][i]['courses'][j]['id']}`}>
-                        <p 
-                            class="course" draggable={true} on:dragstart={event => dragstartCourse(event, j, i)} 
+                        <p class="course" draggable={true} on:dragstart={event => dragstartCourse(event, j, i)} 
                             on:drop={event => dropCourse(event, j, i)} on:dragover={event => dragover(event, 'course', i, j)}
                             on:click={() => { triggerreload = !triggerreload; }} on:dragleave={event => dragleave(event, 'course', i, j)}
                             on:contextmenu={
@@ -648,25 +677,6 @@
     right: 8px;
 }
 
-.logo {
-    margin-top: 50px;
-    display: flex; 
-    flex-direction: row;
-    font-weight: 500;
-    font-size: 15px;
-    /* justify-content: center; */
-    align-items: center;
-    margin-right: 35px;
-}
-
-.user {
-    font-weight: 500;
-    color: #717171;
-    margin-right: 8px;
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
 .workspace {
     width: 100%;
     border-radius: 0px 8px 8px 0px;
@@ -678,7 +688,6 @@
 .new_term {
     padding-bottom: 15px;
     padding-right: 10px;
-    /* transition: 0.5s; */
     width: 100%;
     height: 15px;
 }
@@ -690,7 +699,6 @@
     width: 15vw;
     padding-left: 20px;
     padding-right: 5px;
-    /* transition: 0.5s; */
     height: 100vh;
     background-color: #F7F6F3;
 }
@@ -723,11 +731,13 @@
 }
 
 #sidebar .term-row-left {
+    width: 100%;
     display: flex; 
     flex-direction: row;
 }
 
 #sidebar .term {
+    width: 100%;
     font-weight: 600;
 }
 

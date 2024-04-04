@@ -66,7 +66,7 @@
 
     function resize(e) {
         if (e.pageX > 350 || e.pageX < window.innerWidth * 0.15) return;        
-        w = (e.pageX / window.innerWidth) * 100 - 3;
+        w = (e.pageX / window.innerWidth) * 100 - 2;
     }
 
     function dividerMousedown(e) {

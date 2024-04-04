@@ -81,12 +81,15 @@ const COURSE_INFO = gql`
     query Courses($id: ID!) {
         getCourse(id: $id) {
             id, 
-            name, 
+            name,
+            term_id,
             data, 
             content_info,
             term_id, 
             assignments {
                 id,
+                course_id,
+                term_id,
                 data 
             }
         }
@@ -97,6 +100,7 @@ const GET_CONTENT_INFO = gql`
     query ContentInfo($id: ID!) {
         getCourse(id: $id) {
             id,
+            term_id,
             data,
             content_info
         }
@@ -114,6 +118,8 @@ const COURSE_CONTENT = gql`
             assignments {
                 id, 
                 name,
+                course_id,
+                term_id,
                 data
             }
         }
@@ -126,6 +132,8 @@ const ASSIGN_INFO = gql`
             id, 
             name, 
             data, 
+            course_id, 
+            term_id,
             course {
                 content_info
             }

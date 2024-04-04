@@ -9,6 +9,7 @@
     import ContextMenu from "../utils/ContextMenu.svelte";
     import { ALL_COURSES } from "../constants/queries_get";
     import { DUPLICATE_TERM } from "../constants/queries_post";
+    import { ADD_COURSE, ADD_ASSIGNMENT, ADD_TERM } from "../constants/queries_post";
     import { UPDATE_TERM, UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
     import { DELETE_TERM, DELETE_COURSE, DELETE_ASSIGN } from "../constants/queries_delete";
 
@@ -29,6 +30,10 @@
     const delete_course = mutation(DELETE_COURSE);
     const delete_assign = mutation(DELETE_ASSIGN);
     const duplicate_term = mutation(DUPLICATE_TERM);
+    const add_assign = mutation(ADD_ASSIGNMENT);
+    const add_course = mutation(ADD_COURSE);
+    const add_term = mutation(ADD_TERM);
+
     let info;
     let last_info;
     let showTerm = false;
@@ -277,7 +282,6 @@
         for (let i = 0; i < info["allTerm"]["items"][termIndex]["courses"].length; i++) {
             if (i == parseInt(index)) continue;
             const o = info["allTerm"]["items"][termIndex]["courses"][i]["order"];
-            console.log("order ", i, info["allTerm"]["items"][termIndex]["courses"][i]);
             if (orders.includes(o)) {
                 orders.push(o + 1);
                 info["allTerm"]["items"][termIndex]["courses"][i]["order"] = o + 1;
@@ -398,7 +402,7 @@
             type: "term",
             data: item["data"], 
             grade: item["grade"],
-            order: 0
+            order: item["order"]
         }
 
         let courses = [];
@@ -408,7 +412,7 @@
             courses.push({
                 id: course_id, 
                 term_id: term_id, 
-                name: "Copy of " + course["name"], 
+                name: course["name"], 
                 type: "course", 
                 data: course["data"],
                 content_info: course["content_info"],
@@ -423,24 +427,50 @@
                     id: assign_id, 
                     term_id: term_id, 
                     course_id: course_id, 
-                    name: "Copy of " + assign["name"], 
+                    name: assign["name"], 
                     type: "item", 
                     data: assign["data"],
                 })
             }
         }
 
-        let input = [{
-            term: term,
-            courses: courses, 
-            assignments: assigns
-        }]
+        for (let assign of assigns) {
+            try {
+                await add_assign({ 
+                    variables: { 
+                        input: {
+                            ...assign
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        for (let course of courses) {
+            try {
+                await add_course({ 
+                    variables: { 
+                        input: {
+                            ...course
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
 
         try {
-            await duplicate_term({ 
-                variables: {
-                    input: input
-                } 
+            await add_term({ 
+                variables: { 
+                    input: {
+                        ...term
+                    }
+                }
+            }).then(response => {
+                reload = true;
             });
         } catch (error) {
             console.error(error);
@@ -448,15 +478,64 @@
     }
 
     async function duplicateCourse(index, item) {
+        let assigns = [];
+        let course_id = uuidv4();
+        let course = {
+            id: course_id, 
+            term_id: item["term_id"], 
+            name: "Copy of " + item["name"], 
+            type: "course", 
+            data: item["data"],
+            content_info: item["content_info"],
+            order: item["order"],
+            grading_scheme: item["grading_scheme"],
+            grade: item["grade"]
+        };
+        let assignments = item["assignments"];
+        for (let assign of assignments) {
+            let assign_id = uuidv4();
+            assigns.push({
+                id: assign_id, 
+                term_id: item["term_id"], 
+                course_id: course_id, 
+                name: assign["name"], 
+                type: "item", 
+                data: assign["data"],
+            })
+        }
 
+        for (let assign of assigns) {
+            try {
+                await add_assign({ 
+                    variables: { 
+                        input: {
+                            ...assign
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        try {
+            await add_course({ 
+                variables: { 
+                    input: {
+                        ...course
+                    }
+                }
+            });
+        } catch (error) {
+            console.error(error);
+        }
+        reload = true;
     }
 
     function loadData() {
-        console.log("meep")
         info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
         last_info = JSON.parse(JSON.stringify(info));
         info["allTerm"]["items"] = sortOrder(info["allTerm"]["items"]);
-        console.log(info);
         expand = JSON.parse(localStorage.getItem("expand"));
 
         if (expand == null || expand == undefined) expand = {};
@@ -509,15 +588,14 @@
             deleteCourse(index, item);
         } else if (context == 'edit') {
             navigate(`/course/edit/${item["term_id"]}/${item["term_name"]}/${item["id"]}/${item["name"]}`);
-        } else if (context == 'copy') {
-
+        } else if (context == 'duplicate') {
+            duplicateCourse(index, item);
         }
     }
 
     $: {
         reload;
         if (reload) {
-            console.log("bruh")
             query_result.refetch();
             if (info != undefined) {
                 last_info = JSON.parse(JSON.stringify(info));

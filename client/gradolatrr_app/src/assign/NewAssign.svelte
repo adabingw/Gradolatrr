@@ -37,7 +37,7 @@
         }
         if (id == -1) return;
 
-        let data = JSON.parse(new_assign["data"])
+        let data = typeof new_assign["data"] == 'object' ? new_assign["data"] : JSON.parse(new_assign["data"])
         data["name"]["content"] = name;
         info = JSON.parse(JSON.stringify(new_assign));
         info["data"] = JSON.stringify(data);
@@ -54,6 +54,8 @@
                             data: info["data"],
                         }
                     } 
+                }).then((response) => {
+                    console.log(response)
                 });
         } catch (error) {
             console.error(error);

@@ -26,10 +26,13 @@
     let delete_course = mutation(DELETE_COURSE);
     let delete_assign = mutation(DELETE_ASSIGN);
     let update_term = mutation(UPDATE_TERM);
+    let del = false;
 
     async function deleteTerm() {
         let confirmDelete = confirm("Delete this term?");
         if (!confirmDelete) return;
+
+        del = true;
 
         try {
             await delete_term({ 
@@ -80,6 +83,8 @@
     })
 
     async function saveChanges() {
+        if (del) return;
+        
         if (!name_change) {
             alert("Name cannot be empty!");
             return;

@@ -64,7 +64,7 @@
             'onClick': menuClick,
             'displayText': "Copy",
             'class': 'fa-solid fa-copy fa-ms',
-            'disable': true
+            'disable': false
         }
     ]
 

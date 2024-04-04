@@ -65,7 +65,7 @@
                         content_info: info["content_info"],
                         order: max_order
                     }
-                } 
+                }
             });
             dispatch('message', {
                 text: "reload"

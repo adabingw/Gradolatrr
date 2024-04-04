@@ -230,7 +230,6 @@
     }
 
     async function textChange(i, key, value, assign_id) {
-        console.log(value)
         let new_content = JSON.parse(content[i]["data"])
         new_content[key]["content"] = value;
         if (key == "mark" && !value) new_content[key]["content"] = 0; 

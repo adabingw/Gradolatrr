@@ -1,11 +1,14 @@
 <script>
     // @ts-nocheck
+    import { v4 as uuidv4 } from 'uuid';
+    
     import { Link } from 'svelte-navigator';
     import { query, mutation } from 'svelte-apollo';
     import { create, all } from 'mathjs';
     import { navigate } from 'svelte-navigator';
     import ContextMenu from '../utils/ContextMenu.svelte';
     import { COURSE_CONTENT } from "../constants/queries_get";
+    import { ADD_ASSIGNMENT } from "../constants/queries_post";
     import { DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
     import { DEFAULT_GRADING } from '../constants/constants';
@@ -41,6 +44,7 @@
     let sortDirection = 1;      // default sort direction (ascending)
     let grading_scheme = DEFAULT_GRADING;
     let delete_assign = mutation(DELETE_ASSIGN);
+    const add_assign = mutation(ADD_ASSIGNMENT);
     let update_course = mutation(UPDATE_COURSE);
     let update_assign = mutation(UPDATE_ASSIGNMENT);
     const config = { };
@@ -267,15 +271,19 @@
     }
 
     function contextController(e) {
+        const index = e.detail.index;
+        const item = e.detail.item;
+        
         if (e.detail.context == 'trash') {
             deleteAssignment(e.detail.index);
         } else if (e.detail.context == 'edit') {
             navigate(`/assign/edit/${term_id}/${term_name}/${id}/${name}/${e.detail.index}/${e.detail.item}`)
+        } else if (e.detail.context == 'duplicate') {
+            duplicateAssign(index, item)
         }
     }
 
     async function textChange(i, key, value, assign_id) {
-        console.log(value)
         let new_content = JSON.parse(content[i]["data"])
         new_content[key]["content"] = value;
         if (key == "mark" && !value) new_content[key]["content"] = 0; 
@@ -295,6 +303,31 @@
                 }
             });
         } catch(error) {
+            console.error(error);
+        }
+    }
+
+    async function duplicateAssign(index, item) {
+        let id = uuidv4();
+        let assign = {
+                id: id, 
+                term_id: item["term_id"], 
+                course_id: item["course_id"], 
+                name: "Copy of " + item["name"], 
+                type: "item", 
+                data: item["data"],
+        }
+
+        try {
+            await add_assign({ 
+                variables: { 
+                    input: {
+                        ...assign
+                    }
+                }
+            });
+            reload = true;
+        } catch (error) {
             console.error(error);
         }
     }
@@ -320,7 +353,6 @@
         for (let i = 0; i < content_array.length; i++) {
             if (content_array[i][1]["checked"]) cols += 1;
         }
-        console.log(cols)
         regrade(false);
     }
 
@@ -345,6 +377,13 @@
     }
 
     $: {
+        if (reload) {
+            reload = false;
+            loadData();
+        }
+    }
+
+    $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
             loadData();
         }
@@ -362,7 +401,7 @@
         bind:y={context_bundle[1]} 
         bind:index={context_bundle[2]}
         bind:item={context_bundle[3]}
-        menuNum={4}
+        menuNum={2}
         on:context={contextController}/>
 <div class="page">
     <Modal bind:showModal>
@@ -379,7 +418,7 @@
 
     {#if content != undefined || content != null}
         {#if content_array != undefined || content_array != null}
-            {#if content_array.length == 0}
+            {#if content_array.length == -1}
             <div class="empty">
                 nothing in here yet...
             </div>
@@ -430,7 +469,7 @@
                         <div class="box name_assignment">
                             <span>
                                 <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                                    on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
+                                    on:click={(e) => {e.stopPropagation(); openMenu(e, content[i], content[i]["id"])}}></i>
                                 <span contenteditable on:input={textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}>
                                     {JSON.parse(content[i]["data"])["name"]["content"]}
                                 </span>
@@ -500,7 +539,7 @@
   margin-bottom: 15px;
   vertical-align: center;
   overflow-x: auto;
-  margin-right: 30px;
+  margin-right: 90px;
 }
 
 .row {

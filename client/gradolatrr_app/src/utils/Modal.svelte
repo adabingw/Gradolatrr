@@ -14,9 +14,9 @@
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div on:click|stopPropagation>
 		<slot name="header" />
-		<hr />
+		<!-- <hr /> -->
 		<slot />
-		<hr />
+		<!-- <hr /> -->
 	</div>
 </dialog>
 

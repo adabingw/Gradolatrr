@@ -23,6 +23,7 @@
     });
     let info;
     let last_info;
+    let del = false;
     let update_course = mutation(UPDATE_COURSE);
     let update_assign = mutation(UPDATE_ASSIGNMENT);
     let delete_assign = mutation(DELETE_ASSIGN);
@@ -30,6 +31,7 @@
     async function deleteAssignment(assign_id) {
         let confirmDelete = confirm("Delete this assignment?");
         if (!confirmDelete) return;
+        del = true;
         try {
             await delete_assign({ 
                 variables: { 
@@ -46,6 +48,7 @@
     }
 
     async function saveChanges() {
+        if (del) return;
         if (!name) {
             alert("Name cannot be empty!");
             return;

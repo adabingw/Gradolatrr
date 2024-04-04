@@ -139,7 +139,7 @@
     </div>
     </table>
     <div class="add-row">
-        <Button text="+" on:message={addInfo} />
+        <Button text="+" on:message={addInfo} icon={""} />
         {#if add}
         <div class="add-row">
             <TextField bind:inputText={info_name} text="name" type="text" max="" min="" focus={true} on:enter={saveInfo}/>

@@ -106,6 +106,7 @@
     }
 
     function loadData() {
+        if ($query_result.loading == true) return;
         info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
         let content_info = JSON.parse(info["getAssignment"]["course"]["content_info"])
         let info_temp = JSON.parse(info["getAssignment"]["data"]);

@@ -121,7 +121,7 @@
     }
 
     $: {
-        if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
+        if (!$query_result.loading && $query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
             courses = info["getTerm"]["courses"];

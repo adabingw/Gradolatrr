@@ -333,6 +333,7 @@
     }
 
     function loadData() {
+        if ($query_result.loading == true) return;
         info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
         last_info = JSON.parse(JSON.stringify(info));
         content = JSON.parse(JSON.stringify($query_result["data"]["getCourse"]["assignments"]))
@@ -385,6 +386,7 @@
 
     $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
+
             loadData();
         }
     }

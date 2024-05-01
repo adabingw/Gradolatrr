@@ -129,6 +129,11 @@
 
 <div class="dashboard" style={`width: ${70-w}vw`}>
     <!-- <Modal bind:showModal>
+        <h2 slot="header">
+        </h2>
+        &lbrace; &rbrace;
+    </Modal> -->
+    <!-- <Modal bind:showModal>
         <div class="subheader">Select items to export (default all)</div>
         {#if info != undefined}
         {#each Object.keys(info.allTerm["items"]) as i}
@@ -239,7 +244,9 @@
     <Button bind:text={exportText} icon={"fa-solid fa-arrow-right-from-bracket"} on:message={exportData}/>
 
     <p class="subheader">Import</p>
-    <p class="note">Import your grades <span> | See example file</span></p>
+    <p class="note">Import your grades <span> | 
+        <span on:click={() => {showModal = true;} } class="hover">See example file</span>
+    </span></p>
     <Button bind:text={importText} icon={"fa-solid fa-arrow-right-to-bracket"}  on:message={importData}/>
 
     <p class="subheader">Support</p>
@@ -265,13 +272,16 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <style>
 p {
     margin-bottom: 0px;
     padding-bottom: 0px;
+}
+
+.hover:hover {
+    cursor: pointer;
 }
 
 .note {

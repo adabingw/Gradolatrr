@@ -5,6 +5,7 @@
     import { v4 as uuidv4 } from 'uuid';
     import { navigate } from 'svelte-navigator';
     import { onDestroy } from 'svelte';
+    import { tooltip } from '@svelte-plugins/tooltips';
 
     import Folder from '../utils/Folder.svelte';
     import HeaderField from '../utils/HeaderField.svelte';
@@ -143,9 +144,25 @@
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info} on:message={dataChange}/>
     {/if}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="term-op">
-        <i class="fa-solid fa-ban" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-ban" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}
+            use:tooltip={{
+                content: 'cancel',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
+            use:tooltip={{
+                content: 'save',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}></i>
     </div>
 </div>
 

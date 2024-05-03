@@ -114,7 +114,7 @@ img:hover {
 }
 
 .subheader {
-  width: 88%;
+  width: 95%;
   font-size: 20px;
   font-weight: 600;
   color: #717171;
@@ -207,4 +207,23 @@ button {
   outline: none;
 }
 
-textarea { resize: none; }
+::-webkit-scrollbar {
+  width: 3px;
+  height: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F7F6F3;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 12px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #c1c1c1;
+}

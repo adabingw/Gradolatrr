@@ -297,6 +297,7 @@ p {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    width: 95%;
 }
 
 .head {

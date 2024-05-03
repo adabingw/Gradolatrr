@@ -4,6 +4,7 @@
     import { query, mutation } from 'svelte-apollo';
     import { v4 as uuidv4 } from 'uuid';
     import { navigate } from 'svelte-navigator';
+    import { tooltip } from '@svelte-plugins/tooltips';
     
     import Folder from '../utils/Folder.svelte';
     import TextField from '../utils/TextField.svelte';
@@ -18,7 +19,7 @@
     export let term_id;
     export let term_name;
 
-    let id;
+
 
     let num;
     let suffix;
@@ -221,8 +222,33 @@
     {/if}
 
     <div class="term-op">
-        <i class="fa-solid fa-ban" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <i class="fa-solid fa-ban" 
+            on:click={() => {
+                data_changed = false;
+                navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`);
+            }}
+            use:tooltip={{
+                content:
+                  'cancel',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}></i>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
+            use:tooltip={{
+                content:
+                  'save',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}
+        ></i>
     </div>
 </div>
 

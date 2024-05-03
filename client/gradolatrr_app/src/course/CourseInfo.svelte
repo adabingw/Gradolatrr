@@ -4,6 +4,7 @@
     import { query, mutation } from 'svelte-apollo';
     import { navigate } from 'svelte-navigator';
     import { createEventDispatcher, onDestroy } from 'svelte';
+    import { tooltip } from '@svelte-plugins/tooltips';
 
     import Folder from '../utils/Folder.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
@@ -233,9 +234,25 @@
     {#if info != undefined}
         <InfoTable cmd="course" bind:info={info.getCourse} on:message={updateChange} on:action={newData} />
     {/if}
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="term-op">
-        <i class="fa-solid fa-trash-can" on:click={() => deleteCourse()}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-trash-can" on:click={() => deleteCourse()}
+            use:tooltip={{
+                content: 'delete',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
+            use:tooltip={{
+                content: 'save',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}></i>
     </div>
 </div>
 

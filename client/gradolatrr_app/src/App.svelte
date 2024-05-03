@@ -5,6 +5,7 @@
     import { setClient } from "svelte-apollo";
     import { createAuthLink } from "aws-appsync-auth-link";
     import { createSubscriptionHandshakeLink } from "aws-appsync-subscription-link";
+    import { tooltip } from '@svelte-plugins/tooltips';
     
     import Sidebar from "./sidebar/Sidebar.svelte";
     import Dashboard from "./dashboard/Dashboard.svelte";
@@ -23,7 +24,6 @@
     let w = '15';
     let dragging = false;
     let body = document.body;
-    let sidebar;
 
     const url = import.meta.env.VITE_APPSYNC_GRAPHQLENDPOINT;
     const region = import.meta.env.VITE_APPSYNC_REGION;
@@ -97,8 +97,16 @@
           <div class="divider" on:mousedown={dividerMousedown}>
             
           </div>
-          <div id="homepage" style={`width: ${100-w}vw`}>
-            <i class="fa-solid fa-angles-right" id="navbar_show" on:click={() => showNav()}></i>
+          <div id="homepage" style={`width: ${100-w}vw`} on:scroll={(e) => onPageScroll(e)}>
+            <i class="fa-solid fa-angles-right" id="navbar_show" on:click={() => showNav()}
+                use:tooltip={{
+                    content:
+                      'expand',
+                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                    position: 'right',
+                    animation: 'slide',
+                    arrow: false
+                }}></i>
             
             <Route path="/*">
                 <Dashboard text="dashboard" bind:w={w} />
@@ -120,7 +128,7 @@
             </Route>
             <Route path="/course/:term_id/:term_name/:id/:name" let:params>
                 <Course id={params.id} name={params.name} term_id={params.term_id} 
-                    term_name={params.term_name} bind:reload={reload}/>
+                    term_name={params.term_name} bind:reload={reload} />
             </Route>
             <Route path="/term/:id/:name" let:params>
                 <Term id={params.id} name={params.name}  on:message={triggerReload} />

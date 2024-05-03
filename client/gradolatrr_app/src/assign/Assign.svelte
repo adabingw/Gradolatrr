@@ -1,6 +1,9 @@
 <script>
+// @ts-nocheck
+
     import { query, mutation } from "svelte-apollo";
     import { navigate } from "svelte-navigator";
+    import { tooltip } from '@svelte-plugins/tooltips';
 
     import InfoTable from '../utils/InfoTable.svelte';
     import { ASSIGN_INFO } from "../constants/queries_get";
@@ -178,9 +181,29 @@
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange}/>
     {/if}
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="term-op">
-        <i class="fa-solid fa-trash-can" on:click={() => deleteAssignment()}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <i class="fa-solid fa-trash-can" on:click={() => deleteAssignment()}
+            use:tooltip={{
+                content: 'delete',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}
+            ></i>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
+            use:tooltip={{
+                content: 'save',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}    
+        ></i>
     </div>
 </div>
 

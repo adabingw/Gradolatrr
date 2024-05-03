@@ -4,6 +4,7 @@
     import { query, mutation } from 'svelte-apollo';
     import { createEventDispatcher, onDestroy } from 'svelte';
     import { navigate } from 'svelte-navigator';
+    import { tooltip } from '@svelte-plugins/tooltips';
     
     import Folder from '../utils/Folder.svelte';
     import HeaderField from "../utils/HeaderField.svelte";
@@ -93,9 +94,25 @@
     <HeaderField bind:inputText={name} text="Untitled Course"/>    
     <InfoTable cmd="course" bind:info={info} on:message={updateChange} />
 
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->    
     <div class="term-op">
-        <i class="fa-solid fa-ban" on:click={() => navigate(`/term/${term_id}/${term_name}`)}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-ban" on:click={() => navigate(`/term/${term_id}/${term_name}`)}
+            use:tooltip={{
+                content: 'cancel',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
+            use:tooltip={{
+                content: 'save',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}></i>
     </div>
 </div>
 

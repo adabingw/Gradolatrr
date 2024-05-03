@@ -8,6 +8,8 @@
     export let item;
     export let menuNum;
 
+    let style = "";
+
     let menuItem;
     let menuItems1 = [
         {
@@ -68,6 +70,40 @@
         }
     ]
 
+    let menuItems5 = [
+        {
+            'name': 'custom',
+            'onClick': menuClick,
+            'displayText': "Custom",
+            'class': '',
+            'disable': false
+        }, {
+            'name': 'alpha_asc',
+            'onClick': menuClick,
+            'displayText': "Alphabetical ascending",
+            'class': '',
+            'disable': false
+        }, {
+            'name': 'alpha_desc',
+            'onClick': menuClick,
+            'displayText': "Alphabetical descending",
+            'class': '',
+            'disable': false
+        }, {
+            'name': 'grade_asc',
+            'onClick': menuClick,
+            'displayText': "Grades ascending",
+            'class': '',
+            'disable': false
+        }, {
+            'name': 'grade_desc',
+            'onClick': menuClick,
+            'displayText': "Grades descending",
+            'class': '',
+            'disable': false
+        }
+    ]
+
     let menuItems3 = [
         {
             'name': 'trash',
@@ -116,8 +152,22 @@
         if (menuNum == 1) menuItem = menuItems1;
         else if (menuNum == 2) menuItem = menuItems2;
         else if (menuNum == 3) menuItem = menuItems3;
+        else if (menuNum == 5) menuItem = menuItems5;
         else menuItem = menuItems4;
     });
+
+    $: {
+        y, x;
+        if (y > window.innerHeight - 200 && x > window.innerWidth - 200) {
+            style = `position: absolute; bottom:${window.innerHeight - y}px; right:${window.innerWidth - x}px; z-index: 1;`
+        } else if (y > window.innerHeight - 200 && x <= window.innerWidth - 200) {
+            style = `position: absolute; bottom:${window.innerHeight - y}px; right:${x}px; z-index: 1;`
+        } if (y <= window.innerHeight - 200 && x > window.innerWidth - 200) {
+            style = `position: absolute; bottom:${y}px; right:${window.innerWidth - x}px; z-index: 1;`
+        } else {
+            style = `position: absolute; top:${y}px; left:${x}px; z-index: 1;`
+        }
+    }
 
 </script>
 
@@ -130,9 +180,9 @@
 .navbar{
     display: inline-flex;
     border: 1px #999 solid;
-    width: 170px;
+    width: fit-content;
     background-color: #fff;
-    border-radius: 3px;
+    border-radius: 5px;
     overflow: hidden;
     flex-direction: column;
 }
@@ -169,6 +219,7 @@ ul li button {
     text-align: left;
     border: 0px;
     background-color: #fff;
+    padding-right: 8px;
 }
 
 ul li button:hover{
@@ -204,6 +255,14 @@ hr{
     margin: 5px 0px;
 }
 
+.menu-5 {
+    text-align: right;
+}
+
+.menu-5:hover {
+    text-align: right;
+}
+
 .subclass {
     color: #818181;
     padding-left: 15px;
@@ -211,10 +270,10 @@ hr{
 </style>
 
 {#if showMenu}
-<div style="position: absolute; top:{y}px; left:{x}px; z-index: 1;" class:show={showMenu}>
-    <div class="navbar" id="navbar">
+<div style={style} class:show={showMenu}>
+    <div class={`navbar`} id="navbar">
         <ul>
-            {#each menuItem as item}
+            {#each menuItem as item, i}
                 {#if item.name == "hr"}
                     <hr>
                 {:else}
@@ -225,7 +284,11 @@ hr{
                                 {item.displayText}
                             </button>
                         {:else}
-                            <button on:click={() => item.onClick(item.name, undefined)} disabled={item.disable == true}> 
+                            <button class={`menu-${menuNum}`}
+                                on:click={() => item.onClick(item.name, undefined)} disabled={item.disable == true}> 
+                            {#if menuNum == 5 && index == i}
+                                <i class="fa-solid fa-check"></i>
+                            {/if}
                                 <i class={`${item.class}`} id={item.disable ? "disabled" : ""}></i>
                                 {item.displayText}
                             </button>
@@ -247,5 +310,4 @@ hr{
 </div>
 {/if}
 
-<svelte:window on:click={(e) => onPageClick(e)} />
-
+<svelte:window on:click={(e) => onPageClick(e)}/>

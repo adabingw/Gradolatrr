@@ -1,15 +1,18 @@
 <script>
+// @ts-nocheck
+
     import { query, mutation } from "svelte-apollo";
     import { v4 as uuidv4 } from 'uuid';
     import { navigate } from 'svelte-navigator';
     import { createEventDispatcher, onDestroy } from "svelte";
+    import { tooltip } from '@svelte-plugins/tooltips';
 
     import InfoTable from "../utils/InfoTable.svelte";
     import new_term from "../constants/new_term.json";
     import { ADD_TERM } from "../constants/queries_post";
     import { TERM_ORDERS } from "../constants/queries_get";
     import HeaderField from "../utils/HeaderField.svelte";
-  import Folder from "../utils/Folder.svelte";
+    import Folder from "../utils/Folder.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -92,9 +95,25 @@
         <InfoTable cmd="term" bind:info={info} on:message={updateChange} />
     {/if} 
 
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->    
     <div class="term-op">
-        <i class="fa-solid fa-ban" on:click={() => navigate(`/`)}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}></i>
+        <i class="fa-solid fa-ban" on:click={() => navigate(`/`)}
+            use:tooltip={{
+                content: 'cancel',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}></i>
+        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
+            use:tooltip={{
+                content: 'save',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}></i>
     </div>
 </div>
 

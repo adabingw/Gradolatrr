@@ -5,6 +5,7 @@
     import { query, mutation } from "svelte-apollo";
     import { navigate } from "svelte-navigator";
     import { v4 as uuidv4 } from 'uuid';
+    import { tooltip } from '@svelte-plugins/tooltips';
 
     import ContextMenu from "../utils/ContextMenu.svelte";
     import { ALL_COURSES } from "../constants/queries_get";
@@ -118,6 +119,16 @@
             }
         }
         ev.dataTransfer.dropEffect = 'move';
+    }
+
+    function mouseover (id) {
+        const element = document.getElementById(`plus-${id}`);
+        if (element) element.style.visibility = 'visible';
+    }
+
+    function mouseleave (id) {
+        const element = document.getElementById(`plus-${id}`);
+        if (element) element.style.visibility = 'hidden';
     }
 
     async function switchCourse(course, old_term, new_term, old_term_index, new_term_index, course_index) {
@@ -665,12 +676,36 @@
                     text: "clicked"
                 });
             }}
+            use:tooltip={{
+                content:
+                  'collapse',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'bottom',
+                animation: 'slide',
+                arrow: false
+            }}
         ></i>
         <Link to={'/new_term'}>
-            <i class="fa-solid fa-circle-plus tool_item"></i>    
+            <i class="fa-solid fa-circle-plus tool_item"
+            use:tooltip={{
+                content:
+                  'add term',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'bottom',
+                animation: 'slide',
+                arrow: false
+            }}></i>    
         </Link>
         <Link to={'/settings'}>
-            <i class="fa-solid fa-gear tool_item"></i>
+            <i class="fa-solid fa-gear tool_item"
+            use:tooltip={{
+                content:
+                  'settings',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'bottom',
+                animation: 'slide',
+                arrow: false
+            }}></i>
         </Link>
     </div>
     <div class="workspace">
@@ -686,8 +721,11 @@
         {#if info.allTerm["items"][i] != undefined} 
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <div id={`term-${info.allTerm['items'][i]['id']}`} on:dragover={event => dragover(event, 'term', i)}
-                on:dragleave={event => dragleave(event, 'term', i)} div class="term-row" 
+            <div id={`term-${info.allTerm['items'][i]['id']}`} 
+                on:dragover={event => dragover(event, 'term', i)}
+                on:dragleave={event => dragleave(event, 'term', i)} class="term-row" 
+                on:mouseover={event => mouseover(info.allTerm["items"][i]["id"])}
+                on:mouseleave={event => mouseleave(info.allTerm["items"][i]["id"])}
                 on:contextmenu={(e) => { e.stopPropagation(); openTerm(e, i, info.allTerm["items"][i])}}  >
                     <span class="term-row-left">
                         <p>
@@ -705,7 +743,15 @@
                     </span>
                     <div>
                         <Link to={`/new_course/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`}>
-                            <i class="fa-solid fa-plus"></i>
+                            <i class="fa-solid fa-plus" id={`plus-${info.allTerm["items"][i]["id"]}`}
+                            use:tooltip={{
+                                content:
+                                  'add course',
+                                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                                position: 'bottom',
+                                animation: 'slide',
+                                arrow: false
+                            }}></i>
                         </Link>
                     </div>
             </div>
@@ -778,6 +824,10 @@
     height: 15px;
 }
 
+.fa-plus  {
+    visibility: hidden;
+}
+
 #sidebar {
     position: relative;
     color: #616161;
@@ -793,7 +843,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 95%;
+    width: 92%;
     align-items: center;
     align-self: center;
     height: 15px;
@@ -801,7 +851,6 @@
     padding-bottom: 8px;
     padding-left: 28px;
     padding-right: 10px;
-    border-radius: 0px 8px 8px 0px;
     margin-left: -15px;
 }
 
@@ -839,41 +888,18 @@
     overflow-x: hidden;
 }
 
-::-webkit-scrollbar {
-  width: 3px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #F7F6F3;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #d1d1d1;
-  border-radius: 12px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #c1c1c1;
-}
-
 #sidebar .course {
     width: 13vw;
     padding-left: 50px;
     padding-right: 25px;
     padding-top: 3px;
     padding-bottom: 3px;
-
     margin-bottom: 0px;
     margin-left: -15px;
     margin-right: 15px;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-top: 0px;
-
-    border-radius: 0px 8px 8px 0px;
     color: #616161;
     overflow: hidden;
     display:inline-block;

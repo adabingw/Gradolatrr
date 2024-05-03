@@ -1,6 +1,7 @@
 <script>
     // @ts-nocheck
     import { v4 as uuidv4 } from 'uuid';
+    import { tooltip } from '@svelte-plugins/tooltips';
     
     import { Link } from 'svelte-navigator';
     import { query, mutation } from 'svelte-apollo';
@@ -259,25 +260,26 @@
         }
     }
 
-    onDestroy(() => {
-        console.log(content);
-    })
-
     function openMenu(e, item, index) {
         showMenu = false;
         e.preventDefault();
         context_bundle = [e.clientX, e.clientY, index, item];
         showMenu = true;
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'hidden';
     }
 
     function contextController(e) {
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'auto';
+        
         const index = e.detail.index;
         const item = e.detail.item;
         
         if (e.detail.context == 'trash') {
             deleteAssignment(e.detail.index);
         } else if (e.detail.context == 'edit') {
-            navigate(`/assign/edit/${term_id}/${term_name}/${id}/${name}/${e.detail.index}/${e.detail.item}`)
+            navigate(`/assign/edit/${term_id}/${term_name}/${id}/${name}/${index}/${item.name}`)
         } else if (e.detail.context == 'duplicate') {
             duplicateAssign(index, item)
         }
@@ -354,6 +356,7 @@
         for (let i = 0; i < content_array.length; i++) {
             if (content_array[i][1]["checked"]) cols += 1;
         }
+
         regrade(false);
     }
 
@@ -386,7 +389,6 @@
 
     $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
-
             loadData();
         }
     }
@@ -394,6 +396,14 @@
     $: {
         query_result.refetch({ id });
         last_info = info;
+    }
+
+    $: {
+        showMenu;
+        if (!showMenu) {
+            let body = document.getElementById('homepage');
+            if (body) body.style.overflowY = 'auto';
+        }
     }
 
 </script>
@@ -469,13 +479,15 @@
                 {#each Object.keys(content) as i}
                     <div  class="row" id={i} >
                         <div class="box name_assignment">
-                            <span>
-                                <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                                    on:click={(e) => {e.stopPropagation(); openMenu(e, content[i], content[i]["id"])}}></i>
-                                <span contenteditable on:input={textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}>
-                                    {JSON.parse(content[i]["data"])["name"]["content"]}
-                                </span>
+                        <span>
+                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                            <!-- svelte-ignore a11y-no-static-element-interactions -->
+                            <i class="fa-solid fa-ellipsis-vertical context_menu" 
+                                on:click={(e) => {e.stopPropagation(); openMenu(e, content[i], content[i]["id"])}}></i>
+                            <span contenteditable on:input={textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}>
+                                {content[i]['name']}
                             </span>
+                        </span>
                         </div>
                         <div class="box">
                             <input type="number" value={JSON.parse(content[i]["data"])["mark"]["content"]} 
@@ -517,11 +529,31 @@
                     {/each}
                 </div>
                 <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add"> item </span> </Link>
-                <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
+                <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}>
+                    <span use:tooltip={{
+                        content: 'add in bulk',
+                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                        position: 'top',
+                        animation: 'slide',
+                        arrow: false
+                    }}>
+                        <i class="fa-regular fa-file-zipper fa-xs" ></i> <span class="add">bundle </span>
+                    </span> 
+                </Link>
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->    
                 <div class="grade-block">
                     <p class="grade">Grade: </p> { grade == undefined ? "no grade" : grade}
                     <i class="fa-regular fa-circle-question" on:click={() => { showModal = true; }}></i>
-                    <i class="fa-solid fa-rotate-right" on:click={() => regrade(true)}></i>
+                    <i class="fa-solid fa-rotate-right" on:click={() => regrade(true)}
+                        use:tooltip={{
+                            content: 'regrade',
+                            style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                            position: 'top',
+                            animation: 'slide',
+                            arrow: false
+                        }}
+                    ></i>
                 </div>
             {/if}
         {/if}
@@ -551,7 +583,7 @@
 
 .box {
     min-height: fit-content;
-    border-bottom: 1px solid grey;
+    border-bottom: 1px solid #d1d1d1;
     padding-left: 0px;
     min-width: fit-content;
     vertical-align: center;

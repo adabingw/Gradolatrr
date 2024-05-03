@@ -39,8 +39,16 @@ select:focus {
 }
 
 option {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    height: calc(1.2em + 24px);
+    padding-top: 32px;
+    padding-bottom: 32px;
+    height: calc(1.2em + 40px);
+}
+
+option:checked {  
+  background-color: #919191;
+}
+
+option:hover {
+    background-color: antiquewhite;
 }
 </style>

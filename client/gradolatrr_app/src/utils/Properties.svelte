@@ -100,6 +100,13 @@
     <table>
     <div class="property-table">
         <tr>
+            <td class="tag-check ">
+                <p  class="check-icon"></p>
+            </td>
+            <td class="info-name th">property name</td>
+            <td class="info-name th">type</td>
+        </tr>
+        <tr>
             <td class="tag-check">
                 <p  class="check-icon"></p>
             </td>
@@ -139,7 +146,7 @@
     </div>
     </table>
     <div class="add-row">
-        <Button text="+" on:message={addInfo} icon={""} />
+        <Button text="" icon="fa-solid fa-plus fa-xs" on:message={addInfo} />
         {#if add}
         <div class="add-row">
             <TextField bind:inputText={info_name} text="name" type="text" max="" min="" focus={true} on:enter={saveInfo}/>
@@ -155,10 +162,15 @@
 <style>
 .add-row {
     display: flex; 
-    align-items: center;
+    align-items: baseline;
     vertical-align: middle;
     margin-left: 35px;
-    margin-top: -10px;
+}
+
+.th {
+    font-weight: 500;
+    border-bottom: 1px solid #d1d1d1;
+    padding-bottom: 18px;
 }
 
 .fa-solid {

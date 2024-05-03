@@ -26,7 +26,7 @@
 }
 
 textarea {
-    resize: vertical;
+    resize: none;
     border: none;
 }
 

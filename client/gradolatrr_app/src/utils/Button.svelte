@@ -22,13 +22,8 @@
 
 <style>
 .button {
-    /* margin-left: 8px;
-    margin-right: 8px; */
-    border-radius: 5px;
     font-size: 15px;
     width: fit-content;
-    padding: 5px 8px 5px 8px;
-    border: 1px solid #717171;
 }
 
 .button:hover {

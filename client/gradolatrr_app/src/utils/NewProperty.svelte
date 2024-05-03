@@ -40,8 +40,8 @@
 
 </script>
 
-<div class="add-row">
-    <Button text="+" on:message={addProperty} />
+<div class="row">
+    <Button text="" icon="fa-solid fa-plus fa-xs" on:message={addProperty} />
     {#if add}
     <div class="add-row">
         <TextField bind:inputText={name} text="name" type="text" max="" min="" focus={true} on:enter={saveProperty}/>
@@ -54,10 +54,17 @@
 </div>
 
 <style>
+.row {
+    display: flex; 
+    flex-direction: row;
+    align-items: baseline;
+}
+
 .add-row {
     display: flex; 
     flex-direction: row;
-    align-items: center;
+    align-items: baseline;
+    margin-left: 25px;
 }
 
 .fa-solid {

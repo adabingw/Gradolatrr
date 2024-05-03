@@ -516,7 +516,7 @@
                     </div>
                     {/each}
                 </div>
-                <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
+                <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add"> item </span> </Link>
                 <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
                 <div class="grade-block">
                     <p class="grade">Grade: </p> { grade == undefined ? "no grade" : grade}

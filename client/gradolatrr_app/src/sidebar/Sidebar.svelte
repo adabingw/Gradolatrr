@@ -144,7 +144,6 @@
             info["allTerm"]["items"][old_term_index]["courses"] = sortOrder(info["allTerm"]["items"][old_term_index]["courses"]);                
             info["allTerm"]["items"][new_term_index]["courses"] = sortOrder(info["allTerm"]["items"][new_term_index]["courses"]);                
         
-
             lock = true;
             for (let i = 0; i < course["assignments"].length; i++) {
                 await update_assign({
@@ -593,6 +592,8 @@
         }
     }
 
+
+
     $: {
         reload;
         if (reload) {
@@ -617,7 +618,7 @@
     $: {
         w;
         if (w) {
-            width = w - 2;
+            width = w - 4;
         }
     }
 
@@ -637,32 +638,44 @@
         bind:item={context_bundle[3]}
         menuNum={2}
         on:context={contextControllerCourse}/>
-<div id="sidebar" style={`width: ${w}vw`}>
-    <i class="fa-solid fa-angles-left"
-    on:click={() => {
-        dispatch('collapse', {
-            text: "clicked"
-        });
-    }}
-    ></i>
+<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div id="sidebar" style={`width: ${w}vw`} on:mouseover={() => {
+    const tools = document.getElementById("tools");
+    if (tools) {
+        tools.style.transition = "opacity 0.3s ease-in-out";
+        tools.style.opacity = 1;
+    }
+}} on:mouseleave={() => {
+    const tools = document.getElementById("tools");
+    if (tools) {
+        tools.style.opacity = 0;
+        tools.style.transition = "opacity 0.3s ease-in-out";
+    }
+}}>
     <Link to="/">
         <div class="name">graku</div>
     </Link>
+    <div id="tools">
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <i class="fa-solid fa-angles-left tool_item"
+            on:click={() => {
+                dispatch('collapse', {
+                    text: "clicked"
+                });
+            }}
+        ></i>
+        <Link to={'/new_term'}>
+            <i class="fa-solid fa-circle-plus tool_item"></i>    
+        </Link>
+        <Link to={'/settings'}>
+            <i class="fa-solid fa-gear tool_item"></i>
+        </Link>
+    </div>
     <div class="workspace">
     </div>
     <br />
-    <div class="new_term">
-        <Link to={'/new_term'}>
-            <i class="fa-solid fa-circle-plus"></i>    
-            New term
-        </Link>
-    </div>
-    <div class="new_term">
-        <Link to={'/settings'}>
-            <i class="fa-solid fa-gear"></i>
-            Settings
-        </Link>
-    </div>
     <div class="content">
     {#if info != undefined}
     {#each Object.keys(info.allTerm["items"]) as i}
@@ -749,23 +762,18 @@
     cursor: pointer;
 }
 
-.fa-angles-left {
+#tools {
     position: absolute;
     top: 15px;
     right: 8px;
+    opacity: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: baseline;
 }
 
-.workspace {
-    width: 100%;
-    border-radius: 0px 8px 8px 0px;
-    margin-left: -18px;
-    padding-left: 15px;
-    margin-bottom: 15px;
-}
-
-.new_term {
-    padding-bottom: 15px;
-    padding-right: 10px;
+.tool_item {
+    margin-left: 3px;
     width: 100%;
     height: 15px;
 }
@@ -774,8 +782,8 @@
     position: relative;
     color: #616161;
     padding-top: 25px;
-    width: 15vw;
-    padding-left: 20px;
+    width: 18vw;
+    padding-left: 2px;
     padding-right: 5px;
     height: 100vh;
     background-color: #F7F6F3;
@@ -785,16 +793,16 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 100%;
+    width: 95%;
     align-items: center;
     align-self: center;
     height: 15px;
     padding-top: 8px;
     padding-bottom: 8px;
-    padding-left: 10px;
+    padding-left: 28px;
     padding-right: 10px;
     border-radius: 0px 8px 8px 0px;
-    margin-left: -18px;
+    margin-left: -15px;
 }
 
 #sidebar .term-row:hover {
@@ -824,23 +832,50 @@
 }
 
 #sidebar .content {
-    margin-top: 20px;
+    margin-top: 5px;
+    height: 90%;
+    padding-bottom: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F7F6F3;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 12px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #c1c1c1;
 }
 
 #sidebar .course {
     width: 13vw;
-    padding-left: 27px;
-    padding-right: 15px;
+    padding-left: 50px;
+    padding-right: 25px;
     padding-top: 3px;
     padding-bottom: 3px;
+
     margin-bottom: 0px;
     margin-left: -15px;
+    margin-right: 15px;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-top: 0px;
+
     border-radius: 0px 8px 8px 0px;
     color: #616161;
-    overflow:hidden;
+    overflow: hidden;
     display:inline-block;
 }
 

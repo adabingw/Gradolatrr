@@ -165,10 +165,7 @@
     }
 
     async function newData(event) {
-        let name = event.detail.info_name;
-        let type = event.detail.new_info;
         let action = event.detail.action;
-
         let assignments = info["getCourse"]["assignments"];
 
         for (let i = 0; i < assignments.length; i++) {
@@ -176,6 +173,8 @@
             let assign_data = JSON.parse(assign["data"]);
 
             if (action == 'saved') {
+                let name = event.detail.info_name;
+                let type = event.detail.new_info;
                 let new_property = {
                     "type": type, 
                 }
@@ -191,8 +190,14 @@
 
                 assign_data[name] = new_property;
             } else if (action == 'delete') {
+                let name = event.detail.info_name;
                 delete assign_data[name]
-            }
+            } else if (action == 'update') {
+                let old_name = event.detail.old_name;
+                let new_name = event.detail.new_name;
+                assign_data[new_name] = assign_data[old_name];
+                delete assign_data[old_name];
+            } 
 
             await update_assign({
                 variables: {

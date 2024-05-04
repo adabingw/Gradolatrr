@@ -125,12 +125,20 @@
                 action: 'delete',
                 info_name: event.detail.data, 
             })
+        } else if (event.detail.info == "update") {
+            let old_name = event.detail.old_name;
+            let new_name = event.detail.new_name;
+            dispatch('action', {
+                'action': 'update',
+                old_name: old_name, 
+                new_name: new_name
+            })
         } else if (event.detail.info == "saved") {
             content_info[event.detail.info_name] = event.detail.new_info;
             dispatch('action', {
                 'action': 'saved',
                 info_name: event.detail.info_name, 
-                new_info: event.detail.new_info['type']
+                new_info: event.detail.new_info
             })
         } else if (event.detail.info == "tags") {
             content_info[event.detail.info_name] = event.detail.tags;

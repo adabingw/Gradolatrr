@@ -61,12 +61,21 @@
 
     function changeInfo(event, infoname) {
         let infostuff = courseinfo[infoname];
-        courseinfo[event.detail.data] = infostuff;
-        deleteTag(infoname);
+        const keys = Object.keys(courseinfo);
+        const result = keys.reduce((acc, val) => {
+            if (val == infoname) {
+                val = event.detail.data;
+                acc[val] = infostuff;
+            } else {
+                acc[val] = courseinfo[val];
+            }
+            return acc;
+        }, {});
+        courseinfo = { ... result};
         dispatch('info', {
-            info: 'saved',
-            new_info: infostuff, 
-            info_name: event.detail.data
+            info: 'update',
+            old_name: infoname, 
+            new_name: event.detail.data
         });
     }
 
@@ -86,16 +95,18 @@
     }
 
     function deleteTag(name) {
-        dispatch('info', {
-            info: 'delete',
-            data: name
-        })
+        // dispatch('info', {
+        //     info: 'delete',
+        //     data: name
+        // })
 
         info_name = "";
     }
 
 </script>
 
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div>
     <table>
     <div class="property-table">
@@ -133,8 +144,7 @@
             </td>
             <td>
             <div class="change-type">
-                <Dropdown info={TYPES} selected={courseinfo[item]["type"]} 
-                        on:message={(e) => changeType(e, item)}/>
+                <Dropdown info={TYPES} selected={courseinfo[item]["type"]} on:message={(e) => changeType(e, item)}/>
             </div>
             </td>
             <td>

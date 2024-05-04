@@ -308,7 +308,7 @@
 {/if}
 {#if cmd == "course"}
     <p class="subheader">Information about items in this course</p>
-    <Properties bind:courseinfo={content_info} on:info={infoController}/>
+    <Properties bind:content_info={content_info} on:info={infoController}/>
 {/if}
 
 <style>

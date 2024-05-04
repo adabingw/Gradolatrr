@@ -6,7 +6,7 @@
     import Dropdown from './Dropdown.svelte';
     import { TYPES } from '../constants/constants';
 
-    export let courseinfo;
+    export let content_info;
 
     let add = false;
     let info_name;
@@ -30,7 +30,7 @@
             return;
         }
 
-        for (let item of Object.keys(courseinfo)) {
+        for (let item of Object.keys(content_info)) {
             if (item == info_name) {
                 alert("Name already exists");
                 return;
@@ -48,7 +48,7 @@
             new_info["tag_info"] = []
         }
 
-        courseinfo[info_name] = new_info;
+        content_info[info_name] = new_info;
 
         dispatch('info', {
             info: 'saved',
@@ -60,18 +60,19 @@
     }
 
     function changeInfo(event, infoname) {
-        let infostuff = courseinfo[infoname];
-        const keys = Object.keys(courseinfo);
+        let infostuff = content_info[infoname];
+        const keys = Object.keys(content_info);
+        
         const result = keys.reduce((acc, val) => {
             if (val == infoname) {
                 val = event.detail.data;
                 acc[val] = infostuff;
             } else {
-                acc[val] = courseinfo[val];
+                acc[val] = content_info[val];
             }
             return acc;
         }, {});
-        courseinfo = { ... result};
+        content_info = { ... result};
         dispatch('info', {
             info: 'update',
             old_name: infoname, 
@@ -80,16 +81,16 @@
     }
 
     function changeType(event, infoname) {
-        let old_type = courseinfo[infoname]["type"];
-        courseinfo[infoname]["type"] = event.detail.data;
-        courseinfo[infoname]["old_type"] = old_type;
+        let old_type = content_info[infoname]["type"];
+        content_info[infoname]["type"] = event.detail.data;
+        content_info[infoname]["old_type"] = old_type;
         if (event.detail.data == "multiselect" || event.detail.data == "singleselect") {
-            courseinfo[infoname]["tag_info"] = [];
+            content_info[infoname]["tag_info"] = [];
         }
         
         dispatch('info', {
             info: 'type', 
-            new_info: courseinfo[infoname],
+            new_info: content_info[infoname],
             info_name: infoname
         })
     }
@@ -131,11 +132,11 @@
             <td class="info-name">mark</td>
             <td><p class="info-type">number</p></td>
         </tr>
-    {#each Object.keys(courseinfo) as item}
+    {#each Object.keys(content_info) as item}
     {#if item != "name" && item != "mark"}
         <tr>
             <td class="tag-check">
-                <input type="checkbox" bind:checked={courseinfo[item]["checked"]} 
+                <input type="checkbox" bind:checked={content_info[item]["checked"]} 
                     on:change={() => {checkInfo(item)}}/>
             </td>
             <td class="info-name">
@@ -144,7 +145,7 @@
             </td>
             <td>
             <div class="change-type">
-                <Dropdown info={TYPES} selected={courseinfo[item]["type"]} on:message={(e) => changeType(e, item)}/>
+                <Dropdown info={TYPES} selected={content_info[item]["type"]} on:message={(e) => changeType(e, item)}/>
             </div>
             </td>
             <td>

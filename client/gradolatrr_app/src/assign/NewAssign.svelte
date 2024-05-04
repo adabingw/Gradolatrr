@@ -94,7 +94,7 @@
             let content_info = JSON.parse(new_assign["content_info"])
             for (let i of Object.keys(content_info)) {
                 let value = content_info[i];
-                if (value["type"] == "text" || value["type"] == "textarea") {
+                if (value["type"] == "text") {
                     new_assign["data"][i] = {
                         "content": "", 
                         "type": value["type"]

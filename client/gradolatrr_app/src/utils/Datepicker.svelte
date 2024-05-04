@@ -224,6 +224,7 @@ span {
 
 i {
     margin-left: 5px;
+    color: #818181 !important;
 }
 
 table {

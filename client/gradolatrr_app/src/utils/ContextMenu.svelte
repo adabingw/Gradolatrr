@@ -34,11 +34,6 @@
                 'displayText': 'Number', 
                 'class': ''
             }, {
-                'name': 'textarea', 
-                'onClick': menuClick,
-                'displayText': 'Textarea', 
-                'class': ''
-            }, {
                 'name': 'date', 
                 'onClick': menuClick,
                 'displayText': 'Date', 

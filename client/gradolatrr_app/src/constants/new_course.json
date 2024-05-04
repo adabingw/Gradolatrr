@@ -15,12 +15,5 @@
             "type": "number", 
             "required": true
         }
-    },
-    "data": {
-        "description": {
-            "type": "textarea",
-            "content": "",
-            "order": 0
-        }
     }
 }

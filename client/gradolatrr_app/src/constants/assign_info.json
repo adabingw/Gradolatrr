@@ -23,10 +23,6 @@
             "content": ["assignment", 0],
             "type": "tags", 
             "addition": [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]]
-        }, 
-        "description": {
-            "content": "", 
-            "type": "textarea"
         }
     },
     "content_info": {
@@ -53,12 +49,6 @@
             "type": "tags",
             "required": false,
             "order": 3
-        },
-        "description": {
-            "checked": false, 
-            "type": "textarea",
-            "required": false,
-            "order": 4
         }
     }
 }

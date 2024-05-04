@@ -58,7 +58,7 @@
                         let assign = assignments[i];
                         let assign_data = JSON.parse(assign["data"]);
                         assign_data[key]["type"] = new_type;
-                        if (old_type == "number" || old_type == "text" || old_type == "textarea") {
+                        if (old_type == "number" || old_type == "text") {
                             if (new_type == "multiselect" || new_type == "singleselect") {
                                 assign_data[key]["content"] = [];
                                 assign_data[key]["tag_info"] = content_info[key]["tag_info"];
@@ -68,7 +68,7 @@
                         } else if (old_type == "multiselect" || old_type == "singleselect") {
                             if (new_type == "singleselect" || new_type == "multiselect") {
                                 assign_data[key]["content"] = [];
-                            } else if (new_type == "text" || new_type == "textarea") {
+                            } else if (new_type == "text") {
                                 assign_data[key]["content"] = "";
                                 delete assign_data[key]["tag_info"];
                             } else if (new_type == "date") {

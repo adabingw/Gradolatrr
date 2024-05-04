@@ -329,14 +329,10 @@
                         on:dragstart={event => dragstart(event, item[0] , index)}
                         on:drop={event => drop(event, item[0], index)} on:dragover={dragover}>
                             <p class="term-header tablecol">
-                                {#if item[1]["type"] == "textarea"}
+                                {#if item[1]["type"] == "text"}
                                     <i class="fa-solid fa-align-justify component fa-xs"></i>
-                                {:else if item[1]["type"] == "text" || item[1]["type"] == "number"}
-                                    {#if item[1]["type"] == "text"}
-                                        <i class="fa-solid fa-font component"></i>
-                                    {:else}
-                                        <i class="fa-solid fa-hashtag component"></i>
-                                    {/if}
+                                {:else if item[1]["type"] == "number"}
+                                    <i class="fa-solid fa-hashtag component"></i>
                                 {:else if item[1]["type"] == "multiselect"}
                                     <i class="fa-solid fa-list component"></i>
                                 {:else if item[1]["type"] == "singleselect"}
@@ -377,9 +373,6 @@
                     {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
                         <td>
                             {#if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "text"}
-                                <input type="text" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
-                                on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} maxlength="20" />
-                            {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "textarea"}
                                 <span contenteditable on:input={e => textChange(i, j[0], e.currentTarget.textContent, content[i]["id"])}>
                                     {JSON.parse(content[i]["data"])[j[0]]["content"]}
                                 </span>

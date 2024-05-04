@@ -3,26 +3,29 @@
 
     export let inputText;
     const dispatch = createEventDispatcher();
+    let textarea;
 
     function dataChange() {
+        console.log(textarea.scrollHeight.toString() + "px")
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight.toString() + "px";
         dispatch('message', {
             text: "data changed"
         });
+        
     }
 </script>
 
 <div class="input-row">
-    <textarea class="input-text" rows="4" cols="50" placeholder="nothing here yet..."
-        bind:value={inputText} on:change={dataChange} on:input={dataChange} />
+    <textarea class="input-text" cols="50" placeholder="empty"
+        bind:value={inputText} on:change={dataChange} on:input={dataChange} bind:this={textarea}/>
 </div>
 
 <style>
 .input-text {
     margin-top: 5px;
-    margin-bottom: 20px;
     width: 60vw;
     margin-left: 3px;
-    height: 50px;
 }
 
 textarea {

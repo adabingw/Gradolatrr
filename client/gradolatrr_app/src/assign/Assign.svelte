@@ -116,7 +116,7 @@
         for (let c of Object.keys(content_info)) {
             if (info_temp[c] == undefined) {
                 let value = content_info[c]
-                if (value["type"] == "text" || value["type"] == "textarea") {
+                if (value["type"] == "text") {
                     info_temp[c] = {
                         "content": "", 
                         "type": value["type"]

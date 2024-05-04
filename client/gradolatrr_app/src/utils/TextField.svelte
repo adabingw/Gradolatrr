@@ -52,7 +52,9 @@
   border-top: none;
   border-bottom: none;
   border-right: none;
-  width:100%
+  width:100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 input {

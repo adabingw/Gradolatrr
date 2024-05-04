@@ -150,7 +150,7 @@
             "order": (cmd == "assign" || cmd == "bundle") ? 1 : maxOrder(data_array) + 1
         }
 
-        if (new_type == "text" || new_type == "textarea") new_property["content"] = "";
+        if (new_type == "text") new_property["content"] = "";
         else if (new_type == "number") new_property["content"] = 0;
         else if (new_type == "multiselect" || new_type == "singleselect") new_property["content"] = [["", 0]];
 
@@ -236,80 +236,65 @@
         bind:item={context_bundle[3]}
         menuNum={1}
         on:context={contextController}/>
-<table class="Table">
-<div class="Table">
-    <tbody>
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="wrapper">
         {#if data_array.length > 0 && data_array != undefined}
             {#each data_array as data, i}
             {#if data[0] != "name"}
-                <tr id={`${data[0]}`}>
-                <!-- svelte-ignore a11y-no-static-element-interactions -->
-                <div class="TableBodyRow"
-                    draggable={true}
+            <div class="row" id={`${data[0]}`} draggable={true}
                     on:dragstart={event => dragstart(event, data[0] , i)}
                     on:drop={event => dropEvent(event, data[0], i)} on:dragover={(event) => dragover(event, i)}
-                    on:dragleave={(event) => dragleave(event, i)}
-                    >
-                    <td>
+                    on:dragleave={(event) => dragleave(event, i)}>
+                    <div class="box property_name">
                         <span class="bodycellheader tablecol">
-                        {#if cmd != "assign" && cmd != "bundle"}
-                            <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                            on:click={(e) => { e.stopPropagation(); openMenu(e, i, data[0])}}></i>
-                        {/if}
-                        {#if data[1]["type"] == "textarea"}
-                            <i class="fa-solid fa-align-justify component"></i>
-                        {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
-                            {#if data[1]["type"] == "text"}
-                                <i class="fa-solid fa-font component"></i>
-                            {:else}
-                                <i class="fa-solid fa-hashtag component"></i>
+                            {#if cmd != "assign" && cmd != "bundle"}
+                                <i class="fa-solid fa-ellipsis-vertical context_menu" 
+                                on:click={(e) => { e.stopPropagation(); openMenu(e, i, data[0])}}></i>
                             {/if}
-                        {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
-                            <i class="fa-solid fa-list component"></i>
-                        {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
-                            <i class="fa-regular fa-circle-check component"></i>
-                        {:else if data[1]["type"] == "date"}
-                            <i class="fa-regular fa-calendar component"></i>
-                        {/if}
+                            {#if data[1]["type"] == "text"}
+                                <i class="fa-solid fa-align-justify component"></i>
+                            {:else if data[1]["type"] == "number"}
+                                <i class="fa-solid fa-hashtag component"></i>
+                            {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
+                                <i class="fa-solid fa-list component"></i>
+                            {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
+                                <i class="fa-regular fa-circle-check component"></i>
+                            {:else if data[1]["type"] == "date"}
+                                <i class="fa-regular fa-calendar component"></i>
+                            {/if}
                             <p>{data[0]}</p>
                         </span>
-                    </td>
-                </div>
-                </tr>
-                <tr>
-                    <div class="TableBodyRow TableBodyText">
-                        <td>
-                            {#if data[1]["type"] == "textarea"}
-                                <TextArea bind:inputText={data[1]["content"]} on:message={dataChange}/>
-                            {:else if data[1]["type"] == "text" || data[1]["type"] == "number"}
-                                 <TextField bind:inputText={data[1]["content"]} 
-                                    text="nothing here yet..." type={data[1]["type"]} on:message={dataChange}
-                                    max={100} min={0}  focus={false}/>
-                            {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
-                                <Multiselect bind:properties={data[1]["content"]} bind:selections={data[1]["tag_info"]}
-                                    on:assign={(e) => dataChangeSelect(e, data[0])} on:course={(e) => dataChangeSelect(e, data[0])} max=0/>
-                            {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
-                                <Multiselect bind:properties={data[1]["content"]} bind:selections={data[1]["tag_info"]}
-                                on:assign={(e) => dataChangeSelect(e, data[0])} on:course={(e) => dataChangeSelect(e, data[0])} max=1/>
-                            {:else if data[1]["type"] == "date" && cmd != "bundle"}
-                                <DateComp bind:date={data[1]["content"]} on:message={dataChange} />
-                            {:else if data[1]["type"] == "date" && cmd == "bundle"}
-                                <span class="details">
-                                    You can pick multiple days here. The days will be applied in chronological order. <br/>
-                                    If you pick more than the number of items (n), only the n dates picked will be applied. <br/>
-                                    If you pick less than the number of items, the last day will be applied for the remaining items.
-                                </span>
-                                <Datepicker bind:dates={data[1]["content"]} bind:num={data[1]["num"]} on:message={dataChange}/>
-                            {/if}
-                        </td>
                     </div>
-                </tr>
+                    <div class="box property_data">
+                        {#if data[1]["type"] == "text"}
+                            <TextArea bind:inputText={data[1]["content"]} on:message={dataChange}/>
+                        {:else if data[1]["type"] == "number"}
+                             <TextField bind:inputText={data[1]["content"]} 
+                                text="Empty" type={data[1]["type"]} on:message={dataChange}
+                                max={100} min={0}  focus={false}/>
+                        {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
+                            <Multiselect bind:properties={data[1]["content"]} bind:selections={data[1]["tag_info"]}
+                                on:assign={(e) => dataChangeSelect(e, data[0])} on:course={(e) => dataChangeSelect(e, data[0])} max=0/>
+                        {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
+                            <Multiselect bind:properties={data[1]["content"]} bind:selections={data[1]["tag_info"]}
+                            on:assign={(e) => dataChangeSelect(e, data[0])} on:course={(e) => dataChangeSelect(e, data[0])} max=1/>
+                        {:else if data[1]["type"] == "date" && cmd != "bundle"}
+                            <DateComp bind:date={data[1]["content"]} on:message={dataChange} />
+                        {:else if data[1]["type"] == "date" && cmd == "bundle"}
+                            <span class="details">
+                                You can pick multiple days here. The days will be applied in chronological order. <br/>
+                                If you pick more than the number of items (n), only the n dates picked will be applied. <br/>
+                                If you pick less than the number of items, the last day will be applied for the remaining items.
+                            </span>
+                            <Datepicker bind:dates={data[1]["content"]} bind:num={data[1]["num"]} on:message={dataChange}/>
+                        {/if}
+                    </div>
+            </div>
             {/if} 
             {/each} 
         {/if}
-        </tbody>
 </div>
-</table>
 {#if cmd != "assign" && cmd != "bundle"}
     <NewProperty on:message={addedProperty} data={data_array}/>
 {/if}
@@ -336,38 +321,46 @@
     width: 100%;
 }
 
-.TableBodyRow {
-    display: flex; 
-    align-items: center;
-    width: 100%;
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  max-width: 100vw;
+  margin-right: 50px;
+  align-self: start;
+  vertical-align: top;
+  overflow-x: auto;
+}
+
+p {
+    margin-top: -3px;
+}
+
+i {
+    color: #818181 !important;
+}
+
+.row {
+    display: contents;
+    color: #717171 !important;
+}
+
+.property_name {
+    width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 5px;
+    vertical-align: top;
+}
+
+.property_data {
+    display: flex;
+    align-items: start;
 }
 
 .bodycellheader {
     display: flex;
     flex-direction: row;
-    align-items: center;
     width: fit-content;
     min-width: fit-content;
-}
-
-.TableBodyText {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: -15px;
-    margin-left: 15px;
-    width:100%;
-}
-
-.TableBodyRow:hover {
-    cursor: pointer;
-}
-
-.Table {
-    width:100%;
-}
-
-table, tbody, tr, td, .TableBodyRow {
-    width: 100%;
 }
 </style>

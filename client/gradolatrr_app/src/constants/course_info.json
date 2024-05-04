@@ -90,25 +90,9 @@
             "type": "tags",
             "required": false,
             "order": 3
-        },
-        "description": {
-            "checked": false, 
-            "type": "textarea",
-            "required": false,
-            "order": 4
         }
     }, 
     "data": {
-        "description": {
-            "type": "textarea",
-            "content": "hello", 
-            "order": 5
-        }, 
-        "resource": {
-            "type": "textarea",
-            "content": "resource",
-            "order": 1
-        },
         "tags": {
             "type": "tags",
             "content": [["assignment", "#afc3e3"], ["final", "#debada"], ["midterm", "#c5deba"]],

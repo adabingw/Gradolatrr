@@ -21,6 +21,7 @@
     import { onDestroy } from 'svelte';
     import Folder from '../utils/Folder.svelte';
     import DateComp from "../utils/Date.svelte";
+  import Filter from '../utils/Filter.svelte';
     
     export let term_id;
     export let term_name;
@@ -52,8 +53,13 @@
     const math = create(all, config);
 
     let showMenu = false;
+    let filter = false;
+
+    let search = false;
+    let searchInput = '';
+
     let context_bundle = [ 0, 0, 0 ];
-    
+    let filter_bundle = [0, 0, 0];
 
     async function deleteAssignment(assign_id) {
         let confirmDelete = confirm("Delete this assignment?");
@@ -269,6 +275,15 @@
         if (body) body.style.overflowY = 'hidden';
     }
 
+    function openFilter(e, properties) {
+        filter = false;
+        e.preventDefault();
+        filter_bundle = [e.clientX, e.clientY, properties]
+        filter = true;
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'hidden';
+    }
+
     function contextController(e) {
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'auto';
@@ -283,6 +298,10 @@
         } else if (e.detail.context == 'duplicate') {
             duplicateAssign(index, item)
         }
+    }
+
+    function filterController(e) {
+
     }
 
     async function textChange(i, key, value, assign_id) {
@@ -415,6 +434,11 @@
         bind:item={context_bundle[3]}
         menuNum={2}
         on:context={contextController}/>
+<Filter bind:showMenu={filter} 
+        bind:x={filter_bundle[0]} 
+        bind:y={filter_bundle[1]} 
+        bind:properties={filter_bundle[2]}
+        on:context={filterController}/>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="page">
@@ -439,6 +463,71 @@
                 <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
                 <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
             {:else}
+            <div class={`table_actions-${(search || filter) ? 'show' : 'hide'}`} id="actions">
+                <i class="fa-solid fa-filter"
+                    use:tooltip={{
+                        content: 'filter',
+                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                        position: 'top',
+                        animation: 'slide',
+                        arrow: false
+                    }}
+                    on:click={(e) => {
+                        e.stopPropagation(); 
+                        openFilter(e, content_array);
+                    }}
+                ></i>
+                <i class="fa-solid fa-magnifying-glass"
+                    use:tooltip={{
+                        content: 'search',
+                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                        position: 'top',
+                        animation: 'slide',
+                        arrow: false
+                    }}
+                    on:click={() => {
+                        let element = document.getElementById('search_input');
+                        if (element && !search) {
+                            element.style.transition = "width 3s ease-in-out";
+                            element.style.width = '200px';
+                            element.style.display = 'block';
+                            search = true;
+                        } else if (element && search) {
+                            element.style.transition = "width 3s ease-in-out";
+                            element.style.width = '0px';
+                            element.style.display = 'none';
+                            search = false;
+                        }
+
+                    }}
+                ></i>
+                <input type="text" id="search_input" placeholder="search by name" bind:value={searchInput}/>
+                <i class="fa-solid fa-arrow-up-wide-short"
+                    use:tooltip={{
+                        content: 'sort',
+                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                        position: 'top',
+                        animation: 'slide',
+                        arrow: false
+                    }}></i>
+                <i class="fa-solid fa-layer-group"
+                    use:tooltip={{
+                        content: 'group (coming soon?)',
+                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                        position: 'top',
+                        animation: 'slide',
+                        arrow: false
+                    }}></i>
+                <i class="fa-solid fa-toilet-paper"
+                    use:tooltip={{
+                        content: 'paging (coming soon?)',
+                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                        position: 'top',
+                        animation: 'slide',
+                        arrow: false
+                    }}></i>
+            </div>
+
             <div class="wrapper" style={`grid-template-columns: repeat(${cols}, minmax(200px, 1fr));`}>
                 <div class="row">
                     <div class="tablehead" on:click={() => sortTable("name")}>
@@ -473,6 +562,7 @@
                     {/each}
                 </div>
                 {#each Object.keys(content) as i}
+                {#if content[i]['name'].includes(searchInput)}
                     <div  class="row" id={i} >
                         <div class="box name_assignment">
                         <span>
@@ -517,7 +607,9 @@
                             {/if}
                         {/each}
                     </div>
-                    {/each}
+                {/if}
+                {/each}
+                
                 </div>
                 <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add"> item </span> </Link>
                 <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}>
@@ -551,10 +643,16 @@
     
 <style>
 
+#search_input {
+    width: 0px;
+    display: none;
+}
+
 .tablehead {
     padding-bottom: 0px;
     min-height: fit-content;
-    border-bottom: 1px solid #d1d1d1;
+    border-top: 1px solid #b1b1b1;
+    border-bottom: 1px solid #b1b1b1;
     padding-left: 0px;
     min-width: fit-content;
     display: flex;
@@ -566,6 +664,28 @@
 
 .tablehead:hover {
     cursor: pointer;
+}
+
+.table_actions-hide {
+    margin-bottom: 15px;
+    opacity: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 90%;
+}
+
+.table_actions-hide:hover {
+    opacity: 1;
+}
+
+.table_actions-show {
+    margin-bottom: 15px;
+    opacity: 1;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 90%;
 }
 
 .wrapper {

@@ -12,7 +12,7 @@
     function dataChange(e) {
         dispatch('message', {
             text: "data changed",
-            data: inputText
+            data: e.target.value
         });
     }
 

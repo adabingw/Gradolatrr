@@ -6,6 +6,9 @@
   font-family: "Segoe UI", Arial, sans-serif;
   font-weight: 400;
   width: 100%;
+  --toastBackground: rgba(245, 208, 254, 0.95);
+  --toastColor: #424242;
+  --toastBarBackground: #e8e5df;
 }
 
 i {

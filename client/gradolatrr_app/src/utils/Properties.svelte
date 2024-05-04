@@ -5,6 +5,8 @@
     import TextField from './TextField.svelte';
     import Dropdown from './Dropdown.svelte';
     import { TYPES } from '../constants/constants';
+    import Toasts from './Toasts.svelte';
+    import { addToast } from "./store";
 
     export let content_info;
 
@@ -62,10 +64,28 @@
     function changeInfo(event, infoname) {
         let infostuff = content_info[infoname];
         const keys = Object.keys(content_info);
+
+        let new_name = event.detail.data;
+        let conflict = false;
+        Object.keys(content_info).forEach((value, index) => {
+            if (value == new_name) {
+                new_name += "_";
+                conflict = true;
+            }
+        })
+        if (conflict) {
+            addToast({ 
+                message: 'conflicting property names', 
+                type: 'info', 
+                dismissible: true, 
+                timeout: 0 
+            })
+        }
         
         const result = keys.reduce((acc, val) => {
             if (val == infoname) {
-                val = event.detail.data;
+
+                val = new_name;
                 acc[val] = infostuff;
             } else {
                 acc[val] = content_info[val];
@@ -76,7 +96,7 @@
         dispatch('info', {
             info: 'update',
             old_name: infoname, 
-            new_name: event.detail.data
+            new_name: new_name
         });
     }
 
@@ -96,16 +116,17 @@
     }
 
     function deleteTag(name) {
-        // dispatch('info', {
-        //     info: 'delete',
-        //     data: name
-        // })
+        dispatch('info', {
+            info: 'delete',
+            data: name
+        })
 
         info_name = "";
     }
 
 </script>
 
+<Toasts />
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div>

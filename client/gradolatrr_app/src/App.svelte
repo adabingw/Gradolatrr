@@ -88,16 +88,16 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 </div>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div>
   <Router>
       <div class="flex-row">
           <div id="navbar">
             <Sidebar class="sidebar" bind:w={w} bind:reload={sidebarReload} bind:triggerreload={reload} on:collapse={() => collapseNav()}/>
           </div>
-          <div class="divider" on:mousedown={dividerMousedown}>
-            
-          </div>
-          <div id="homepage" style={`width: ${100-w}vw`} on:scroll={(e) => onPageScroll(e)}>
+          <div class="divider" on:mousedown={dividerMousedown} />
+          <div id="homepage" style={`width: ${100-w}vw`} >
             <i class="fa-solid fa-angles-right" id="navbar_show" on:click={() => showNav()}
                 use:tooltip={{
                     content:

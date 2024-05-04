@@ -415,6 +415,8 @@
         bind:item={context_bundle[3]}
         menuNum={2}
         on:context={contextController}/>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="page">
     <Modal bind:showModal>
         <h2 slot="header">
@@ -432,25 +434,23 @@
         {#if content_array != undefined || content_array != null}
             {#if content_array.length == -1}
             <div class="empty">
-                nothing in here yet...
+                empty
             </div>
                 <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
                 <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
             {:else}
             <div class="wrapper" style={`grid-template-columns: repeat(${cols}, minmax(200px, 1fr));`}>
                 <div class="row">
-                    <div class="box tablehead" on:click={() => sortTable("name")}>
+                    <div class="tablehead" on:click={() => sortTable("name")}>
                         <p class="term-header tablecol"><i class="fa-solid fa-font component"></i> name</p>
                     </div>
-                    <div class="box tablehead" on:click={() => sortTable("mark")}>
+                    <div class="tablehead" on:click={() => sortTable("mark")}>
                         <p class="term-header tablecol"><i class="fa-solid fa-hashtag component"></i> mark</p>
                     </div>
                     
                     {#each content_array as item, index}
                         {#if item[1]["checked"] && item[0] != "name" && item[0] != "mark"}
-                            <!-- svelte-ignore a11y-click-events-have-key-events -->
-                            <!-- svelte-ignore a11y-no-static-element-interactions -->
-                            <div class="box tablehead" on:click={() => sortTable(item[0])} draggable={true}
+                            <div class="tablehead" on:click={() => sortTable(item[0])} draggable={true}
                                 on:dragstart={event => dragstart(event, item[0] , index)}
                                 on:drop={event => drop(event, item[0], index)} on:dragover={event => dragover(event, index)}
                                 on:dragleave={event => dragleave(event, index)} id={`${item[0]}`}>
@@ -476,8 +476,6 @@
                     <div  class="row" id={i} >
                         <div class="box name_assignment">
                         <span>
-                            <!-- svelte-ignore a11y-click-events-have-key-events -->
-                            <!-- svelte-ignore a11y-no-static-element-interactions -->
                             <i class="fa-solid fa-ellipsis-vertical context_menu" 
                                 on:click={(e) => {e.stopPropagation(); openMenu(e, content[i], content[i]["id"])}}></i>
                             <span contenteditable on:input={e => textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}>
@@ -533,8 +531,6 @@
                         <i class="fa-regular fa-file-zipper fa-xs" ></i> <span class="add">bundle </span>
                     </span> 
                 </Link>
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <!-- svelte-ignore a11y-no-static-element-interactions -->    
                 <div class="grade-block">
                     <p class="grade">Grade: </p> { grade == undefined ? "no grade" : grade}
                     <i class="fa-regular fa-circle-question" on:click={() => { showModal = true; }}></i>
@@ -554,6 +550,19 @@
 </div>
     
 <style>
+
+.tablehead {
+    padding-bottom: 0px;
+    min-height: fit-content;
+    border-bottom: 1px solid #d1d1d1;
+    padding-left: 0px;
+    min-width: fit-content;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    word-break: break-all;
+    padding-right: 10px;
+}
 
 .tablehead:hover {
     cursor: pointer;
@@ -579,7 +588,6 @@
     border-bottom: 1px solid #d1d1d1;
     padding-left: 0px;
     min-width: fit-content;
-    vertical-align: center;
     display: flex;
     align-items: center;
     word-wrap: break-word;

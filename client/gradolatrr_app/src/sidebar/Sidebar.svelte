@@ -651,6 +651,8 @@
         on:context={contextControllerCourse}/>
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div id="sidebar" style={`width: ${w}vw`} on:mouseover={() => {
     const tools = document.getElementById("tools");
     if (tools) {
@@ -668,8 +670,6 @@
         <div class="name">graku</div>
     </Link>
     <div id="tools">
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <i class="fa-solid fa-angles-left tool_item"
             on:click={() => {
                 dispatch('collapse', {
@@ -714,13 +714,10 @@
     <div class="content">
     {#if info != undefined}
     {#each Object.keys(info.allTerm["items"]) as i}
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div draggable={true} on:dragstart={event => dragstart(event, i)} 
         on:drop={event => drop(event, i)}
     >
         {#if info.allTerm["items"][i] != undefined} 
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div id={`term-${info.allTerm['items'][i]['id']}`} 
                 on:dragover={event => dragover(event, 'term', i)}
                 on:dragleave={event => dragleave(event, 'term', i)} class="term-row" 
@@ -762,8 +759,6 @@
             {#each Object.keys(info.allTerm["items"][i]["courses"]) as j}
             <div>
                 <Link to={`/course/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}/${info.allTerm["items"][i]["courses"][j]["id"]}/${info.allTerm["items"][i]["courses"][j]["name"]}`}>
-                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <span class="course_wrapper" id={`course-${info.allTerm['items'][i]['courses'][j]['id']}`}>
                         <p class="course" draggable={true} on:dragstart={event => dragstartCourse(event, j, i)} 
                             on:drop={event => dropCourse(event, j, i)} on:dragover={event => dragover(event, 'course', i, j)}

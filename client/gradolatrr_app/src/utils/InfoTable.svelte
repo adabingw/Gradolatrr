@@ -304,6 +304,10 @@
 {/if}
 
 <style>
+.subheader {
+    margin-top: 15px;
+}
+
 .details {
     color: #818181;
     font-size: 15px;

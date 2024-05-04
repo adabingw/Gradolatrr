@@ -177,20 +177,18 @@
     }
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div class="page">
     <Folder term_id={term_id} term_name={term_name} course_id={course_id} course_name={course_name} assign_name={""} />
     <p class="header">New Bundle</p>
-    <!-- <span class="header"><p class="title">Create item bundle</p>   <p class="section">{term_name}/{course_name}</p></span> -->
     <TextField type="number" text="Number of items in this bundle" bind:inputText={num} max={10} min={1}  focus={true}/>
     <br/>
-    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <label on:click={() => { manual = true; }} class="label">
         <input type="radio" name="input_form" value="manual">
         Manual input
     </label><br/><br/>
-    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <label on:click={() => { manual = false; }} class="label">
         <input type="radio" name="input_form" value="prefix" checked>
         Use prefix
@@ -222,8 +220,6 @@
     {/if}
 
     <div class="term-op">
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <i class="fa-solid fa-ban" 
             on:click={() => {
                 data_changed = false;
@@ -237,8 +233,6 @@
                 animation: 'slide',
                 arrow: false
             }}></i>
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
             use:tooltip={{
                 content:

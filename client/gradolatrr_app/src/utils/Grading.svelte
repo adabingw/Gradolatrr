@@ -2,6 +2,7 @@
 // @ts-nocheck
     import { createEventDispatcher } from "svelte";
     import { all, create} from "mathjs";
+    import { tooltip } from '@svelte-plugins/tooltips';
 
     import Button from "./Button.svelte";
     import { DEFAULT_GRADING } from "../constants/constants";
@@ -82,6 +83,8 @@
 </div>
 {/if}
 {#if edit_grading && variables != undefined && grading != undefined}
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->            
 <div>
     <h3>a little explanation</h3>
         <ul>
@@ -89,9 +92,6 @@
             <li><span class="equation"><em>variable</em></span> must be a field in the item</li>
             <li>the equation represents the way to calculate the grade for ONE item</li>
             <li>the grade in the course is calculated by summing up the weighted value of all items</li>
-            <!-- <li>square brackets <span class="equation">[<em>variable</em>]</span> 
-                indicate the <em>variable</em> field of all items. </li>
-            <li>use <span class="equation">sum([variable])</span> to sum the <em>variable</em> field of all items. </li> -->
             <li>use <span class="equation">#</span> to get the number of items</li>
             <li>individual variables represent an individual field of a specific row.</li>
             <li>
@@ -107,8 +107,8 @@
             <p class="alert">{eq_error}</p>
         {/if}
         <div class="grading-div">
-            <i class="fa-solid fa-ban" on:message={cancelVariable}></i>
-            <i class="fa-solid fa-floppy-disk" on:message={saveVariable}></i>
+            <i class="fa-solid fa-xmark" on:click={cancelVariable}></i>
+            <i class="fa-solid fa-floppy-disk" on:click={saveVariable}></i>
         </div>
     </div>
 {:else} 
@@ -138,7 +138,7 @@ textarea {
 
 .grading-div {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-around;
     margin-top: 20px;
     margin-bottom: 15px;
 }

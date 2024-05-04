@@ -175,16 +175,15 @@
 
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="page">
     <Folder term_id={term_id} term_name={term_name} course_id={course_id} course_name={course_name} assign_name={name} />
     <HeaderField bind:inputText={name} text="" on:message={(event) => {name = event.detail.data;}}/>    
     {#if info != undefined}
         <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange}/>
     {/if}
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="term-op">
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <i class="fa-solid fa-trash-can" on:click={() => deleteAssignment()}
             use:tooltip={{
                 content: 'delete',
@@ -194,7 +193,6 @@
                 arrow: false
             }}
             ></i>
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
         <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
             use:tooltip={{
                 content: 'save',

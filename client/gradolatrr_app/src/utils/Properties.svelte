@@ -73,12 +73,21 @@
                 conflict = true;
             }
         })
+        if (!new_name || !event.detail.data) {
+            new_name = "_"
+            addToast({ 
+                message: 'name cannot be empty', 
+                type: 'info', 
+                dismissible: true, 
+                timeout: 3000
+            })
+        }
         if (conflict) {
             addToast({ 
                 message: 'conflicting property names', 
                 type: 'info', 
                 dismissible: true, 
-                timeout: 0 
+                timeout: 3000
             })
         }
         

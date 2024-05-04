@@ -42,10 +42,10 @@
     width: 20rem;
   }
   .error {
-    background: IndianRed;
+    background: #d6aba3;
   }
   .success {
-    background: MediumSeaGreen;
+    background: #b4d4bd;
   }
   .info {
     background: #e8e5df;

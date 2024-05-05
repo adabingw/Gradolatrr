@@ -315,6 +315,7 @@
     }
 
     async function textChange(i, key, value, assign_id) {
+        console.log("value: ", value)
         let new_content = JSON.parse(content[i]["data"])
         new_content[key]["content"] = value;
         if (key == "mark" && !value) new_content[key]["content"] = 0; 
@@ -618,6 +619,7 @@
                                         on:assign={saveAssignChanges} on:course={saveCourseChanges} max=1/>
                                     {:else if j[1]["type"] == "checked"}
                                         <input type="checkbox" checked={JSON.parse(content[i]["data"])[j[0]]["content"]}
+                                        on:change={(e) => textChange(i, j[0], e.target.checked, content[i]["id"])}
                                         />
                                     {/if}
                                 </div>

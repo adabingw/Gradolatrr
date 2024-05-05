@@ -603,8 +603,6 @@
         }
     }
 
-
-
     $: {
         reload;
         if (reload) {
@@ -654,59 +652,63 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div id="sidebar" style={`width: ${w}vw`} on:mouseover={() => {
-    const tools = document.getElementById("tools");
-    if (tools) {
-        tools.style.transition = "opacity 0.3s ease-in-out";
-        tools.style.opacity = 1;
-    }
-}} on:mouseleave={() => {
-    const tools = document.getElementById("tools");
-    if (tools) {
-        tools.style.opacity = 0;
-        tools.style.transition = "opacity 0.3s ease-in-out";
-    }
-}}>
-    <Link to="/">
-        <div class="name">graku</div>
-    </Link>
-    <div id="tools">
-        <i class="fa-solid fa-angles-left tool_item"
-            on:click={() => {
-                dispatch('collapse', {
-                    text: "clicked"
-                });
-            }}
-            use:tooltip={{
-                content:
-                  'collapse',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'bottom',
-                animation: 'slide',
-                arrow: false
-            }}
-        ></i>
-        <Link to={'/new_term'}>
-            <i class="fa-solid fa-circle-plus tool_item"
-            use:tooltip={{
-                content:
-                  'add term',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'bottom',
-                animation: 'slide',
-                arrow: false
-            }}></i>    
+        const tools = document.getElementById("tools");
+        if (tools) {
+            tools.style.transition = "opacity 0.3s ease-in-out";
+            tools.style.opacity = 1;
+        }
+    }} on:mouseleave={() => {
+        const tools = document.getElementById("tools");
+        if (tools) {
+            tools.style.opacity = 0;
+            tools.style.transition = "opacity 0.3s ease-in-out";
+        }
+    }}
+>
+
+    <div class="top">
+        <Link to="/">
+            <div class="name">graku</div>
         </Link>
-        <Link to={'/settings'}>
-            <i class="fa-solid fa-gear tool_item"
-            use:tooltip={{
-                content:
-                  'settings',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'bottom',
-                animation: 'slide',
-                arrow: false
-            }}></i>
-        </Link>
+        <div id="tools">
+            <i class="fa-solid fa-angles-left tool_item"
+                on:click={() => {
+                    dispatch('collapse', {
+                        text: "clicked"
+                    });
+                }}
+                use:tooltip={{
+                    content:
+                      'collapse',
+                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                    position: 'bottom',
+                    animation: 'slide',
+                    arrow: false
+                }}
+            ></i>
+            <Link to={'/new_term'}>
+                <i class="fa-solid fa-circle-plus tool_item"
+                use:tooltip={{
+                    content:
+                      'add term',
+                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                    position: 'bottom',
+                    animation: 'slide',
+                    arrow: false
+                }}></i>    
+            </Link>
+            <Link to={'/settings'}>
+                <i class="fa-solid fa-gear tool_item"
+                use:tooltip={{
+                    content:
+                      'settings',
+                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                    position: 'bottom',
+                    animation: 'slide',
+                    arrow: false
+                }}></i>
+            </Link>
+        </div>
     </div>
     <div class="workspace">
     </div>
@@ -790,10 +792,18 @@
     display: block;
 }
 
+.top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: top;
+    align-self: top;
+    align-content: top;
+}
+
 .name {
-    position: absolute;
-    top: 15px;
-    left: 13px;
+    margin-left: 15px;
     font-weight: 500;
     color: #717171;
 }
@@ -804,9 +814,6 @@
 }
 
 #tools {
-    position: absolute;
-    top: 15px;
-    right: 8px;
     opacity: 0;
     display: flex;
     flex-direction: row-reverse;

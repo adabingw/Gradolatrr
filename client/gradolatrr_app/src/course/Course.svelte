@@ -63,6 +63,11 @@
     let context_bundle = [ 0, 0, 0 ];
     let filter_bundle = [0, 0, 0];
 
+    let sort = [0, 0];
+    let sorts = {};
+    let showSort = false;
+    let sort_bundle = [ 0, 0, 0, 0 ];
+
     async function deleteAssignment(assign_id) {
         let confirmDelete = confirm("Delete this assignment?");
         if (!confirmDelete) return;
@@ -280,7 +285,6 @@
     function openFilter(e, properties) {
         filter = false;
         e.preventDefault();
-        console.log(properties)
         filter_bundle = [e.clientX, e.clientY, [...properties, [
             'name', { type: 'text' }
         ], [
@@ -289,6 +293,81 @@
         filter = true;
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'hidden';
+    }
+
+    function openSort(e, content) {
+        showSort = false;
+        e.preventDefault();
+        sort_bundle = [e.clientX, e.clientY, sort, [...content, [
+            'name', { type: 'text' }
+        ], [
+            'mark', { type: 'number'}
+        ]] ]
+        showSort = true;
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'hidden';
+    }
+
+    function sortController(e) {     
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'auto';
+
+        let index = e.detail.sort;
+        let context = e.detail.context;
+
+        if (sort[0] == index && sort[1] == context) return;   
+        if (context == 'alpha_asc') {
+            sort = [index, 1];
+        } else if (context == 'alpha_desc') {
+            sort = [index, 2];
+        } else if (context == 'grade_asc') {
+            sort = [index, 3];
+        } else if (context == 'grade_desc') {
+            sort = [index, 4];
+        } else if (context == 'custom') {
+            sort = [index, 5];
+        }
+        sorts[name] = sort;
+        localStorage.setItem("sort-course", JSON.stringify(sorts));
+        sortCourses();
+    }
+
+    function sortItems() {
+        /**
+         * 0: default
+         * 1: alphabetical asc
+         * 2: alphabetical desc
+         * 3: grade asc
+         * 4: grade desc
+        */
+        if (sort == 0) {
+            courses = info["getTerm"]["courses"];
+        } else if (sort == 1) {
+            courses.sort(function(a, b){
+                if(a.name < b.name) { return -1; }
+                if(a.name > b.name) { return 1; }
+                return 0;
+            })
+        } else if (sort == 2) {
+            courses.sort(function(a, b){
+                if(a.name < b.name) { return 1; }
+                if(a.name > b.name) { return -1; }
+                return 0;
+            })
+        } else if (sort == 3) {
+            courses.sort(function(a, b){
+                if(a.grade < b.grade) { return -1; }
+                if(a.grade > b.grade) { return 1; }
+                return 0;
+            })
+        } else if (sort == 4) {
+            courses.sort(function(a, b){
+                if(a.grade < b.grade) { return 1; }
+                if(a.grade > b.grade) { return -1; }
+                return 0;
+            })
+        }
+        courses = [...courses];
     }
 
     function contextController(e) {
@@ -426,6 +505,16 @@
             filterInput = JSON.parse(filterInput)
         }
         last_info = info;
+
+        sorts = JSON.parse(localStorage.getItem('sort-course'));
+        if (sorts && sorts[name]) sort = sorts[name];
+        else if (!sorts) {
+            sorts = {};
+            sorts[name] = sort;
+        } else if (!sorts[name]) {
+            sorts[name] = sort
+        };
+        localStorage.setItem("sort-course", JSON.stringify(sorts));
     }
 
     $: {
@@ -451,6 +540,13 @@
         bind:properties={filter_bundle[2]}
         bind:prevfilters={filterInput}
         on:context={filterController}/>
+<ContextMenu bind:showMenu={showSort} 
+        bind:x={sort_bundle[0]} 
+        bind:y={sort_bundle[1]} 
+        bind:index={sort_bundle[2]}     
+        bind:item={sort_bundle[3]}   
+        menuNum={6}
+        on:context={sortController}/>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="page">
@@ -521,7 +617,12 @@
                         position: 'top',
                         animation: 'slide',
                         arrow: false
-                    }}></i>
+                    }}
+                    on:click={(e) => {
+                        e.stopPropagation(); 
+                        openSort(e, content_array);
+                    }}
+                ></i>
                 <i class="fa-solid fa-layer-group"
                     use:tooltip={{
                         content: 'group (coming soon?)',

@@ -13,6 +13,7 @@
     let name; 
     let type = 0;
     let visible = true;
+    let required = false;
 
     const dispatch = createEventDispatcher();
 
@@ -87,6 +88,10 @@
                     }}>
                         <i class={`fa-solid ${visible ? 'fa-eye' : 'fa-eye-slash'}`}></i> 
                         <span>{visible ? 'show' : 'hide'}</span>
+                    </div>
+                    <div class="action">
+                        <i class="fa-solid fa-asterisk"></i>
+                        <span>{required ? 'required' : 'not required'}</span>
                     </div>
                 {/if}
                 <div class="action" on:click={saveProperty}>

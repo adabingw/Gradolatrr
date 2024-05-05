@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher, onMount } from 'svelte';
+  import { clickOutside } from './utils.svelte';
 
     export let x;
     export let y;
@@ -147,7 +148,7 @@
         if (menuNum == 1) menuItem = menuItems1;
         else if (menuNum == 2) menuItem = menuItems2;
         else if (menuNum == 3) menuItem = menuItems3;
-        else if (menuNum == 5) menuItem = menuItems5;
+        else if (menuNum == 5 || menuNum == 6) menuItem = menuItems5;
         else menuItem = menuItems4;
     });
 
@@ -166,10 +167,83 @@
 
 </script>
 
+{#if showMenu}
+<div style={style} class:show={showMenu} use:clickOutside on:click_outside={onPageClick}>
+    <div class={`navbar`} id="navbar">
+        <ul>
+            {#if menuNum == 6}
+            <div class="sort_key">
+                Sort by
+                {#each item as i, i2}
+                <li>
+                    <button class={`sort_item ${index[0] == i2 ? 'selected' : ''}`}> 
+                        {i[0]}
+                    </button>
+                </li>
+                {/each}
+            </div>
+            {/if}
+            
+            {#each menuItem as item, i}
+                {#if item.name == "hr"}
+                    <hr>
+                {:else}
+                    <li>
+                        {#if item.onClick == undefined} 
+                            <button> 
+                                <i class={item.class}></i>
+                                {item.displayText}
+                            </button>
+                        {:else}
+                            <button class={`menu-${menuNum} ${menuNum == 6 && index[1] == i ? 'selected' : ''}`}
+                                on:click={() => item.onClick(item.name, undefined)} disabled={item.disable == true}> 
+                            {#if menuNum == 5 && index == i}
+                                <i class="fa-solid fa-check"></i>
+                            {/if}
+                                <i class={`${item.class}`} id={item.disable ? "disabled" : ""}></i>
+                                {item.displayText}
+                            </button>
+                        {/if}
+                    </li>
+                    {#if item.subClasses}
+                    {#each item.subClasses as subClasses}
+                        <li class="subclass">
+                            <button on:click={() => subClasses.onClick(item.name, subClasses.name)} class="subclass"> 
+                                {subClasses.displayText}
+                            </button>
+                        </li>
+                    {/each}
+                    {/if}
+                {/if}
+            {/each}
+        </ul>
+    </div>
+</div>
+{/if}
+
 <style>
 * {
     padding: 0;
     margin: 0;
+}
+
+.sort_item {
+    padding-left: 25px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.sort_key {
+    border-bottom: 1px solid #d1d1d1;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.selected {
+    color: #000;
+    text-align: left;
+    border-radius: 5px;
+    background-color: #eee;
 }
 
 .navbar{
@@ -201,7 +275,7 @@ button[disabled]:hover{
     cursor: not-allowed;
 }
 
-ul li{
+ul li {
     display: block;
     list-style-type: none;
     width: 1fr;
@@ -263,46 +337,3 @@ hr{
     padding-left: 15px;
 }
 </style>
-
-{#if showMenu}
-<div style={style} class:show={showMenu}>
-    <div class={`navbar`} id="navbar">
-        <ul>
-            {#each menuItem as item, i}
-                {#if item.name == "hr"}
-                    <hr>
-                {:else}
-                    <li>
-                        {#if item.onClick == undefined} 
-                            <button> 
-                                <i class={item.class}></i>
-                                {item.displayText}
-                            </button>
-                        {:else}
-                            <button class={`menu-${menuNum}`}
-                                on:click={() => item.onClick(item.name, undefined)} disabled={item.disable == true}> 
-                            {#if menuNum == 5 && index == i}
-                                <i class="fa-solid fa-check"></i>
-                            {/if}
-                                <i class={`${item.class}`} id={item.disable ? "disabled" : ""}></i>
-                                {item.displayText}
-                            </button>
-                        {/if}
-                    </li>
-                    {#if item.subClasses}
-                    {#each item.subClasses as subClasses}
-                        <li class="subclass">
-                            <button on:click={() => subClasses.onClick(item.name, subClasses.name)} class="subclass"> 
-                                {subClasses.displayText}
-                            </button>
-                        </li>
-                    {/each}
-                    {/if}
-                {/if}
-            {/each}
-        </ul>
-    </div>
-</div>
-{/if}
-
-<svelte:window on:click={(e) => onPageClick(e)}/>

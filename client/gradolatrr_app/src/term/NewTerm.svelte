@@ -72,7 +72,6 @@
 
     function updateChange(event) {
         data_changed = true;
-        console.log(event.detail.data, info)
         info["data"] = event.detail.data;
     }
 

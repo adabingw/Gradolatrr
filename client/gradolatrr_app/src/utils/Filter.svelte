@@ -1,5 +1,5 @@
 <script>
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
     import { clickOutside } from './utils.svelte';
     import { CONDITION, LOGIC } from '../constants/constants';
 

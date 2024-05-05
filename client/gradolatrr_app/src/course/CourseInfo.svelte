@@ -177,19 +177,19 @@
 
             if (action == 'saved') {
                 let name = event.detail.info_name;
-                let type = event.detail.new_info;
+                let info = event.detail.new_info;
                 let new_property = {
-                    "type": type, 
+                    "type": info.type, 
                 }
 
-                if (type == "number") new_property["content"] = 0;
-                else if (type == "text" || type == "textarea") new_property["content"] = "";
-                else if (type == "multiselect" || type == "singleselect") {
+                if (info.type == "number") new_property["content"] = 0;
+                else if (info.type == "text") new_property["content"] = "";
+                else if (info.type == "multiselect" || info.type == "singleselect") {
                     new_property["content"] = [];
                     new_property["tag_info"] = [];
-                } else if (type == "date") {
+                } else if (info.type == "date") {
                     new_property["content"] = (new Date()).toISOString().split('T')[0]
-                } else if (type == "checked") {
+                } else if (info.type == "checked") {
                     new_property["content"] = false;
                 }
 

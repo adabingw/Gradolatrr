@@ -12,12 +12,12 @@
     import ContextMenu from "./ContextMenu.svelte";
     import DateComp from "./Date.svelte";
     import Multiselect from "./Multiselect.svelte";
+    import { TERM_TYPES } from "../constants/constants";
 
     export let cmd;
     export let info;
 
     let data = info["data"];
-    console.log(info)
     data = JSON.parse(data);
         
     let content_info;
@@ -34,6 +34,9 @@
     let showMenu = false;
     let context_bundle = [ 0, 0, 0 ];
     let update;
+
+    let showAdd = false;
+    let add_bundle = [0, 0];
 
     if (cmd == "term") update = mutation(UPDATE_TERM);
     else if (cmd == "course") update = mutation(UPDATE_COURSE);
@@ -197,6 +200,13 @@
         showMenu = true;
     }
 
+    function openNew(e) {
+        showAdd = false;
+        e.preventDefault();
+        add_bundle = [e.clientX, e.clientY];
+        showAdd = true;
+    }
+
     function contextController(e) {
         const context = e.detail.context; 
         const subcontext = e.detail.subcontext;
@@ -245,6 +255,13 @@
         bind:item={context_bundle[3]}
         menuNum={1}
         on:context={contextController}/>
+<NewProperty bind:showMenu={showAdd} 
+        bind:x={add_bundle[0]} 
+        bind:y={add_bundle[1]}
+        types={TERM_TYPES}
+        src='info_table'
+        bind:data={data}
+        on:context={addedProperty}/>
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="wrapper">
@@ -309,7 +326,7 @@
         {/if}
 </div>
 {#if cmd != "assign" && cmd != "bundle"}
-    <NewProperty on:message={addedProperty} data={data_array}/>
+    <i class="fa-solid fa-plus fa-xs" on:click={(e) => openNew(e)}></i>
 {/if}
 {#if cmd == "course"}
     <p class="subheader">Information about items in this course</p>

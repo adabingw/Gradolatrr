@@ -28,8 +28,6 @@
     let max_order = 1;
     let data_changed = false;
 
-    console.log(info)
-
     info["data"] = JSON.stringify(info["data"]);
     info["content_info"] = JSON.stringify(info["content_info"]);
 

@@ -1,18 +1,21 @@
 <script>
     import { createEventDispatcher } from 'svelte';
 
-    import Button from './Button.svelte';
     import TextField from './TextField.svelte';
     import Dropdown from './Dropdown.svelte';
-    import { TYPES } from '../constants/constants';
+    import { TYPES, DROPDOWN } from '../constants/constants';
     import Toasts from './Toasts.svelte';
     import { addToast } from "./store";
+    import NewProperty from './NewProperty.svelte';
 
     export let content_info;
 
     let add = false;
     let info_name;
     let info_type;
+
+    let showAdd = false;
+    let add_bundle = [0, 0];
 
     const dispatch = createEventDispatcher();
 
@@ -22,11 +25,18 @@
         })
     }
 
-    function addInfo() {
-        add = !add;
+    function openNew(e) {
+        showAdd = false;
+        e.preventDefault();
+        add_bundle = [e.clientX, e.clientY];
+        showAdd = true;
     }
 
-    function saveInfo() {
+    function saveInfo(event) {
+        const info_name = event.detail.name;
+        const info_type = event.detail.type;
+        const visible = event.detail.visibility; 
+
         if (info_name == undefined) {
             alert("Name is required");
             return;
@@ -40,7 +50,7 @@
         }
 
         let new_info = {
-            "checked": true, 
+            "checked": visible, 
             "type": info_type, 
             "required": false,
             "order": 0
@@ -55,10 +65,8 @@
         dispatch('info', {
             info: 'saved',
             new_info: new_info, 
-            info_name: info_name
+            info_name: info_name,
         });
-        add = false;
-        info_name = "";
     }
 
     function changeInfo(event, infoname) {
@@ -135,6 +143,13 @@
 </script>
 
 <Toasts />
+<NewProperty bind:showMenu={showAdd} 
+        bind:x={add_bundle[0]} 
+        bind:y={add_bundle[1]}
+        types={TYPES}
+        src="properties"
+        bind:data={content_info}
+        on:context={saveInfo}/>
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div>
@@ -174,7 +189,7 @@
             </td>
             <td>
             <div class="change-type">
-                <Dropdown info={TYPES} selected={content_info[item]["type"]} on:message={(e) => changeType(e, item)}/>
+                <Dropdown info={DROPDOWN} selected={content_info[item]["type"]} on:message={(e) => changeType(e, item)}/>
             </div>
             </td>
             <td>
@@ -185,28 +200,11 @@
     {/each}
     </div>
     </table>
-    <div class="add-row">
-        <Button text="" icon="fa-solid fa-plus fa-xs" on:message={addInfo} />
-        {#if add}
-        <div class="add-row">
-            <TextField bind:inputText={info_name} text="name" type="text" max="" min="" focus={true} on:enter={saveInfo}/>
-            <Dropdown info={TYPES} bind:selected={info_type}/>
-        </div>
-        <div class="save-div">
-            <i class="fa-solid fa-check" on:click={() => saveInfo()}></i>
-        </div>
-        {/if}
-    </div>
+
+    <i class="fa-solid fa-plus fa-xs" on:click={(e) => openNew(e)}></i>
 </div>
 
 <style>
-.add-row {
-    display: flex; 
-    align-items: baseline;
-    vertical-align: middle;
-    margin-left: 35px;
-}
-
 .th {
     font-weight: 500;
     border-bottom: 1px solid #d1d1d1;
@@ -240,14 +238,6 @@ table {
 
 input:checked {
     accent-color: #818181;
-}
-
-.save-div {
-    display: flex;
-    flex-direction: row;
-    margin-left: 40px;
-    align-content: center;
-    align-items: center;
 }
 
 td {

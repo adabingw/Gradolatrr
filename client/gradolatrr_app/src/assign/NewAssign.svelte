@@ -115,6 +115,11 @@
                         "content": (new Date()).toISOString().split('T')[0],
                         "type": value["type"]
                     };
+                } else if (value["type"] == "checked") {
+                    new_assign["data"][i] = {
+                        "content": false,
+                        "type": value["type"]
+                    };
                 }
             }
             info = JSON.parse(JSON.stringify(new_assign));

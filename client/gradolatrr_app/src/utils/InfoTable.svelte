@@ -17,6 +17,7 @@
     export let info;
 
     let data = info["data"];
+    console.log(info)
     data = JSON.parse(data);
         
     let content_info;
@@ -270,6 +271,8 @@
                                 <i class="fa-regular fa-circle-check component"></i>
                             {:else if data[1]["type"] == "date"}
                                 <i class="fa-regular fa-calendar component"></i>
+                            {:else if data[1]["type"] == "checked"}
+                                <i class="fa-regular fa-circle-check"></i>
                             {/if}
                             <p>{data[0]}</p>
                         </span>
@@ -296,6 +299,8 @@
                                 If you pick less than the number of items, the last day will be applied for the remaining items.
                             </span>
                             <Datepicker bind:dates={data[1]["content"]} bind:num={data[1]["num"]} on:message={dataChange}/>
+                        {:else if data[1]["type"] == "checked"}
+                            <input type="checkbox" bind:checked={data[1]["content"]} on:change={dataChange} />
                         {/if}
                     </div>
             </div>
@@ -357,7 +362,7 @@ i {
 }
 
 .property_name {
-    width: 100px;
+    min-width: 130px;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-top: 5px;

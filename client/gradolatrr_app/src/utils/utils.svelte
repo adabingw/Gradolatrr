@@ -136,13 +136,51 @@ export function clickOutside(node) {
         }
     }
 
-  document.addEventListener('click', handleClick, true);
+    document.addEventListener('click', handleClick, true);
   
     return {
         destroy() {
             document.removeEventListener('click', handleClick, true);
         }
     }
+}
+
+export function evalFilter(what, content, value){
+    let result;
+    if (what == 0) {
+        result = content.includes(value);
+    } else if (what == 1) {
+        result = !content.includes(value);
+    } else if (what == 2) {
+        result = content == value;
+    } else if (what == 3) {
+        result = content != value;
+    } else if (what == 4) {
+        result = content == undefined || content == null || (typeof content == 'string' && content.length == 0);
+    } else {
+        result = !(content == undefined || content == null || (typeof content == 'string' && content.length == 0))
+    }
+    return result;
+}
+
+export function filterContent(filters, contents) {
+    if (!filters || !(filters.length > 0)) return true;
+
+    return true;
+
+    let content = JSON.parse(contents['data'])
+    const [ property, what, value ] = filters[0]
+
+    if (!content[property] && !content[property]['content']) return false;
+
+    let result = evalFilter(what, content[property]['content'], value);   
+    filters.forEach((filter, index) => {
+        if (index != 0) {
+            const [ logic, property, what, value ] = filter;
+            result = logic == 'AND' ? result && evalFilter(what, property, value) : result || evalFilter(what, property, value)
+        }
+    })
+    return result;
 }
 
 </script>

@@ -168,6 +168,11 @@
                         "type": value["type"], 
                         "num": 1
                     };
+                } else if (value["type"] == "checked") {
+                    new_assign["data"][i] = {
+                        "content": false,
+                        "type": value["type"]
+                    };
                 }
             }
             info = JSON.parse(JSON.stringify(new_assign));

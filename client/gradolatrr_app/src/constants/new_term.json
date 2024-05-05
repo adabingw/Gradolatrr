@@ -6,7 +6,7 @@
     "current": false, 
     "data": {
         "description": {
-            "type": "textarea",
+            "type": "text",
             "content": "",
             "order": 0
         }

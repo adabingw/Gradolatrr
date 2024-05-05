@@ -1,35 +1,31 @@
 <script>
     import { createEventDispatcher, onMount } from 'svelte';
-  import NewProperty from './NewProperty.svelte';
-  import { clickOutside } from './utils.svelte';
+    import { clickOutside } from './utils.svelte';
+    import { CONDITION, LOGIC } from '../constants/constants';
 
     export let x;
     export let y;
     export let showMenu = false;
     export let properties;
+    export let prevfilters;
 
     let style = "";
-    let filters = [['0', '0', '']];
-    let add = false;
-
-    let condition = [
-        'IS', 'IS NOT', 'CONTAINS', 'DOES NOT CONTAIN', 'STARTS WITH', 'ENDS WITH', 'IS EMPTY', 'IS NOT EMPTY'
-    ]
-    let logic = ['AND', 'OR']
+    let filters = (prevfilters && prevfilters.length > 0) ? prevfilters : [['', '0', '']];
 
     const dispatch = createEventDispatcher();
 
     function onChange(e, i, index) {
-        console.log(filters)
         if (index < filters[i].length) {
             filters[i][index] = e.target.value;
         }
-        console.log(filters)
     }
 
     function onPageClick(e) {
         showMenu = false;
-        // SAVE FILTER
+        dispatch('context', {
+            action: 'filters',
+            filters: filters 
+        })
     }
 
     $: {
@@ -108,7 +104,20 @@ i {
 
 .trash {
     margin-top: 15px;
+    color: #717171;
     border-top: 1px solid #d1d1d1;
+}
+
+.trash:hover {
+    margin-top: 15px;
+    cursor: pointer;
+    border-top: 1px solid #d1d1d1;
+}
+
+input {
+    border: 1px solid #d1d1d1;
+    padding: 8px;
+    border-radius: 8px;
 }
 
 </style>
@@ -126,11 +135,11 @@ i {
                         Where 
                         <select value={filter[0]} on:change={(e) => onChange(e, index, 0)}>
                             {#each properties as property, i}
-                                <option value={i.toString()}>{property[0]}</option>
+                                <option value={property[0].toString()}>{property[0]}</option>
                             {/each}
                         </select>
                         <select value={filter[1]} on:change={(e) => onChange(e, index, 1)}>
-                            {#each condition as c, i}
+                            {#each CONDITION as c, i}
                                 <option value={i.toString()}>{c}</option>
                             {/each}
                         </select>
@@ -151,38 +160,41 @@ i {
                 <div class="filter_row">
                     <div class="row">
                     <select value={filter[0]} on:change={(e) => onChange(e, index, 0)}>
-                        {#each logic as l, i}
+                        {#each LOGIC as l, i}
                             <option value={i.toString()}>{l}</option>
                         {/each}
                     </select>  
                     <select value={filter[1]} on:change={(e) => onChange(e, index, 0)}>
                         {#each properties as property, i}
-                            <option value={i.toString()}>{property[0]}</option>
+                            <option value={property[0].toString()}>{property[0]}</option>
                         {/each}
                     </select>
                     <select value={filter[2]} on:change={(e) => onChange(e, index, 0)}>
-                        {#each condition as c, i}
+                        {#each CONDITION as c, i}
                             <option value={i.toString()}>{c}</option>
                         {/each}
                     </select>
                     <input type="text" placeholder="value" bind:value={filter[3]} on:change={(e) => onChange(e, index, 0)}/>
                     <i class="fa-solid fa-trash"
-                    on:click={() => {
-                        filters.splice(index, 1);
-                        filters = filters;
-                    }}
+                        on:click={() => {
+                            filters.splice(index, 1);
+                            filters = filters;
+                        }}
                     ></i>
                     </div>
                 </div>
             {/if}
             {/each}
             <div on:click={() => {
-                filters.push(['0', '0', '0', ''])
+                filters.push(['', '0', '0', ''])
                 filters = filters;
             }} class="filter_action">
                 <i class="fa-solid fa-plus"></i>
             </div>
-            <div class="filter_action trash">
+            <div class="filter_action trash" on:click={(e) => {
+                filters = [];
+                onPageClick(e)
+            }}>
                 <i class="fa-solid fa-trash"></i> delete
             </div>
         </ul>

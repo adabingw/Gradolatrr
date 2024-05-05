@@ -3,7 +3,8 @@ let TYPES = [
     ["number", '\u{23}'], 
     ["multiselect", '\u{f03a}'], 
     ["singleselect", '\u{f0d7}'], 
-    ["date", '\u{f133}']
+    ["date", '\u{f133}'],
+    ["checked", '\u{f058}']
 ];
 
 let TERM_TYPES = [
@@ -15,4 +16,21 @@ let DEFAULT_GRADING = "mark / #";
 let WEIGHTED_GRADING = "mark * weight";
 let TOKENS = ['+', '-', '/', '*', '[', ']', '(', ')', '#']
 
-export { TYPES, TERM_TYPES, DEFAULT_GRADING, WEIGHTED_GRADING, TOKENS }
+let CONDITION = [
+    ['CONTAINS', 
+    'DOES NOT CONTAIN', 
+    'IS', 
+    'IS NOT'], 
+    // 'STARTS WITH', 
+    // 'ENDS WITH', 
+    // 'IS EMPTY', 
+    // 'IS NOT EMPTY'
+    ['IS', 'LESS THAN', 'LESS THAN / EQUAL TO', 'GREATER THAN', 'GREATER THAN / EQUAL TO', 'BETWEEN'],
+    ['HAS PROPERTY'],
+    ['BEFORE', 'AFTER', 'BETWEEN', 'ON'],
+    ['CHECKED', 'UNCHECKED']
+
+]
+let LOGIC = ['AND', 'OR']
+
+export { TYPES, TERM_TYPES, DEFAULT_GRADING, WEIGHTED_GRADING, TOKENS, CONDITION, LOGIC }

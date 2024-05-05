@@ -64,7 +64,6 @@
     function changeInfo(event, infoname) {
         let infostuff = content_info[infoname];
         const keys = Object.keys(content_info);
-
         let new_name = event.detail.data;
         let conflict = false;
         Object.keys(content_info).forEach((value, index) => {

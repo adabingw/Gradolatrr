@@ -137,6 +137,11 @@
                         "content": (new Date()).toISOString().split('T')[0],
                         "type": value["type"]
                     }
+                } else if (value["type"] == "checked") {
+                    info_temp[c] = {
+                        "content": false,
+                        "type": value["type"]
+                    };
                 }
             } else if (info_temp[c] != undefined) {
                 if (content_info[c]["type"] == "multiselect" || content_info[c]["type"] == "singleselect") {

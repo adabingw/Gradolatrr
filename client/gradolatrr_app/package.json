@@ -41,6 +41,7 @@
     "svelte-multiselect": "^10.1.0",
     "svelte-navigator": "^3.2.2",
     "svelte-toasts": "^1.1.2",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "vite-plugin-node-polyfills": "^0.21.0"
   }
 }

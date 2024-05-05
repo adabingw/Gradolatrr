@@ -58,7 +58,7 @@
                         let assign = assignments[i];
                         let assign_data = JSON.parse(assign["data"]);
                         assign_data[key]["type"] = new_type;
-                        if (old_type == "number" || old_type == "text") {
+                        if (old_type == "number" || old_type == "text" || old_type == "checked") {
                             if (new_type == "multiselect" || new_type == "singleselect") {
                                 assign_data[key]["content"] = [];
                                 assign_data[key]["tag_info"] = content_info[key]["tag_info"];
@@ -76,6 +76,9 @@
                                 delete assign_data[key]["tag_info"];
                             } else if (new_type == "number") {
                                 assign_data[key]["content"] = 0;
+                                delete assign_data[key]["tag_info"];
+                            } else if (new_type == "checked") {
+                                assign_data[key]["content"] = false;
                                 delete assign_data[key]["tag_info"];
                             }
                         }
@@ -186,6 +189,8 @@
                     new_property["tag_info"] = [];
                 } else if (type == "date") {
                     new_property["content"] = (new Date()).toISOString().split('T')[0]
+                } else if (type == "checked") {
+                    new_property["content"] = false;
                 }
 
                 assign_data[name] = new_property;

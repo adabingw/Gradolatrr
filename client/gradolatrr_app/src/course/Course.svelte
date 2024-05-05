@@ -14,14 +14,14 @@
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
     import { DEFAULT_GRADING } from '../constants/constants';
     import { dragstart, sortOrder } from '../utils/utils.svelte';
-    import { tokenize } from "../utils/utils.svelte";
+    import { tokenize, filterContent } from "../utils/utils.svelte";
     import Modal from '../utils/Modal.svelte';
     import Grading from '../utils/Grading.svelte';
     import Multiselect2 from '../utils/Multiselect2.svelte';
     import { onDestroy } from 'svelte';
     import Folder from '../utils/Folder.svelte';
     import DateComp from "../utils/Date.svelte";
-  import Filter from '../utils/Filter.svelte';
+    import Filter from '../utils/Filter.svelte';
     
     export let term_id;
     export let term_name;
@@ -53,7 +53,9 @@
     const math = create(all, config);
 
     let showMenu = false;
+
     let filter = false;
+    let filterInput = [];
 
     let search = false;
     let searchInput = '';
@@ -278,7 +280,12 @@
     function openFilter(e, properties) {
         filter = false;
         e.preventDefault();
-        filter_bundle = [e.clientX, e.clientY, properties]
+        console.log(properties)
+        filter_bundle = [e.clientX, e.clientY, [...properties, [
+            'name', { type: 'text' }
+        ], [
+            'mark', { type: 'number'}
+        ]]]
         filter = true;
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'hidden';
@@ -301,7 +308,10 @@
     }
 
     function filterController(e) {
-
+        if (e.detail.action == 'filters') {
+            filterInput = e.detail.filters;
+            localStorage.setItem(`${id}-filter`, JSON.stringify(filterInput));
+        }
     }
 
     async function textChange(i, key, value, assign_id) {
@@ -365,17 +375,14 @@
             content_array.push([key, content_info[key]]);
             content_array = sortOrder(content_array);
         }
-
         grade = info["getCourse"]["grade"]
         if (info["getCourse"]["grading_scheme"] != undefined) {
             grading_scheme = info["getCourse"]["grading_scheme"]
         }
-
         cols = 2;
         for (let i = 0; i < content_array.length; i++) {
             if (content_array[i][1]["checked"]) cols += 1;
         }
-
         regrade(false);
     }
 
@@ -414,12 +421,16 @@
 
     $: {
         query_result.refetch({ id });
+        filterInput = localStorage.getItem(`${id}-filter`)
+        if (filterInput && typeof filterInput == 'string') {
+            filterInput = JSON.parse(filterInput)
+        }
         last_info = info;
     }
 
     $: {
-        showMenu;
-        if (!showMenu) {
+        showMenu, filter;
+        if (!showMenu && !filter) {
             let body = document.getElementById('homepage');
             if (body) body.style.overflowY = 'auto';
         }
@@ -438,6 +449,7 @@
         bind:x={filter_bundle[0]} 
         bind:y={filter_bundle[1]} 
         bind:properties={filter_bundle[2]}
+        bind:prevfilters={filterInput}
         on:context={filterController}/>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -464,7 +476,7 @@
                 <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
             {:else}
             <div class={`table_actions-${(search || filter) ? 'show' : 'hide'}`} id="actions">
-                <i class="fa-solid fa-filter"
+                <i class={`fa-solid fa-filter outline-${(filterInput && filterInput.length > 0) ? 'show' : 'none'}`}
                     use:tooltip={{
                         content: 'filter',
                         style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
@@ -554,6 +566,8 @@
                                             <i class="fa-regular fa-circle-check component"></i>
                                         {:else if item[1]["type"] == "date"}
                                             <i class="fa-regular fa-calendar component"></i>
+                                        {:else if item[1]["type"] == "checked"}
+                                            <i class="fa-regular fa-circle-check"></i>
                                         {/if}
                                         {item[0]}
                                     </p>
@@ -562,7 +576,7 @@
                     {/each}
                 </div>
                 {#each Object.keys(content) as i}
-                {#if content[i]['name'].includes(searchInput)}
+                {#if (filterContent(filterInput, content[i])) || (searchInput.length > 0 && content[i]['name'].includes(searchInput))}
                     <div  class="row" id={i} >
                         <div class="box name_assignment">
                         <span>
@@ -602,6 +616,9 @@
                                         <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                         bind:j={j} bind:content={content[i]} bind:i={i}
                                         on:assign={saveAssignChanges} on:course={saveCourseChanges} max=1/>
+                                    {:else if j[1]["type"] == "checked"}
+                                        <input type="checkbox" checked={JSON.parse(content[i]["data"])[j[0]]["content"]}
+                                        />
                                     {/if}
                                 </div>
                             {/if}
@@ -646,6 +663,14 @@
 #search_input {
     width: 0px;
     display: none;
+}
+
+.outline-none {
+    border: 0px solid #b1b1b1;
+}
+
+.outline-show {
+    border: 1px solid #b1b1b1;
 }
 
 .tablehead {
@@ -718,8 +743,9 @@
 }
 
 i {
-    padding: 1px;
     margin-left: 8px;
+    padding: 5px;
+    border-radius: 8px;
 }
 
 i:hover {

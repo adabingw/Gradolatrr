@@ -39,6 +39,15 @@
         if (id == -1) return;
 
         let data = typeof new_assign["data"] == 'object' ? new_assign["data"] : JSON.parse(new_assign["data"])
+
+        let content_info = JSON.parse(new_assign["content_info"])
+        for (let i of Object.keys(content_info)) {
+            if (content_info[i]['required'] && !(data[i]['content'])) {
+                alert("Please fill in all required fields")
+                return;
+            }
+        }
+
         data["name"]["content"] = name;
         info = JSON.parse(JSON.stringify(new_assign));
         info["data"] = JSON.stringify(data);
@@ -149,7 +158,7 @@
     <Folder term_id={term_id} term_name={term_name} course_id={course_id} course_name={course_name} assign_name={name} />
     <HeaderField bind:inputText={name} text="Untitled item" on:message={(event) => {data_changed = true; name = event.detail.data;}}/>    
     {#if info != undefined}
-        <InfoTable cmd="assign" bind:info={info} on:message={dataChange}/>
+        <InfoTable cmd="assign" bind:info={info} on:message={dataChange} />
     {/if}
     <div class="term-op">
         <i class="fa-solid fa-ban" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}

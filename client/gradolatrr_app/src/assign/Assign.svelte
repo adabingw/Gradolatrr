@@ -186,7 +186,7 @@
     <Folder term_id={term_id} term_name={term_name} course_id={course_id} course_name={course_name} assign_name={name} />
     <HeaderField bind:inputText={name} text="" on:message={(event) => {name = event.detail.data;}}/>    
     {#if info != undefined}
-        <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange}/>
+        <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange} />
     {/if}
     <div class="term-op">
         <i class="fa-solid fa-trash-can" on:click={() => deleteAssignment()}

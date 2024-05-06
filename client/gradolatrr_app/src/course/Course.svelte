@@ -671,6 +671,17 @@
                                             <i class="fa-regular fa-circle-check"></i>
                                         {/if}
                                         {item[0]}
+                                        {#if item[1]['required']}
+                                            <i class="fa-solid fa-exclamation"
+                                                use:tooltip={{
+                                                    content: 'this field is required',
+                                                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                                                    position: 'top',
+                                                    animation: 'slide',
+                                                    arrow: false
+                                                }}
+                                            ></i>
+                                        {/if}
                                     </p>
                             </div>
                         {/if}

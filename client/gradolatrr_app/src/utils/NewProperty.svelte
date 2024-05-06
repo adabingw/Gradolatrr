@@ -33,7 +33,8 @@
         dispatch('context', {
             name: name, 
             type: types[type][0],
-            visibility: visible
+            visibility: visible,
+            required: required
         });
         showMenu = false;
     }
@@ -83,13 +84,13 @@
             {/each}
             <div class="eye">
                 {#if src == 'properties'}
-                    <div class="property_action" id="eye" on:click={(e) => {
+                    <div class="property_action" on:click={(e) => {
                         visible = !visible; 
                     }}>
                         <i class={`fa-solid ${visible ? 'fa-eye' : 'fa-eye-slash'}`}></i> 
                         <span>{visible ? 'show' : 'hide'}</span>
                     </div>
-                    <div class="action">
+                    <div class="action" on:click={(e) => required = !required}>
                         <i class="fa-solid fa-asterisk"></i>
                         <span>{required ? 'required' : 'not required'}</span>
                     </div>

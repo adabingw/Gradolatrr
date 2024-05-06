@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
     import { createEventDispatcher } from "svelte";
     import { mutation } from "svelte-apollo";
 
@@ -13,6 +15,7 @@
     import DateComp from "./Date.svelte";
     import Multiselect from "./Multiselect.svelte";
     import { TERM_TYPES } from "../constants/constants";
+    import { tooltip } from "@svelte-plugins/tooltips";
 
     export let cmd;
     export let info;
@@ -21,7 +24,7 @@
     data = JSON.parse(data);
         
     let content_info;
-    if (cmd == "course") {
+    if (cmd == "course" || cmd == "assign" || cmd == "bundle") {
         content_info = JSON.parse(info["content_info"]);
     }
 
@@ -275,8 +278,8 @@
                     <div class="box property_name">
                         <span class="bodycellheader tablecol">
                             {#if cmd != "assign" && cmd != "bundle"}
-                                <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                                on:click={(e) => { e.stopPropagation(); openMenu(e, i, data[0])}}></i>
+                                <i class={`fa-solid fa-ellipsis-vertical context_menu`}
+                                    on:click={(e) => { e.stopPropagation(); openMenu(e, i, data[0])}}></i>
                             {/if}
                             {#if data[1]["type"] == "text"}
                                 <i class="fa-solid fa-align-justify component"></i>
@@ -292,6 +295,18 @@
                                 <i class="fa-regular fa-circle-check"></i>
                             {/if}
                             <p>{data[0]}</p>
+                            
+                            {#if content_info[data[0]] && content_info[data[0]]['required']}
+                                <i class="fa-solid fa-exclamation"
+                                    use:tooltip={{
+                                        content: 'this field is required',
+                                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                                        position: 'top',
+                                        animation: 'slide',
+                                        arrow: false
+                                    }}
+                                ></i>
+                            {/if}
                         </span>
                     </div>
                     <div class="box property_data">
@@ -343,12 +358,20 @@
     font-size: 15px;
 }
 
+.fa-exclamation {
+    margin-left: 15px;
+}
+
 .context_menu {
     opacity: 0.0;
 }
 
 .context_menu:hover {
     opacity: 1.0;
+}
+
+.context_menu_show {
+    opacity: 0.0;
 }
 
 .tablecol {

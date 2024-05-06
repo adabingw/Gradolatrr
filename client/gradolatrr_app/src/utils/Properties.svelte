@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
     import { createEventDispatcher } from 'svelte';
 
     import TextField from './TextField.svelte';
@@ -7,12 +9,9 @@
     import Toasts from './Toasts.svelte';
     import { addToast } from "./store";
     import NewProperty from './NewProperty.svelte';
+    import { tooltip } from '@svelte-plugins/tooltips';
 
     export let content_info;
-
-    let add = false;
-    let info_name;
-    let info_type;
 
     let showAdd = false;
     let add_bundle = [0, 0];
@@ -22,6 +21,13 @@
     function checkInfo(name) {
         dispatch('info', {
             info: 'checked'
+        })
+    }
+
+    function toggleRequired(name) {
+        content_info[name]['required'] = !content_info[name]['required'];
+        dispatch('info', {
+            info: 'required'
         })
     }
 
@@ -36,6 +42,7 @@
         const info_name = event.detail.name;
         const info_type = event.detail.type;
         const visible = event.detail.visibility; 
+        const required = event.detail.required;
 
         if (info_name == undefined) {
             alert("Name is required");
@@ -52,7 +59,7 @@
         let new_info = {
             "checked": visible, 
             "type": info_type, 
-            "required": false,
+            "required": required,
             "order": 0
         }
 
@@ -159,11 +166,17 @@
             <td class="tag-check ">
                 <p  class="check-icon"></p>
             </td>
+            <td class="tag-check ">
+                <p  class="check-icon"></p>
+            </td>
             <td class="info-name th">property name</td>
             <td class="info-name th">type</td>
         </tr>
         <tr>
             <td class="tag-check">
+                <p  class="check-icon"></p>
+            </td>
+            <td class="tag-check ">
                 <p  class="check-icon"></p>
             </td>
             <td class="info-name">name</td>
@@ -173,15 +186,36 @@
             <td class="tag-check">
                 <p  class="check-icon"></p>
             </td>
+            <td class="tag-check ">
+                <p  class="check-icon"></p>
+            </td>
             <td class="info-name">mark</td>
             <td><p class="info-type">number</p></td>
         </tr>
     {#each Object.keys(content_info) as item}
     {#if item != "name" && item != "mark"}
         <tr>
-            <td class="tag-check">
+            <td class="tag-check"     
+            use:tooltip={{
+                content: 'show?',
+                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                position: 'left',
+                animation: 'slide',
+                arrow: false
+            }}>
                 <input type="checkbox" bind:checked={content_info[item]["checked"]} 
                     on:change={() => {checkInfo(item)}}/>
+            </td>
+            <td class={`${content_info[item]["required"] ? '' : 'not'}-required`}
+                use:tooltip={{
+                    content: 'required?',
+                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                    position: 'top',
+                    animation: 'slide',
+                    arrow: false
+                }}
+            >
+                <i class="fa-solid fa-exclamation" on:click={() => toggleRequired(item)}></i>
             </td>
             <td class="info-name">
                 <TextField bind:inputText={item} type="text" text={item} on:message={(e) => changeInfo(e, item)}
@@ -250,6 +284,18 @@ i:hover {
 
 div {
     width: 100%;
+}
+
+.not-required {
+    opacity: 0;
+}
+
+.not-required:hover {
+    opacity: 1;
+}
+
+.required {
+    opacity: 1;
 }
 
 </style>

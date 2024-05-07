@@ -53,21 +53,18 @@
     const config = { };
     const math = create(all, config);
 
-    let showMenu = false;
+    let contextmenu;
+    let sortmenu;
+    let filtermenu;
+    let filter;
 
-    let filter = false;
     let filterInput = [];
 
     let search = false;
     let searchInput = '';
 
-    let context_bundle = [ 0, 0, 0 ];
-    let filter_bundle = [0, 0, 0];
-
     let sort = [0, 0];
     let sorts = {};
-    let showSort = false;
-    let sort_bundle = [ 0, 0, 0, 0 ];
 
     async function deleteAssignment(assign_id) {
         let confirmDelete = confirm("Delete this assignment?");
@@ -105,7 +102,7 @@
                 return;
             }
         }
-        return;
+
         try {
             await update_assign({
                 variables: {
@@ -115,7 +112,7 @@
                         course_id: id,
                         term_id: term_id, 
                         name: assign_name, 
-                        data: content[i]["data"],
+                        data: JSON.stringify(content[i]["data"]),
                     }
                 }
             });
@@ -288,41 +285,6 @@
         }
     }
 
-    function openMenu(e, item, index) {
-        showMenu = false;
-        e.preventDefault();
-        context_bundle = [e.clientX, e.clientY, index, item];
-        showMenu = true;
-        let body = document.getElementById('homepage');
-        if (body) body.style.overflowY = 'hidden';
-    }
-
-    function openFilter(e, properties) {
-        filter = false;
-        e.preventDefault();
-        filter_bundle = [e.clientX, e.clientY, [...properties, [
-            'name', { type: 'text' }
-        ], [
-            'mark', { type: 'number'}
-        ]]]
-        filter = true;
-        let body = document.getElementById('homepage');
-        if (body) body.style.overflowY = 'hidden';
-    }
-
-    function openSort(e, content) {
-        showSort = false;
-        e.preventDefault();
-        sort_bundle = [e.clientX, e.clientY, sort, [...content, [
-            'name', { type: 'text' }
-        ], [
-            'mark', { type: 'number'}
-        ]] ]
-        showSort = true;
-        let body = document.getElementById('homepage');
-        if (body) body.style.overflowY = 'hidden';
-    }
-
     function sortController(e) {     
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'auto';
@@ -403,6 +365,7 @@
 
     function filterController(e) {
         if (e.detail.action == 'filters') {
+            filter = false;
             filterInput = e.detail.filters;
             localStorage.setItem(`${id}-filter`, JSON.stringify(filterInput));
         }
@@ -423,7 +386,7 @@
                         course_id: id,
                         term_id: term_id, 
                         name: content[i]["name"], 
-                        data: content[i]["data"],
+                        data: JSON.stringify(content[i]["data"]),
                     }
                 }
             });
@@ -536,36 +499,11 @@
         localStorage.setItem("sort-course", JSON.stringify(sorts));
     }
 
-    $: {
-        showMenu, filter;
-        if (!showMenu && !filter) {
-            let body = document.getElementById('homepage');
-            if (body) body.style.overflowY = 'auto';
-        }
-    }
-
 </script>
 
-<ContextMenu bind:showMenu={showMenu} 
-        bind:x={context_bundle[0]} 
-        bind:y={context_bundle[1]} 
-        bind:index={context_bundle[2]}
-        bind:item={context_bundle[3]}
-        menuNum={2}
-        on:context={contextController}/>
-<Filter bind:showMenu={filter} 
-        bind:x={filter_bundle[0]} 
-        bind:y={filter_bundle[1]} 
-        bind:properties={filter_bundle[2]}
-        bind:prevfilters={filterInput}
-        on:context={filterController}/>
-<ContextMenu bind:showMenu={showSort} 
-        bind:x={sort_bundle[0]} 
-        bind:y={sort_bundle[1]} 
-        bind:index={sort_bundle[2]}     
-        bind:item={sort_bundle[3]}   
-        menuNum={6}
-        on:context={sortController}/>
+<ContextMenu menuNum={2} on:context={contextController} bind:this={contextmenu}/>
+<Filter bind:this={filtermenu} bind:prevfilters={filterInput} on:context={filterController}/>
+<ContextMenu menuNum={6} on:context={sortController} bind:this={sortmenu}/>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore missing-declaration -->
@@ -586,7 +524,7 @@
         {#if content_array != undefined || content_array != null}
             {#if content_array.length == -1}
             <div class="empty">
-                empty
+                Empty
             </div>
                 <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
                 <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
@@ -602,7 +540,8 @@
                     }}
                     on:click={(e) => {
                         e.stopPropagation(); 
-                        openFilter(e, content_array);
+                        filter = true;
+                        filtermenu.openMenu(e, content_array);
                     }}
                 ></i>
                 <i class="fa-solid fa-magnifying-glass"
@@ -640,7 +579,11 @@
                     }}
                     on:click={(e) => {
                         e.stopPropagation(); 
-                        openSort(e, content_array);
+                        sortmenu.openMenu(e, sort, [...content_array, [
+                            'name', { type: 'text' }
+                        ], [
+                            'mark', { type: 'number'}
+                        ]]);
                     }}
                 ></i>
                 <i class="fa-solid fa-layer-group"
@@ -711,36 +654,31 @@
                 {#if (filterContent(filterInput, content[i])) || (searchInput.length > 0 && content[i]['name'].includes(searchInput))}
                     <div  class="row" id={i} >
                         <div class="box name_assignment">
-                        <span>
+                        <span class="name_row">
                             <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                                on:click={(e) => {e.stopPropagation(); openMenu(e, content[i], content[i]["id"])}}></i>
+                                on:click={(e) => {e.stopPropagation(); contextmenu.openMenu(e, content[i], content[i]["id"])}}></i>
                             <TextArea bind:inputText={content[i]['name']} 
-                                on:message={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], -2) }
                                 on:blur={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], -2)}/>
-                            <!-- <span contenteditable on:input={e => textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}
-                                on:focusout={(e) => console.log("OUT!")} >
-                                {content[i]['name']}
-                            </span> -->
                         </span>
                         </div>
                         <div class="box">
                             <input type="number" value={content[i]["data"]["mark"]["content"]} 
-                                on:change={(e) => textChange(i, "mark", e.target.value, content[i]["id"])} 
-                                on:blur={(e) => console.log("OUT!")} />
+                                on:blur={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], -1)} />
                         </div>
                         {#each content_array as j}
                             {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
                                 <div class="box">
                                     {#if content[i]["data"][j[0]] != undefined && j[1]["type"] == "text"}
+                                    <div class="name_row">
                                         <TextArea bind:inputText={content[i]["data"][j[0]]["content"]} 
-                                            on:message={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], j) }
                                             on:blur={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)}/>
+                                    </div>
                                     {:else if content[i]["data"][j[0]] != undefined && j[1]["type"] == "number"}
                                         <input type="number" value={content[i]["data"][j[0]]["content"]} 
-                                        on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} max="100" min="0" />
+                                        on:blur={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)} />
                                     {:else if content[i]["data"][j[0]] != undefined && j[1]["type"] == "date"}
                                         <DateComp date={content[i]["data"][j[0]]["content"]} 
-                                        on:message={(e) => textChange(i, j[0], e.detail.data, content[i]["id"])} />
+                                        on:message={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)} />
                                     {:else if content[i]["data"][j[0]] == undefined}
                                         something has gone wrong
                                     {:else if j[1]["type"] == "multiselect"}
@@ -803,6 +741,12 @@
 #search_input {
     width: 0px;
     display: none;
+}
+
+.name_row {
+    display: flex;
+    flex-direction: row;
+    margin-top: 15px;
 }
 
 .outline-none {
@@ -874,7 +818,9 @@
     padding-left: 0px;
     min-width: fit-content;
     display: flex;
-    align-items: center;
+    align-items: top;
+    align-content: top;
+    align-self: top;
     word-wrap: break-word;
     word-break: break-all;
     padding-right: 10px;

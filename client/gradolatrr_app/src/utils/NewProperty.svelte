@@ -43,6 +43,16 @@
         showMenu = false;
     }
 
+    export function openMenu(e) {
+        showMenu = false;
+        e.preventDefault();
+        x = e.clientX;
+        y = e.clientY;
+        showMenu = true;
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'hidden';
+    }
+
     $: {
         y, x;
         if (src == 'properties') {

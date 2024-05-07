@@ -47,8 +47,7 @@
     const config = { };
     const math = create(all, config);
 
-    let showMenu = false;
-    let context_bundle = [ 0, 0, 0 ];
+    let contextmenu;
     
 
     async function deleteAssignment(assign_id) {
@@ -210,17 +209,6 @@
         }
     }
 
-    onDestroy(() => {
-        console.log(content);
-    })
-
-    function openMenu(e, item, index) {
-        showMenu = false;
-        e.preventDefault();
-        context_bundle = [e.clientX, e.clientY, index, item];
-        showMenu = true;
-    }
-
     function contextController(e) {
         if (e.detail.context == 'trash') {
             deleteAssignment(e.detail.index);
@@ -291,13 +279,7 @@
 
 </script>
 
-<ContextMenu bind:showMenu={showMenu} 
-        bind:x={context_bundle[0]} 
-        bind:y={context_bundle[1]} 
-        bind:index={context_bundle[2]}
-        bind:item={context_bundle[3]}
-        menuNum={4}
-        on:context={contextController}/>
+<ContextMenu menuNum={4} on:context={contextController}/>
 <div class="page">
     <Modal bind:showModal>
         <h2 slot="header">
@@ -353,17 +335,16 @@
             {#each Object.keys(content) as i}
             <tr id={i} >
                 <td class="name_assignment">
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
                     <span>
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                            on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
+                            on:click={(e) => {e.stopPropagation(); contextmenu.openMenu(e, content[i]["name"], content[i]["id"])}}></i>
                         <span contenteditable on:input={textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}>
                             {JSON.parse(content[i]["data"])["name"]["content"]}
                         </span>
                     </span>
-                    <!-- <i class="fa-solid fa-ellipsis-vertical context_menu" 
-                    on:click={(e) => {e.stopPropagation(); openMenu(e, content[i]["name"], content[i]["id"])}}></i>
-                    <input type="text" value={JSON.parse(content[i]["data"])["name"]["content"]} 
-                        on:change={(e) => textChange(i, "name", e.target.value, content[i]["id"])} /> -->
                 </td>
                 <td>
                     <input type="number" value={JSON.parse(content[i]["data"])["mark"]["content"]} 

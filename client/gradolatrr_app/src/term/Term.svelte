@@ -33,8 +33,7 @@
     let del = false;
     let sort = 0;
     let sorts = {};
-    let showMenu = false;
-    let context_bundle = [ 0, 0, 0, 0 ];
+    let contextmenu;
 
     async function deleteTerm() {
         let confirmDelete = confirm("Delete this term?");
@@ -130,15 +129,6 @@
         info["getTerm"]["data"] = event.detail.data;
     }
 
-    function openMenu(e) {
-        showMenu = false;
-        e.preventDefault();
-        context_bundle = [e.clientX, e.clientY, sort, 0];
-        showMenu = true;
-        let body = document.getElementById('homepage');
-        if (body) body.style.overflowY = 'hidden';
-    }
-
     function contextController(e) {     
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'auto';
@@ -231,13 +221,7 @@
 
 </script>
 
-<ContextMenu bind:showMenu={showMenu} 
-        bind:x={context_bundle[0]} 
-        bind:y={context_bundle[1]} 
-        bind:index={context_bundle[2]}
-        bind:item={context_bundle[3]}
-        menuNum={5}
-        on:context={contextController}/>
+<ContextMenu bind:this={contextmenu} menuNum={5} on:context={contextController}/>
 <!-- svelte-ignore missing-declaration -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -250,7 +234,8 @@
     {/if}
     <p class="subheader">Courses <i class="fa-solid fa-arrow-down-wide-short fa-xs" on:click={(e) => {
         e.stopPropagation(); 
-        openMenu(e)}}></i></p>
+        contextmenu.openMenu(e, sort, 0)
+    }}></i></p>
         
     <div class="course-block">
     <table>

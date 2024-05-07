@@ -37,13 +37,13 @@
 
     let info;
     let last_info;
-    let showTerm = false;
-    let showCourse = false;
     let expand = {};
-    let context_bundle = [ 0, 0, 0 ];
     let dragged = undefined;
     let lock = false;
     let droppingcourse = false;
+
+    let contextmenu_course;
+    let contextmenu_term;
 
     function termClick(k) {
         expand[k] = !expand[k];
@@ -563,22 +563,6 @@
         reload = false;
     }
 
-    function openTerm(e, index, item) {
-        e.preventDefault();
-        context_bundle = [e.clientX, e.clientY, index, item];
-        showTerm = true;
-        showCourse = false;
-    }
-
-    function openCourse(e, index, item, term_id, term_name) {
-        e.preventDefault();
-        item["term_id"] = term_id;
-        item["term_name"] = term_name;
-        context_bundle = [e.clientX, e.clientY, index, item];
-        showCourse = true;
-        showTerm = false;
-    }
-
     function contextControllerTerm(e) {
         const context = e.detail.context; 
         const index = e.detail.index;
@@ -633,20 +617,8 @@
 
 </script>
 
-<ContextMenu bind:showMenu={showTerm} 
-        bind:x={context_bundle[0]} 
-        bind:y={context_bundle[1]} 
-        bind:index={context_bundle[2]}
-        bind:item={context_bundle[3]}
-        menuNum={3}
-        on:context={contextControllerTerm}/>
-<ContextMenu bind:showMenu={showCourse} 
-        bind:x={context_bundle[0]} 
-        bind:y={context_bundle[1]} 
-        bind:index={context_bundle[2]}
-        bind:item={context_bundle[3]}
-        menuNum={2}
-        on:context={contextControllerCourse}/>
+<ContextMenu bind:this={contextmenu_term} menuNum={3} on:context={contextControllerTerm}/>
+<ContextMenu bind:this={contextmenu_course} menuNum={2} on:context={contextControllerCourse}/>
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -725,7 +697,10 @@
                 on:dragleave={event => dragleave(event, 'term', i)} class="term-row" 
                 on:mouseover={event => mouseover(info.allTerm["items"][i]["id"])}
                 on:mouseleave={event => mouseleave(info.allTerm["items"][i]["id"])}
-                on:contextmenu={(e) => { e.stopPropagation(); openTerm(e, i, info.allTerm["items"][i])}}  >
+                on:contextmenu={(e) => { 
+                    e.stopPropagation(); 
+                    contextmenu_term.openMenu(e, i, info.allTerm["items"][i])
+                }}>
                     <span class="term-row-left">
                         <p>
                             {#if info.allTerm["items"][i]["courses"] != undefined && expand[info.allTerm["items"][i]["id"]]}
@@ -765,10 +740,9 @@
                         <p class="course" draggable={true} on:dragstart={event => dragstartCourse(event, j, i)} 
                             on:drop={event => dropCourse(event, j, i)} on:dragover={event => dragover(event, 'course', i, j)}
                             on:click={() => { triggerreload = !triggerreload; }} on:dragleave={event => dragleave(event, 'course', i, j)}
-                            on:contextmenu={
-                                (e) => {e.stopPropagation(); openCourse(
-                                    e, j, info.allTerm["items"][i]["courses"][j],
-                                    info.allTerm["items"][i]["id"], info.allTerm["items"][i]["name"])} } 
+                            on:contextmenu={(e) => {
+                                    e.stopPropagation(); 
+                                    contextmenu_course.openMenu(e, j, info.allTerm["items"][i]["courses"][j])} } 
                             style={`width: ${width}vw`} >
                             {info.allTerm["items"][i]["courses"][j]["name"]}
                         </p>

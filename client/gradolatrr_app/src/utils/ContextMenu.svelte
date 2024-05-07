@@ -2,11 +2,11 @@
     import { createEventDispatcher, onMount } from 'svelte';
   import { clickOutside } from './utils.svelte';
 
-    export let x;
-    export let y;
-    export let showMenu = false;
-    export let index;
-    export let item;
+    let x;
+    let y;
+    let showMenu = false;
+    let index;
+    let item;
     export let menuNum;
 
     let style = "";
@@ -132,6 +132,8 @@
 
     function menuClick(context, subcontext) {
         showMenu = false; 
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'auto';
         dispatch('context', {
             context: context,
             subcontext: subcontext,
@@ -142,6 +144,8 @@
 
     function onPageClick(e) {
         showMenu = false;
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'auto';
     }
 
     onMount(() => {
@@ -151,6 +155,19 @@
         else if (menuNum == 5 || menuNum == 6) menuItem = menuItems5;
         else menuItem = menuItems4;
     });
+
+    export function openMenu(e, item, index) {
+        showMenu = false;
+        e.preventDefault();
+        x = e.clientX;
+        y = e.clientY;
+        index = index;
+        item = item;
+        // context_bundle = [e.clientX, e.clientY, index, item];
+        showMenu = true;
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'hidden';
+    }
 
     $: {
         y, x;

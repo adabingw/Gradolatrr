@@ -28,6 +28,21 @@
         })
     }
 
+    export function openMenu(e, properties) {
+        showMenu = false;
+        e.preventDefault();
+        x = e.clientX;
+        y = e.clientY;
+        properties = [...properties, [
+            'name', { type: 'text' }
+        ], [
+            'mark', { type: 'number'}
+        ]]
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'hidden';
+        showMenu = true;
+    }
+
     $: {
         y, x;
         if (y > window.innerHeight - 200 && x > window.innerWidth - 200) {

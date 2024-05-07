@@ -34,12 +34,10 @@
     }
     data_array = sortOrder(data_array);
 
-    let showMenu = false;
-    let context_bundle = [ 0, 0, 0 ];
+    
     let update;
-
-    let showAdd = false;
-    let add_bundle = [0, 0];
+    let contextmenu;
+    let newproperty;
 
     if (cmd == "term") update = mutation(UPDATE_TERM);
     else if (cmd == "course") update = mutation(UPDATE_COURSE);
@@ -196,13 +194,6 @@
         });
     }
 
-    function openMenu(e, index, item) {
-        showMenu = false;
-        e.preventDefault();
-        context_bundle = [e.clientX, e.clientY, index, item];
-        showMenu = true;
-    }
-
     function openNew(e) {
         showAdd = false;
         e.preventDefault();
@@ -251,20 +242,8 @@
 
 </script>
 
-<ContextMenu bind:showMenu={showMenu} 
-        bind:x={context_bundle[0]} 
-        bind:y={context_bundle[1]} 
-        bind:index={context_bundle[2]}
-        bind:item={context_bundle[3]}
-        menuNum={1}
-        on:context={contextController}/>
-<NewProperty bind:showMenu={showAdd} 
-        bind:x={add_bundle[0]} 
-        bind:y={add_bundle[1]}
-        types={TERM_TYPES}
-        src='info_table'
-        bind:data={data}
-        on:context={addedProperty}/>
+<ContextMenu bind:this={contextmenu} menuNum={1} on:context={contextController}/>
+<NewProperty bind:this={newproperty} types={TERM_TYPES} src='info_table' bind:data={data} on:context={addedProperty}/>
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="wrapper">
@@ -279,7 +258,7 @@
                         <span class="bodycellheader tablecol">
                             {#if cmd != "assign" && cmd != "bundle"}
                                 <i class={`fa-solid fa-ellipsis-vertical context_menu`}
-                                    on:click={(e) => { e.stopPropagation(); openMenu(e, i, data[0])}}></i>
+                                    on:click={(e) => { e.stopPropagation(); contextmenu.openMenu(e, i, data[0])}}></i>
                             {/if}
                             {#if data[1]["type"] == "text"}
                                 <i class="fa-solid fa-align-justify component"></i>
@@ -341,7 +320,7 @@
         {/if}
 </div>
 {#if cmd != "assign" && cmd != "bundle"}
-    <i class="fa-solid fa-plus fa-xs" on:click={(e) => openNew(e)}></i>
+    <i class="fa-solid fa-plus fa-xs" on:click={(e) => newproperty.openMenu(e)}></i>
 {/if}
 {#if cmd == "course"}
     <p class="subheader">Information about items in this course</p>

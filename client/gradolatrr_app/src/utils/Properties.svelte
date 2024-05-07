@@ -12,9 +12,7 @@
     import { tooltip } from '@svelte-plugins/tooltips';
 
     export let content_info;
-
-    let showAdd = false;
-    let add_bundle = [0, 0];
+    let newproperty;
 
     const dispatch = createEventDispatcher();
 
@@ -29,13 +27,6 @@
         dispatch('info', {
             info: 'required'
         })
-    }
-
-    function openNew(e) {
-        showAdd = false;
-        e.preventDefault();
-        add_bundle = [e.clientX, e.clientY];
-        showAdd = true;
     }
 
     function saveInfo(event) {
@@ -150,13 +141,7 @@
 </script>
 
 <Toasts />
-<NewProperty bind:showMenu={showAdd} 
-        bind:x={add_bundle[0]} 
-        bind:y={add_bundle[1]}
-        types={TYPES}
-        src="properties"
-        bind:data={content_info}
-        on:context={saveInfo}/>
+<NewProperty types={TYPES} src="properties" bind:data={content_info} on:context={saveInfo} bind:this={newproperty}/>
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div>
@@ -235,7 +220,7 @@
     </div>
     </table>
 
-    <i class="fa-solid fa-plus fa-xs" on:click={(e) => openNew(e)}></i>
+    <i class="fa-solid fa-plus fa-xs" on:click={(e) => newproperty.openMenu(e)}></i>
 </div>
 
 <style>

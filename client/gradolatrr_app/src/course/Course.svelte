@@ -22,6 +22,7 @@
     import Folder from '../utils/Folder.svelte';
     import DateComp from "../utils/Date.svelte";
     import Filter from '../utils/Filter.svelte';
+    import TextArea from '../utils/TextArea.svelte';
     
     export let term_id;
     export let term_name;
@@ -87,10 +88,24 @@
         regrade(true); 
     }
 
-    async function saveAssignChanges(event) {
-        let i = event.detail.i;
-        let assign_id = event.detail.data.id;
-        let assign_name = event.detail.data.name;
+    async function saveAssignChanges(i, assign_id, assign_name, index) {
+        if (index) {
+            console.log(!content[i]['name'], index)
+            if (index == -2 && !content[i]['name']) {
+                alert('Name cannot be left empty');
+            } else if (index == -1 && content[i]['data'] && !content[i]['data']['mark']['content']) {
+                alert('Mark cannot be left empty');
+            }
+            return;
+        }
+
+        if (index && index[1]['required']) {
+            if (content[i]['data'] && content[i]['data'][index[0]] && !content[i]['data'][index[0]]['content']) {
+                alert('Field cannot be left blank because it is required (by you?)');
+                return;
+            }
+        }
+        return;
         try {
             await update_assign({
                 variables: {
@@ -203,8 +218,8 @@
             sortDirection = 1;
         }
         const sorted = content.sort((a, b) => {
-            let a_arr = JSON.parse(a["data"]);
-            let b_arr = JSON.parse(b["data"]);
+            let a_arr = a["data"];
+            let b_arr = b["data"];
             const aVal = a_arr[key]["content"];
             const bVal = b_arr[key]["content"];
 
@@ -231,15 +246,15 @@
 
         for (let assign of content) {
             for (let v of variables.message) {
-                if (JSON.parse(assign["data"])[v] == undefined) {
+                if (assign["data"][v] == undefined) {
                     continue;
                 }
                 
-                if (JSON.parse(assign["data"])[v]["content"] == undefined) {
+                if (assign["data"][v]["content"] == undefined) {
                     parser.clear();
                     continue;
                 }
-                parser.set(`${v}`, `${JSON.parse(assign["data"])[v]["content"]}`);
+                parser.set(`${v}`, `${assign["data"][v]["content"]}`);
             }
 
             if (equation.includes('#')) {
@@ -394,7 +409,7 @@
     }
 
     async function textChange(i, key, value, assign_id) {
-        let new_content = JSON.parse(content[i]["data"])
+        let new_content = content[i]["data"]
         new_content[key]["content"] = value;
         if (key == "mark" && !value) new_content[key]["content"] = 0; 
         content[i]["data"] = JSON.stringify(new_content)
@@ -448,6 +463,9 @@
         last_info = JSON.parse(JSON.stringify(info));
         content = JSON.parse(JSON.stringify($query_result["data"]["getCourse"]["assignments"]))
         content_info = JSON.parse($query_result["data"]["getCourse"]["content_info"]);
+        for (let i = 0; i < content.length; i++) {
+            if (content[i]['data']) content[i]['data'] = JSON.parse(content[i]['data'])
+        }
         if (content_array.length != 0) content_array = [];
         for (let key of Object.keys(content_info)) {
             if (key == "name" || key == "mark") continue; 
@@ -506,7 +524,8 @@
         }
         last_info = info;
 
-        sorts = JSON.parse(localStorage.getItem('sort-course'));
+        sorts = localStorage.getItem('sort-course');
+        if (sorts) sorts = JSON.parse(sorts);
         if (sorts && sorts[name]) sort = sorts[name];
         else if (!sorts) {
             sorts = {};
@@ -549,6 +568,7 @@
         on:context={sortController}/>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore missing-declaration -->
 <div class="page">
     <Modal bind:showModal>
         <h2 slot="header">
@@ -694,43 +714,50 @@
                         <span>
                             <i class="fa-solid fa-ellipsis-vertical context_menu" 
                                 on:click={(e) => {e.stopPropagation(); openMenu(e, content[i], content[i]["id"])}}></i>
-                            <span contenteditable on:input={e => textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}>
+                            <TextArea bind:inputText={content[i]['name']} 
+                                on:message={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], -2) }
+                                on:blur={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], -2)}/>
+                            <!-- <span contenteditable on:input={e => textChange(i, "name", e.currentTarget.textContent, content[i]["id"])}
+                                on:focusout={(e) => console.log("OUT!")} >
                                 {content[i]['name']}
-                            </span>
+                            </span> -->
                         </span>
                         </div>
                         <div class="box">
-                            <input type="number" value={JSON.parse(content[i]["data"])["mark"]["content"]} 
-                                on:change={(e) => textChange(i, "mark", e.target.value, content[i]["id"])} />
+                            <input type="number" value={content[i]["data"]["mark"]["content"]} 
+                                on:change={(e) => textChange(i, "mark", e.target.value, content[i]["id"])} 
+                                on:blur={(e) => console.log("OUT!")} />
                         </div>
                         {#each content_array as j}
                             {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
                                 <div class="box">
-                                    {#if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "text"}
-                                        <span contenteditable on:input={e => textChange(i, j[0], e.currentTarget.textContent, content[i]["id"])}>
-                                            {JSON.parse(content[i]["data"])[j[0]]["content"]}
-                                        </span>
-                                    {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "number"}
-                                        <input type="number" value={JSON.parse(content[i]["data"])[j[0]]["content"]} 
+                                    {#if content[i]["data"][j[0]] != undefined && j[1]["type"] == "text"}
+                                        <TextArea bind:inputText={content[i]["data"][j[0]]["content"]} 
+                                            on:message={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], j) }
+                                            on:blur={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)}/>
+                                    {:else if content[i]["data"][j[0]] != undefined && j[1]["type"] == "number"}
+                                        <input type="number" value={content[i]["data"][j[0]]["content"]} 
                                         on:change={(e) => textChange(i, j[0], e.target.value, content[i]["id"])} max="100" min="0" />
-                                    {:else if JSON.parse(content[i]["data"])[j[0]] != undefined && j[1]["type"] == "date"}
-                                        <DateComp date={JSON.parse(content[i]["data"])[j[0]]["content"]} 
+                                    {:else if content[i]["data"][j[0]] != undefined && j[1]["type"] == "date"}
+                                        <DateComp date={content[i]["data"][j[0]]["content"]} 
                                         on:message={(e) => textChange(i, j[0], e.detail.data, content[i]["id"])} />
-                                    {:else if JSON.parse(content[i]["data"])[j[0]] == undefined}
+                                    {:else if content[i]["data"][j[0]] == undefined}
                                         something has gone wrong
                                     {:else if j[1]["type"] == "multiselect"}
                                         <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                             bind:j={j} bind:content={content[i]} bind:i={i} bind:extshowmulti={showmulti}
-                                            on:assign={saveAssignChanges} on:course={saveCourseChanges} max=0 
+                                            on:assign={(e) => saveAssignChanges(e.detail.i, e.detail.data.assign_id, e.detail.data.assign_name, j)} 
+                                            on:course={saveCourseChanges} max=0 
                                             on:press={() => { showmulti = i;}} on:close={() => { showmulti = -1; }}
                                         />
                                     {:else if j[1]["type"] == "singleselect"}
                                         <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                         bind:j={j} bind:content={content[i]} bind:i={i}
-                                        on:assign={saveAssignChanges} on:course={saveCourseChanges} max=1/>
+                                        on:assign={(e) => saveAssignChanges(e.detail.i, e.detail.data.assign_id, e.detail.data.assign_name, j)} 
+                                        on:course={saveCourseChanges} max=1/>
                                     {:else if j[1]["type"] == "checked"}
-                                        <input type="checkbox" checked={JSON.parse(content[i]["data"])[j[0]]["content"]}
-                                        on:change={(e) => textChange(i, j[0], e.target.checked, content[i]["id"])}
+                                        <input type="checkbox" checked={content[i]["data"][j[0]]["content"]}
+                                            on:change={(e) => textChange(i, j[0], e.target.checked, content[i]["id"])}
                                         />
                                     {/if}
                                 </div>

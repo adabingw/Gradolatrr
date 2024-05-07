@@ -5,12 +5,12 @@
     const dispatch = createEventDispatcher();
     let textarea;
 
-    function dataChange() {
-        console.log(textarea.scrollHeight.toString() + "px")
+    function dataChange(e) {
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight.toString() + "px";
         dispatch('message', {
-            text: "data changed"
+            text: "data changed",
+            value: e.target.value
         });
         
     }
@@ -18,7 +18,14 @@
 
 <div class="input-row">
     <textarea class="input-text" cols="50" placeholder="empty"
-        bind:value={inputText} on:change={dataChange} on:input={dataChange} bind:this={textarea}/>
+        bind:value={inputText} on:change={dataChange} on:input={dataChange} bind:this={textarea}
+        on:focusout={() => {
+            console.log("toiquoequrowe")
+            dispatch('blur', {
+                text: "blur"
+            });
+        }}
+    />
 </div>
 
 <style>

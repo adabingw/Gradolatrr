@@ -5,7 +5,6 @@
     import { v4 as uuidv4 } from 'uuid';
     import { navigate } from 'svelte-navigator';
     import { onDestroy } from 'svelte';
-    import { tooltip } from '@svelte-plugins/tooltips';
 
     import Folder from '../utils/Folder.svelte';
     import HeaderField from '../utils/HeaderField.svelte';
@@ -14,6 +13,8 @@
     import { GET_CONTENT_INFO } from '../constants/queries_get';
     import { ADD_ASSIGNMENT } from '../constants/queries_post';
     import { UPDATE_COURSE } from '../constants/queries_put';
+    import TooltipIcon from '../utils/TooltipIcon.svelte';
+    import { mapData } from './assignUtil.js';
 
     export let course_id;
     export let course_name;
@@ -42,7 +43,7 @@
 
         let content_info = JSON.parse(new_assign["content_info"])
         for (let i of Object.keys(content_info)) {
-            if (content_info[i]['required'] && !(data[i]['content'])) {
+            if (content_info[i]['required'] && !data[i]['content'] && data[i]['content'] != 0) {
                 alert("Please fill in all required fields")
                 return;
             }
@@ -102,34 +103,7 @@
             if (typeof new_assign["data"] != Object) new_assign["data"] = {}
             let content_info = JSON.parse(new_assign["content_info"])
             for (let i of Object.keys(content_info)) {
-                let value = content_info[i];
-                if (value["type"] == "text") {
-                    new_assign["data"][i] = {
-                        "content": "", 
-                        "type": value["type"]
-                    };
-                } else if (value["type"] == "number") {
-                    new_assign["data"][i] = {
-                        "content": 0, 
-                        "type": value["type"]
-                    };
-                } else if (value["type"] == "multiselect" || value["type"] == "singleselect") {
-                    new_assign["data"][i] = {
-                        "content": [], 
-                        "type": value["type"], 
-                        "tag_info": content_info[i]["tag_info"]
-                    };
-                } else if (value["type"] == "date") {
-                    new_assign["data"][i] = {
-                        "content": (new Date()).toISOString().split('T')[0],
-                        "type": value["type"]
-                    };
-                } else if (value["type"] == "checked") {
-                    new_assign["data"][i] = {
-                        "content": false,
-                        "type": value["type"]
-                    };
-                }
+                new_assign['data'][i] = mapData(content_info[i])
             }
             info = JSON.parse(JSON.stringify(new_assign));
             info["data"] = JSON.stringify(new_assign["data"]);
@@ -161,22 +135,13 @@
         <InfoTable cmd="assign" bind:info={info} on:message={dataChange} />
     {/if}
     <div class="term-op">
-        <i class="fa-solid fa-ban" on:click={() => navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)}
-            use:tooltip={{
-                content: 'cancel',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
-            use:tooltip={{
-                content: 'save',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
+        <TooltipIcon icon='fa-solid fa-ban' position='left' text='cancel'
+            click={() => {
+                data_changed = false;
+                navigate(`/course/${term_id}/${term_name}/${course_id}/${course_name}`)
+            }} 
+        />
+        <TooltipIcon icon='fa-solid fa-floppy-disk' click={saveChanges} position='left' text='save'/>
     </div>
 </div>
 

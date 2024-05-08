@@ -55,10 +55,20 @@ export function drop (ev, key2, index2, content_array, info) {
 
 export function maxOrder(content_array) {
     if (content_array.length == 0) return 0;
-    let max = content_array[0][1]["order"];
+    let max = 0;
     for (const row of content_array) {
         if (row[1]["order"] == undefined) continue;
         max = Math.max(max, row[1]["order"]);
+    }
+    return max;
+}
+
+export function maxOrderContent(content) {
+    let max = 0;
+    for (let item of content) {
+        if (item["order"] != null && item["order"] != undefined && !isNaN(item["order"])) {
+            max = Math.max(max, item["order"]);
+        }
     }
     return max;
 }

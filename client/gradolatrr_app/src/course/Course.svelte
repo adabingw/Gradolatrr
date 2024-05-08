@@ -1,24 +1,24 @@
 <script>
     // @ts-nocheck
     import { v4 as uuidv4 } from 'uuid';
-    import { tooltip } from '@svelte-plugins/tooltips';
-    
     import { Link } from 'svelte-navigator';
     import { query, mutation } from 'svelte-apollo';
     import { create, all } from 'mathjs';
     import { navigate } from 'svelte-navigator';
+    import { tooltip } from '@svelte-plugins/tooltips';
+
     import ContextMenu from '../utils/ContextMenu.svelte';
+    import TooltipIcon from '../utils/TooltipIcon.svelte';
     import { COURSE_CONTENT } from "../constants/queries_get";
     import { ADD_ASSIGNMENT } from "../constants/queries_post";
     import { DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
-    import { DEFAULT_GRADING } from '../constants/constants';
+    import { DEFAULT_GRADING, TYPES } from '../constants/constants';
     import { dragstart, sortOrder } from '../utils/utils.svelte';
     import { tokenize, filterContent } from "../utils/utils.svelte";
     import Modal from '../utils/Modal.svelte';
     import Grading from '../utils/Grading.svelte';
     import Multiselect2 from '../utils/Multiselect2.svelte';
-    import { onDestroy } from 'svelte';
     import Folder from '../utils/Folder.svelte';
     import DateComp from "../utils/Date.svelte";
     import Filter from '../utils/Filter.svelte';
@@ -90,7 +90,7 @@
             console.log(!content[i]['name'], index)
             if (index == -2 && !content[i]['name']) {
                 alert('Name cannot be left empty');
-            } else if (index == -1 && content[i]['data'] && !content[i]['data']['mark']['content']) {
+            } else if (index == -1 && content[i]['data'] && !content[i]['data']['mark']['content'] && content[i]['data']['mark']['content'] != 0) {
                 alert('Mark cannot be left empty');
             }
             return;
@@ -243,9 +243,7 @@
 
         for (let assign of content) {
             for (let v of variables.message) {
-                if (assign["data"][v] == undefined) {
-                    continue;
-                }
+                if (assign["data"][v] == undefined) continue;
                 
                 if (assign["data"][v]["content"] == undefined) {
                     parser.clear();
@@ -263,8 +261,6 @@
             result += result_0;
             parser.clear();
         }
-
-
 
         if (result != grade && (result != undefined && result != null)) {
             grade = Math.round(result * 100) / 100;
@@ -350,10 +346,7 @@
     function contextController(e) {
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'auto';
-        
-        const index = e.detail.index;
-        const item = e.detail.item;
-        
+                
         if (e.detail.context == 'trash') {
             deleteAssignment(e.detail.index);
         } else if (e.detail.context == 'edit') {
@@ -530,29 +523,16 @@
                 <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
             {:else}
             <div class={`table_actions-${(search || filter) ? 'show' : 'hide'}`} id="actions">
-                <i class={`fa-solid fa-filter outline-${(filterInput && filterInput.length > 0) ? 'show' : 'none'}`}
-                    use:tooltip={{
-                        content: 'filter',
-                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                        position: 'top',
-                        animation: 'slide',
-                        arrow: false
-                    }}
+                <TooltipIcon icon='fa-solid fa-filter' className={`outline-${(filterInput && filterInput.length > 0) ? 'show' : 'none'}`}
+                    position='top' text='save'
                     on:click={(e) => {
                         e.stopPropagation(); 
                         filter = true;
                         filtermenu.openMenu(e, content_array);
                     }}
-                ></i>
-                <i class="fa-solid fa-magnifying-glass"
-                    use:tooltip={{
-                        content: 'search',
-                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                        position: 'top',
-                        animation: 'slide',
-                        arrow: false
-                    }}
-                    on:click={() => {
+                />
+                <TooltipIcon icon='fa-solid fa-magnifying-glass' position='top' text='search'
+                    click={() => {
                         let element = document.getElementById('search_input');
                         if (element && !search) {
                             element.style.transition = "width 3s ease-in-out";
@@ -565,19 +545,11 @@
                             element.style.display = 'none';
                             search = false;
                         }
-
                     }}
-                ></i>
+                />
                 <input type="text" id="search_input" placeholder="search by name" bind:value={searchInput}/>
-                <i class="fa-solid fa-arrow-up-wide-short"
-                    use:tooltip={{
-                        content: 'sort',
-                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                        position: 'top',
-                        animation: 'slide',
-                        arrow: false
-                    }}
-                    on:click={(e) => {
+                <TooltipIcon icon='fa-solid fa-arrow-up-wide-short' position='top' text='sort'
+                    click={(e) => {
                         e.stopPropagation(); 
                         sortmenu.openMenu(e, sort, [...content_array, [
                             'name', { type: 'text' }
@@ -585,23 +557,9 @@
                             'mark', { type: 'number'}
                         ]]);
                     }}
-                ></i>
-                <i class="fa-solid fa-layer-group"
-                    use:tooltip={{
-                        content: 'group (coming soon?)',
-                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                        position: 'top',
-                        animation: 'slide',
-                        arrow: false
-                    }}></i>
-                <i class="fa-solid fa-toilet-paper"
-                    use:tooltip={{
-                        content: 'paging (coming soon?)',
-                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                        position: 'top',
-                        animation: 'slide',
-                        arrow: false
-                    }}></i>
+                />
+                <TooltipIcon icon='fa-solid fa-layer-group' position='top' text='group (coming soon?)' />
+                <TooltipIcon icon='fa-solid fa-toilet-paper' position='top' text='paging (coming soon?)' />
             </div>
 
             <div class="wrapper" style={`grid-template-columns: repeat(${cols}, minmax(200px, 1fr));`}>
@@ -620,30 +578,10 @@
                                 on:drop={event => drop(event, item[0], index)} on:dragover={event => dragover(event, index)}
                                 on:dragleave={event => dragleave(event, index)} id={`${item[0]}`}>
                                     <p class="term-header tablecol">
-                                        {#if item[1]["type"] == "text"}
-                                            <i class="fa-solid fa-align-justify component fa-xs"></i>
-                                        {:else if item[1]["type"] == "number"}
-                                            <i class="fa-solid fa-hashtag component"></i>
-                                        {:else if item[1]["type"] == "multiselect"}
-                                            <i class="fa-solid fa-list component"></i>
-                                        {:else if item[1]["type"] == "singleselect"}
-                                            <i class="fa-regular fa-circle-check component"></i>
-                                        {:else if item[1]["type"] == "date"}
-                                            <i class="fa-regular fa-calendar component"></i>
-                                        {:else if item[1]["type"] == "checked"}
-                                            <i class="fa-regular fa-circle-check"></i>
-                                        {/if}
+                                        <i class={`${TYPES[item[1]["type"]]} component`}></i>
                                         {item[0]}
                                         {#if item[1]['required']}
-                                            <i class="fa-solid fa-exclamation"
-                                                use:tooltip={{
-                                                    content: 'this field is required',
-                                                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                                                    position: 'top',
-                                                    animation: 'slide',
-                                                    arrow: false
-                                                }}
-                                            ></i>
+                                            <TooltipIcon icon='fa-solid fa-exclamation' position='top' text='this field is required' />
                                         {/if}
                                     </p>
                             </div>
@@ -657,7 +595,7 @@
                         <span class="name_row">
                             <i class="fa-solid fa-ellipsis-vertical context_menu" 
                                 on:click={(e) => {e.stopPropagation(); contextmenu.openMenu(e, content[i], content[i]["id"])}}></i>
-                            <TextArea bind:inputText={content[i]['name']} 
+                            <TextArea bind:inputText={content[i]['name']} style={`1000 * 0.8 / cols}px`}
                                 on:blur={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], -2)}/>
                         </span>
                         </div>
@@ -670,7 +608,7 @@
                                 <div class="box">
                                     {#if content[i]["data"][j[0]] != undefined && j[1]["type"] == "text"}
                                     <div class="name_row">
-                                        <TextArea bind:inputText={content[i]["data"][j[0]]["content"]} 
+                                        <TextArea bind:inputText={content[i]["data"][j[0]]["content"]} style={`${1000 * 0.8 / (cols)}px`}
                                             on:blur={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)}/>
                                     </div>
                                     {:else if content[i]["data"][j[0]] != undefined && j[1]["type"] == "number"}
@@ -721,15 +659,12 @@
                 <div class="grade-block">
                     <p class="grade">Grade: </p> { grade == undefined ? "no grade" : grade}
                     <i class="fa-regular fa-circle-question" on:click={() => { showModal = true; }}></i>
-                    <i class="fa-solid fa-rotate-right" on:click={() => regrade(true)}
-                        use:tooltip={{
-                            content: 'regrade',
-                            style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                            position: 'top',
-                            animation: 'slide',
-                            arrow: false
+                    <TooltipIcon icon='fa-solid fa-rotate-right' 
+                        position='top' text='regrade'
+                        on:click={() => {
+                            regrade(true);
                         }}
-                    ></i>
+                    />
                 </div>
             {/if}
         {/if}
@@ -747,14 +682,6 @@
     display: flex;
     flex-direction: row;
     margin-top: 15px;
-}
-
-.outline-none {
-    border: 0px solid #b1b1b1;
-}
-
-.outline-show {
-    border: 1px solid #b1b1b1;
 }
 
 .tablehead {
@@ -816,11 +743,8 @@
     min-height: fit-content;
     border-bottom: 1px solid #d1d1d1;
     padding-left: 0px;
-    min-width: fit-content;
+    min-width: 30px;
     display: flex;
-    align-items: top;
-    align-content: top;
-    align-self: top;
     word-wrap: break-word;
     word-break: break-all;
     padding-right: 10px;

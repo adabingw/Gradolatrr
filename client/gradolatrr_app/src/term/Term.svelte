@@ -4,7 +4,6 @@
     import { query, mutation } from "svelte-apollo";
     import { Link, navigate } from "svelte-navigator";
     import { createEventDispatcher, onDestroy } from "svelte";
-    import { tooltip } from '@svelte-plugins/tooltips';
 
     import InfoTable from '../utils/InfoTable.svelte';
     import { TERM_INFO } from "../constants/queries_get";
@@ -255,24 +254,8 @@
     </table>
     </div>
     <div class="term-op">
-        <i class="fa-solid fa-trash-can" on:click={() => deleteTerm()}
-            use:tooltip={{
-                content:
-                  'delete',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
-            use:tooltip={{
-                content:
-                  'save',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
+        <TooltipIcon icon='fa-solid fa-trash-can' position='left' text='delete' click={deleteTerm} />
+        <TooltipIcon icon='fa-solid fa-floppy-disk' click={saveChanges} position='left' text='save'/>
     </div>
 {/if}
 </div>

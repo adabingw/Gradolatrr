@@ -14,8 +14,8 @@
     import ContextMenu from "./ContextMenu.svelte";
     import DateComp from "./Date.svelte";
     import Multiselect from "./Multiselect.svelte";
-    import { TERM_TYPES } from "../constants/constants";
-    import { tooltip } from "@svelte-plugins/tooltips";
+    import { TERM_TYPES, TYPES } from "../constants/constants";
+    import TooltipIcon from "./TooltipIcon.svelte";
 
     export let cmd;
     export let info;
@@ -194,13 +194,6 @@
         });
     }
 
-    function openNew(e) {
-        showAdd = false;
-        e.preventDefault();
-        add_bundle = [e.clientX, e.clientY];
-        showAdd = true;
-    }
-
     function contextController(e) {
         const context = e.detail.context; 
         const subcontext = e.detail.subcontext;
@@ -260,31 +253,15 @@
                                 <i class={`fa-solid fa-ellipsis-vertical context_menu`}
                                     on:click={(e) => { e.stopPropagation(); contextmenu.openMenu(e, i, data[0])}}></i>
                             {/if}
-                            {#if data[1]["type"] == "text"}
-                                <i class="fa-solid fa-align-justify component"></i>
-                            {:else if data[1]["type"] == "number"}
-                                <i class="fa-solid fa-hashtag component"></i>
-                            {:else if data[1]["type"] == "multiselect" && (cmd == "assign" || cmd == "bundle")}
-                                <i class="fa-solid fa-list component"></i>
-                            {:else if data[1]["type"] == "singleselect" && (cmd == "assign" || cmd == "bundle")}
-                                <i class="fa-regular fa-circle-check component"></i>
-                            {:else if data[1]["type"] == "date"}
-                                <i class="fa-regular fa-calendar component"></i>
-                            {:else if data[1]["type"] == "checked"}
-                                <i class="fa-regular fa-circle-check"></i>
+                            {#if cmd == 'assign' || cmd == 'bundle'}
+                                <i class={`${TYPES[data[1]['type']]} component`}></i>
+                            {:else}
+                                <i class={`${TERM_TYPES[data[1]['type']]} component`}></i>
                             {/if}
                             <p>{data[0]}</p>
                             
                             {#if content_info[data[0]] && content_info[data[0]]['required']}
-                                <i class="fa-solid fa-exclamation"
-                                    use:tooltip={{
-                                        content: 'this field is required',
-                                        style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                                        position: 'top',
-                                        animation: 'slide',
-                                        arrow: false
-                                    }}
-                                ></i>
+                                <TooltipIcon icon='fa-solid fa-exclamation' position='top' text='this field is required'/>
                             {/if}
                         </span>
                     </div>
@@ -335,10 +312,6 @@
 .details {
     color: #818181;
     font-size: 15px;
-}
-
-.fa-exclamation {
-    margin-left: 15px;
 }
 
 .context_menu {

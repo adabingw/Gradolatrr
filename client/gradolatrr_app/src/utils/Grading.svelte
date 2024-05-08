@@ -2,7 +2,6 @@
 // @ts-nocheck
     import { createEventDispatcher } from "svelte";
     import { all, create} from "mathjs";
-    import { tooltip } from '@svelte-plugins/tooltips';
 
     import Button from "./Button.svelte";
     import { DEFAULT_GRADING } from "../constants/constants";

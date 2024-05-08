@@ -1,11 +1,11 @@
-let TYPES = [
-    ["text", 'fa-solid fa-align-justify'], 
-    ["number", 'fa-solid fa-hashtag'], 
-    ["multiselect", 'fa-solid fa-list-ul'], 
-    ["singleselect", 'fa-regular fa-caret-square-down'], 
-    ["date", 'fa-regular fa-calendar'],
-    ["checked", 'fa-regular fa-square-check']
-];
+let TYPES = {
+    "text": 'fa-solid fa-align-justify', 
+    "number": 'fa-solid fa-hashtag', 
+    "multiselect": 'fa-solid fa-list-ul', 
+    "singleselect": 'fa-regular fa-caret-square-down', 
+    "date": 'fa-regular fa-calendar',
+    "checked": 'fa-regular fa-square-check'
+};
 let DROPDOWN = [
     ["text", '\u{f031}'], 
     ["number", '\u{23}'], 
@@ -14,11 +14,11 @@ let DROPDOWN = [
     ["date", '\u{f133}'],
     ["checked", '\u{f058}']
 ]
-let TERM_TYPES = [
-    ["text", 'fa-solid fa-align-justify'], 
-    ["number", 'fa-solid fa-hashtag'], 
-    ["date", 'fa-regular fa-calendar']
-];
+let TERM_TYPES = {
+    "text": 'fa-solid fa-align-justify', 
+    "number": 'fa-solid fa-hashtag', 
+    "date": 'fa-regular fa-calendar',
+};
 let DEFAULT_GRADING = "mark / #";
 let WEIGHTED_GRADING = "mark * weight";
 let TOKENS = ['+', '-', '/', '*', '[', ']', '(', ')', '#']

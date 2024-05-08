@@ -86,10 +86,10 @@
     <div class={`navbar`} id="navbar">
         <ul>
             <input type="text" placeholder="Name" bind:value={name} />
-            {#each types as t, i}
+            {#each Object.keys(types) as t, i}
             <div class={`type ${type == i ? 'selected' : ''}`} on:click={() => type = i }>
-                <i class={t[1]} />
-                {t[0]}
+                <i class={types[t]} />
+                {t}
             </div>
             {/each}
             <div class="eye">

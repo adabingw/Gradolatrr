@@ -181,13 +181,13 @@
     {#if item != "name" && item != "mark"}
         <tr>
             <td class="tag-check"     
-            use:tooltip={{
-                content: 'show?',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}>
+                use:tooltip={{
+                    content: 'show?',
+                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
+                    position: 'left',
+                    animation: 'slide',
+                    arrow: false
+                }}>
                 <input type="checkbox" bind:checked={content_info[item]["checked"]} 
                     on:change={() => {checkInfo(item)}}/>
             </td>

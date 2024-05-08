@@ -4,7 +4,6 @@
     import { query, mutation } from 'svelte-apollo';
     import { createEventDispatcher, onDestroy } from 'svelte';
     import { navigate } from 'svelte-navigator';
-    import { tooltip } from '@svelte-plugins/tooltips';
     
     import Folder from '../utils/Folder.svelte';
     import HeaderField from "../utils/HeaderField.svelte";
@@ -12,6 +11,7 @@
     import new_course from "../constants/new_course.json";
     import { ADD_COURSE } from '../constants/queries_post';
     import { COURSE_ORDERS } from '../constants/queries_get';
+    import TooltipIcon from '../utils/TooltipIcon.svelte';
 
     export let term_id;
     export let term_name;
@@ -97,22 +97,13 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->    
     <div class="term-op">
-        <i class="fa-solid fa-ban" on:click={() => navigate(`/term/${term_id}/${term_name}`)}
-            use:tooltip={{
-                content: 'cancel',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
-            use:tooltip={{
-                content: 'save',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
+        <TooltipIcon icon='fa-solid fa-ban' position='left' text='cancel'
+            click={() => {
+                data_changed = false;
+                navigate(`/term/${term_id}/${term_name}`)
+            }} 
+        />
+        <TooltipIcon icon='fa-solid fa-floppy-disk' click={saveChanges} position='left' text='save'/>
     </div>
 </div>
 

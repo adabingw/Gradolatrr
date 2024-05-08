@@ -2,8 +2,11 @@
     import { createEventDispatcher } from 'svelte';
 
     export let inputText;
+    export let style;
     const dispatch = createEventDispatcher();
     let textarea;
+
+    if (!style) style = '60vw'
 
     function dataChange(e) {
         textarea.style.height = 'auto';
@@ -18,6 +21,7 @@
 
 <div class="input-row">
     <textarea class="input-text" cols="50" placeholder="empty"
+        style={`width: ${style}`}
         bind:value={inputText} on:change={dataChange} on:input={dataChange} bind:this={textarea}
         on:focusout={() => {
             console.log("toiquoequrowe")
@@ -31,7 +35,6 @@
 <style>
 .input-text {
     margin-top: 5px;
-    width: 60vw;
     margin-left: 3px;
 }
 

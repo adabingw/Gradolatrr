@@ -3,7 +3,6 @@
 
     import { query, mutation } from "svelte-apollo";
     import { navigate } from "svelte-navigator";
-    import { tooltip } from '@svelte-plugins/tooltips';
 
     import InfoTable from '../utils/InfoTable.svelte';
     import { ASSIGN_INFO } from "../constants/queries_get";
@@ -12,6 +11,8 @@
     import { onDestroy } from "svelte";
     import { DELETE_ASSIGN } from "../constants/queries_delete";
     import Folder from "../utils/Folder.svelte";
+    import TooltipIcon from "../utils/TooltipIcon.svelte";
+    import { mapData } from "./assignUtil";
 
     export let id;
     export let name;
@@ -115,34 +116,7 @@
         let info_temp = JSON.parse(info["getAssignment"]["data"]);
         for (let c of Object.keys(content_info)) {
             if (info_temp[c] == undefined) {
-                let value = content_info[c]
-                if (value["type"] == "text") {
-                    info_temp[c] = {
-                        "content": "", 
-                        "type": value["type"]
-                    };
-                } else if (value["type"] == "number") {
-                    info_temp[c] = {
-                        "content": 0, 
-                        "type": value["type"]
-                    };
-                } else if (value["type"] == "multiselect" || value["type"] == "singleselect") {
-                    info_temp[c] = {
-                        "content": [], 
-                        "type": value["type"], 
-                        "tag_info": content_info[c]["tag_info"]
-                    };
-                } else if (value["type"] == "date") {
-                    info_temp[c] = {
-                        "content": (new Date()).toISOString().split('T')[0],
-                        "type": value["type"]
-                    }
-                } else if (value["type"] == "checked") {
-                    info_temp[c] = {
-                        "content": false,
-                        "type": value["type"]
-                    };
-                }
+                info_temp[c] = mapData(content_info[c]);
             } else if (info_temp[c] != undefined) {
                 if (content_info[c]["type"] == "multiselect" || content_info[c]["type"] == "singleselect") {
                     info_temp[c]["tag_info"] = content_info[c]["tag_info"];
@@ -189,24 +163,8 @@
         <InfoTable cmd="assign" bind:info={info.getAssignment} on:message={updateChange} />
     {/if}
     <div class="term-op">
-        <i class="fa-solid fa-trash-can" on:click={() => deleteAssignment()}
-            use:tooltip={{
-                content: 'delete',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}
-            ></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
-            use:tooltip={{
-                content: 'save',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}    
-        ></i>
+        <TooltipIcon icon='fa-solid fa-trash-can' click={deleteAssignment} position='left' text='delete'/>
+        <TooltipIcon icon='fa-solid fa-floppy-disk' click={saveChanges} position='left' text='save'/>
     </div>
 </div>
 

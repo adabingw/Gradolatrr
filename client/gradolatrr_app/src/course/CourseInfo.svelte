@@ -4,7 +4,6 @@
     import { query, mutation } from 'svelte-apollo';
     import { navigate } from 'svelte-navigator';
     import { createEventDispatcher, onDestroy } from 'svelte';
-    import { tooltip } from '@svelte-plugins/tooltips';
 
     import Folder from '../utils/Folder.svelte';
     import InfoTable from '../utils/InfoTable.svelte';
@@ -12,6 +11,7 @@
     import { COURSE_INFO } from "../constants/queries_get";
     import { DELETE_COURSE, DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
+    import TooltipIcon from '../utils/TooltipIcon.svelte';
     
     export let id;
     export let name;
@@ -68,17 +68,16 @@
                         } else if (old_type == "multiselect" || old_type == "singleselect") {
                             if (new_type == "singleselect" || new_type == "multiselect") {
                                 assign_data[key]["content"] = [];
-                            } else if (new_type == "text") {
-                                assign_data[key]["content"] = "";
-                                delete assign_data[key]["tag_info"];
-                            } else if (new_type == "date") {
-                                assign_data[key]["content"] = (new Date()).toISOString().split('T')[0];
-                                delete assign_data[key]["tag_info"];
-                            } else if (new_type == "number") {
-                                assign_data[key]["content"] = 0;
-                                delete assign_data[key]["tag_info"];
-                            } else if (new_type == "checked") {
-                                assign_data[key]["content"] = false;
+                            } else {
+                                if (new_type == "text") {
+                                    assign_data[key]["content"] = "";
+                                } else if (new_type == "date") {
+                                    assign_data[key]["content"] = (new Date()).toISOString().split('T')[0];
+                                } else if (new_type == "number") {
+                                    assign_data[key]["content"] = 0;
+                                } else if (new_type == "checked") {
+                                    assign_data[key]["content"] = false;
+                                }
                                 delete assign_data[key]["tag_info"];
                             }
                         }
@@ -156,7 +155,6 @@
         } catch (error) {
             console.error(error);
         }
-
         dispatch('message', {
             text: "reload"
         });
@@ -238,31 +236,15 @@
 
 <div class="page">
     <Folder term_id={term_id} term_name={term_name} course_id={id} course_name={name} assign_name={""} />
-    
     <HeaderField bind:inputText={name} text="" on:message={(event) => {name_change = event.detail.data;}}/>
-
     {#if info != undefined}
         <InfoTable cmd="course" bind:info={info.getCourse} on:message={updateChange} on:action={newData} />
     {/if}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="term-op">
-        <i class="fa-solid fa-trash-can" on:click={() => deleteCourse()}
-            use:tooltip={{
-                content: 'delete',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
-            use:tooltip={{
-                content: 'save',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
+        <TooltipIcon icon='fa-solid fa-trash-can' position='left' text='delete' click={deleteCourse} />
+        <TooltipIcon icon='fa-solid fa-floppy-disk' click={saveChanges} position='left' text='save'/>
     </div>
 </div>
 

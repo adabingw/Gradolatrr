@@ -5,7 +5,7 @@
     import { query, mutation } from "svelte-apollo";
     import { navigate } from "svelte-navigator";
     import { v4 as uuidv4 } from 'uuid';
-    import { tooltip } from '@svelte-plugins/tooltips';
+    import { createEventDispatcher } from 'svelte';
 
     import ContextMenu from "../utils/ContextMenu.svelte";
     import { ALL_COURSES } from "../constants/queries_get";
@@ -13,8 +13,8 @@
     import { ADD_COURSE, ADD_ASSIGNMENT, ADD_TERM } from "../constants/queries_post";
     import { UPDATE_TERM, UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
     import { DELETE_TERM, DELETE_COURSE, DELETE_ASSIGN } from "../constants/queries_delete";
-
-    import { createEventDispatcher } from 'svelte';
+    import TooltipIcon from "../utils/TooltipIcon.svelte";
+    import { maxOrderContent } from '../utils/utils.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -50,27 +50,17 @@
         localStorage.setItem("expand", JSON.stringify(expand));
     }
 
-    function maxOrder(content) {
-        let max = 0;
-        for (let item of content) {
-            if (item["order"] != null && item["order"] != undefined && !isNaN(item["order"])) {
-                max = Math.max(max, item["order"]);
-            }
-        }
-        return max;
-    }
-
     function sortOrder(content) {
         const sorted = content.sort((a, b) => {
             let aVal = a["order"];
             let bVal = b["order"];
             if (aVal == null || aVal == undefined || isNaN(aVal)) {
-                aVal = maxOrder(content) + 1;
+                aVal = maxOrderContent(content) + 1;
                 a["order"] = aVal;
             }
 
             if (bVal == null || bVal == undefined || isNaN(bVal)) {
-                bVal = Math.max(maxOrder(content) + 1, aVal + 1);
+                bVal = Math.max(maxOrderContent(content) + 1, aVal + 1);
                 b["order"] = bVal;
             }
 
@@ -131,8 +121,9 @@
         if (element) element.style.visibility = 'hidden';
     }
 
+    // when you drop a course into a different course
     async function switchCourse(course, old_term, new_term, old_term_index, new_term_index, course_index) {
-        let max_order = maxOrder(new_term["courses"]) + 1;
+        let max_order = maxOrderContent(new_term["courses"]) + 1;
         lock = true;
         course["order"] = max_order;
         try {
@@ -145,17 +136,15 @@
                         order: max_order
                     }
                 }
-            }).then((response) => {
-                // lock = false;
-            });
+            })
 
             info["allTerm"]["items"][old_term_index]["courses"].splice(course_index, 1);
             info["allTerm"]["items"][new_term_index]["courses"].push(course);
-
             info["allTerm"]["items"][old_term_index]["courses"] = sortOrder(info["allTerm"]["items"][old_term_index]["courses"]);                
             info["allTerm"]["items"][new_term_index]["courses"] = sortOrder(info["allTerm"]["items"][new_term_index]["courses"]);                
         
             lock = true;
+
             for (let i = 0; i < course["assignments"].length; i++) {
                 await update_assign({
                     variables: {
@@ -165,11 +154,7 @@
                             term_id: new_term["id"]
                         }
                     }
-                }).then((response) => {
-                    if (i == course["assignments"].length - 1) {
-                        // lock = false;
-                    }
-                });
+                })
             }
         } catch(error) {
             console.error(error);
@@ -239,7 +224,6 @@
             }
         }
         droppingcourse = false;
-        // reload = true;
 
         info["allTerm"]["items"] = sortOrder(info["allTerm"]["items"]);        
         return;
@@ -347,14 +331,7 @@
             for (let i = 0; i < courses.length; i++) {
                 let assignments = courses[i]["assignments"];
                 for (let j = 0; j < assignments.length; j++) {
-                    await delete_assign({
-                        variables: {
-                            input: {
-                                id: assignments[j]["id"],
-                                type: "item"
-                            }
-                        }
-                    });
+                    deleteAssignment(assignments[j]['id'])
                 }
 
                 await delete_course({
@@ -373,6 +350,17 @@
         }
     }
 
+    async function deleteAssignment(id) {
+        await delete_assign({
+            variables: {
+                input: {
+                    id: id,
+                    type: "item"
+                }
+            }
+        });
+    }
+
     async function deleteCourse(index, item) {
         let confirmDelete = confirm("Delete this course?");
         if (!confirmDelete) return;
@@ -388,14 +376,7 @@
             });
 
             for (let i = 0; i < item["assignments"].length; i++) {
-                await delete_assign({
-                    variables: {
-                        input: {
-                            id: info["assignments"][i]["id"], 
-                            type: "item"
-                        }
-                    }
-                });
+                deleteAssignment(info['assignments'][i]['id'])
             }
             query_result.refetch();
             navigate("/");
@@ -643,42 +624,18 @@
             <div class="name">graku</div>
         </Link>
         <div id="tools">
-            <i class="fa-solid fa-angles-left tool_item"
-                on:click={() => {
+            <TooltipIcon icon='fa-solid fa-angles-left' position='bottom' text='collapse' class='tool_item'
+                click={() => {
                     dispatch('collapse', {
                         text: "clicked"
                     });
-                }}
-                use:tooltip={{
-                    content:
-                      'collapse',
-                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                    position: 'bottom',
-                    animation: 'slide',
-                    arrow: false
-                }}
-            ></i>
+                }} 
+            />
             <Link to={'/new_term'}>
-                <i class="fa-solid fa-circle-plus tool_item"
-                use:tooltip={{
-                    content:
-                      'add term',
-                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                    position: 'bottom',
-                    animation: 'slide',
-                    arrow: false
-                }}></i>    
+                <TooltipIcon icon='fa-solid fa-circle-plus' position='bottom' text='add term' class='tool_item'  />    
             </Link>
             <Link to={'/settings'}>
-                <i class="fa-solid fa-gear tool_item"
-                use:tooltip={{
-                    content:
-                      'settings',
-                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                    position: 'bottom',
-                    animation: 'slide',
-                    arrow: false
-                }}></i>
+                <TooltipIcon icon='fa-solid fa-gear' position='bottom' text='settings' class='tool_item'  />
             </Link>
         </div>
     </div>
@@ -717,15 +674,7 @@
                     </span>
                     <div>
                         <Link to={`/new_course/${info.allTerm["items"][i]["id"]}/${info.allTerm["items"][i]["name"]}`}>
-                            <i class="fa-solid fa-plus" id={`plus-${info.allTerm["items"][i]["id"]}`}
-                            use:tooltip={{
-                                content:
-                                  'add course',
-                                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                                position: 'bottom',
-                                animation: 'slide',
-                                arrow: false
-                            }}></i>
+                            <TooltipIcon icon='fa-solid fa-plus' position='bottom' text='add course'/>
                         </Link>
                     </div>
             </div>
@@ -792,12 +741,6 @@
     display: flex;
     flex-direction: row-reverse;
     align-items: baseline;
-}
-
-.tool_item {
-    margin-left: 3px;
-    width: 100%;
-    height: 15px;
 }
 
 .fa-plus  {

@@ -5,7 +5,6 @@
     import { v4 as uuidv4 } from 'uuid';
     import { navigate } from 'svelte-navigator';
     import { createEventDispatcher, onDestroy } from "svelte";
-    import { tooltip } from '@svelte-plugins/tooltips';
 
     import InfoTable from "../utils/InfoTable.svelte";
     import new_term from "../constants/new_term.json";
@@ -13,6 +12,7 @@
     import { TERM_ORDERS } from "../constants/queries_get";
     import HeaderField from "../utils/HeaderField.svelte";
     import Folder from "../utils/Folder.svelte";
+    import TooltipIcon from "../utils/TooltipIcon.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -98,22 +98,13 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->    
     <div class="term-op">
-        <i class="fa-solid fa-ban" on:click={() => navigate(`/`)}
-            use:tooltip={{
-                content: 'cancel',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
-        <i class="fa-solid fa-floppy-disk" on:click={() => saveChanges()}
-            use:tooltip={{
-                content: 'save',
-                style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                position: 'left',
-                animation: 'slide',
-                arrow: false
-            }}></i>
+        <TooltipIcon icon='fa-solid fa-ban' position='left' text='cancel'
+            click={() => {
+                data_changed = false;
+                navigate(`/`)
+            }} 
+        />
+        <TooltipIcon icon='fa-solid fa-floppy-disk' click={saveChanges} position='left' text='save'/>
     </div>
 </div>
 

@@ -5,7 +5,6 @@
     import { setClient } from "svelte-apollo";
     import { createAuthLink } from "aws-appsync-auth-link";
     import { createSubscriptionHandshakeLink } from "aws-appsync-subscription-link";
-    import { tooltip } from '@svelte-plugins/tooltips';
     
     import Sidebar from "./sidebar/Sidebar.svelte";
     import Dashboard from "./dashboard/Dashboard.svelte";
@@ -18,6 +17,7 @@
     import NewAssign from "./assign/NewAssign.svelte";
     import NewAssignBundle from "./assign/NewAssignBundle.svelte";
     import Settings from "./settings/Settings.svelte";
+    import TooltipIcon from "./utils/TooltipIcon.svelte";
 
     let sidebarReload = false;
     let reload = false;
@@ -98,15 +98,8 @@
           </div>
           <div class="divider" on:mousedown={dividerMousedown} />
           <div id="homepage" style={`width: ${100-w}vw`} >
-            <i class="fa-solid fa-angles-right" id="navbar_show" on:click={() => showNav()}
-                use:tooltip={{
-                    content:
-                      'expand',
-                    style: { backgroundColor: '#515151', color: '#ffffff', padding: '5px 5px 5px 5px' },
-                    position: 'right',
-                    animation: 'slide',
-                    arrow: false
-                }}></i>
+            <TooltipIcon icon='fa-solid fa-angles-right' id='navbar_show' click={showNav} position='right' text='expand'/>
+        
             
             <Route path="/*">
                 <Dashboard text="dashboard" bind:w={w} />
@@ -155,13 +148,6 @@
   overflow-x: hidden;
   height: 100vh;
 }    
-
-#navbar_show {
-    position: fixed;
-    left: 15px;
-    top: 15px;
-    display: none;
-}
 
 .divider {
     width: 3px;

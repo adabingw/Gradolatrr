@@ -1,136 +1,24 @@
 <script>
     import { createEventDispatcher, onMount } from 'svelte';
-  import { clickOutside } from './utils.svelte';
+    import { clickOutside } from './utils';
+    import { MENUITEMS1, MENUITEMS2, MENUITEMS3, MENUITEMS4, MENUITEMS5, MENUITEMS6 } from '../constants/constants.js';
 
     let x;
     let y;
     let showMenu = false;
     let index;
-    let item;
+    let item = [];
     export let menuNum;
 
     let style = "";
 
     let menuItem;
-    let menuItems1 = [
-        {
-            'name': 'trash',
-            'onClick': menuClick,
-            'displayText': "Trash",
-            'class': 'fa-solid fa-trash-can fa-ms'
-        }, 
-        {
-            'name': 'change_type', 
-            'onClick': undefined,
-            'displayText': 'Change type', 
-            'class': 'fa-solid fa-sliders fa-ms', 
-            'subClasses': [{
-                'name': 'text', 
-                'onClick': menuClick,
-                'displayText': 'Text', 
-                'class': '', 
-            }, {
-                'name': 'number', 
-                'onClick': menuClick,
-                'displayText': 'Number', 
-                'class': ''
-            }, {
-                'name': 'date', 
-                'onClick': menuClick,
-                'displayText': 'Date', 
-                'class': ''
-            }
-            ]
-        }
-    ]
-
-    let menuItems2 = [
-        {
-            'name': 'trash',
-            'onClick': menuClick,
-            'displayText': "Trash",
-            'class': 'fa-solid fa-trash-can fa-ms',
-            'disable': false
-        }, {
-            'name': 'edit',
-            'onClick': menuClick,
-            'displayText': "Edit",
-            'class': 'fa-solid fa-pen fa-ms',
-            'disable': false
-        }, {
-            'name': 'duplicate',
-            'onClick': menuClick,
-            'displayText': "Copy",
-            'class': 'fa-solid fa-copy fa-ms',
-            'disable': false
-        }
-    ]
-
-    let menuItems5 = [
-        {
-            'name': 'custom',
-            'onClick': menuClick,
-            'displayText': "Custom",
-            'class': '',
-            'disable': false
-        }, {
-            'name': 'alpha_asc',
-            'onClick': menuClick,
-            'displayText': "Alphabetical ascending",
-            'class': '',
-            'disable': false
-        }, {
-            'name': 'alpha_desc',
-            'onClick': menuClick,
-            'displayText': "Alphabetical descending",
-            'class': '',
-            'disable': false
-        }, {
-            'name': 'grade_asc',
-            'onClick': menuClick,
-            'displayText': "Grades ascending",
-            'class': '',
-            'disable': false
-        }, {
-            'name': 'grade_desc',
-            'onClick': menuClick,
-            'displayText': "Grades descending",
-            'class': '',
-            'disable': false
-        }
-    ]
-
-    let menuItems3 = [
-        {
-            'name': 'trash',
-            'onClick': menuClick,
-            'displayText': "Trash",
-            'class': 'fa-solid fa-trash-can fa-ms'
-        }, {
-            'name': 'duplicate',
-            'onClick': menuClick,
-            'displayText': "Copy",
-            'class': 'fa-solid fa-copy fa-ms'
-        }
-    ]
-
-    let menuItems4 = [
-        {
-            'name': 'trash',
-            'onClick': menuClick,
-            'displayText': "Trash",
-            'class': 'fa-solid fa-trash-can fa-ms'
-        }, {
-            'name': 'edit',
-            'onClick': menuClick,
-            'displayText': "Edit",
-            'class': 'fa-solid fa-pen fa-ms'
-        }
-    ]
+    let selectedItem = '';
 
     const dispatch = createEventDispatcher();
 
     function menuClick(context, subcontext) {
+        if (menuNum == 6) return;
         showMenu = false; 
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'auto';
@@ -146,24 +34,36 @@
         showMenu = false;
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'auto';
+        if (menuNum == 6) {
+            console.log(index)
+            dispatch('context', {
+                index: index, 
+                item: item,
+                context: selectedItem
+            })
+        }
     }
 
     onMount(() => {
-        if (menuNum == 1) menuItem = menuItems1;
-        else if (menuNum == 2) menuItem = menuItems2;
-        else if (menuNum == 3) menuItem = menuItems3;
-        else if (menuNum == 5 || menuNum == 6) menuItem = menuItems5;
-        else menuItem = menuItems4;
+        if (menuNum == 1) menuItem = MENUITEMS1;
+        else if (menuNum == 2) menuItem = MENUITEMS2;
+        else if (menuNum == 3) menuItem = MENUITEMS3;
+        else if (menuNum == 5) menuItem = MENUITEMS5;
+        else if (menuNum == 6) menuItem = MENUITEMS6;
+        else menuItem = MENUITEMS4;
     });
 
-    export function openMenu(e, item, index) {
+    export function openMenu(e, item2, index2) {
         showMenu = false;
         e.preventDefault();
+        e.stopPropagation(); 
         x = e.clientX;
         y = e.clientY;
-        index = index;
-        item = item;
-        // context_bundle = [e.clientX, e.clientY, index, item];
+        index = index2;
+        item = item2;
+        for (let k of Object.keys(item2)) {
+            if (selectedItem == '') selectedItem = k;
+        }
         showMenu = true;
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'hidden';
@@ -185,6 +85,8 @@
 </script>
 
 {#if showMenu}
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->  
 <div style={style} class:show={showMenu} use:clickOutside on:click_outside={onPageClick}>
     <div class={`navbar`} id="navbar">
         <ul>
@@ -192,40 +94,46 @@
             <div class="sort_key">
                 Sort by
                 {#each item as i, i2}
-                <li>
-                    <button class={`sort_item ${index[0] == i2 ? 'selected' : ''}`}> 
+                <li on:click={() => {
+                    index[0] = i[0];
+                    selectedItem = i[0];
+                }}>
+                    <button class={`sort_item ${index[0] == i[0] ? 'selected' : ''}`}> 
                         {i[0]}
                     </button>
                 </li>
                 {/each}
             </div>
-            {/if}
-            
-            {#each menuItem as item, i}
-                {#if item.name == "hr"}
+            {/if}            
+            {index}
+            {#each menuItem as mitem, i}
+                {#if mitem.name == "hr"}
                     <hr>
                 {:else}
                     <li>
-                        {#if item.onClick == undefined} 
+                        {#if mitem.subClasses != undefined} 
                             <button> 
-                                <i class={item.class}></i>
-                                {item.displayText}
+                                <i class={mitem.class}></i>
+                                {mitem.displayText}
                             </button>
                         {:else}
-                            <button class={`menu-${menuNum} ${menuNum == 6 && index[1] == i ? 'selected' : ''}`}
-                                on:click={() => item.onClick(item.name, undefined)} disabled={item.disable == true}> 
+                            <button class={`menu-${menuNum} ${(menuNum == 6 && index[0] != 0 && index[1] == i) ? 'selected' : ''}`}
+                                on:click={() => {
+                                    index[1] = i;
+                                    menuClick(mitem.name, undefined);
+                                }} disabled={mitem.disable == true}> 
                             {#if menuNum == 5 && index == i}
                                 <i class="fa-solid fa-check"></i>
                             {/if}
-                                <i class={`${item.class}`} id={item.disable ? "disabled" : ""}></i>
-                                {item.displayText}
+                                <i class={`${mitem.class}`} id={mitem.disable ? "disabled" : ""}></i>
+                                {mitem.displayText}
                             </button>
                         {/if}
                     </li>
-                    {#if item.subClasses}
-                    {#each item.subClasses as subClasses}
+                    {#if mitem.subClasses}
+                    {#each mitem.subClasses as subClasses}
                         <li class="subclass">
-                            <button on:click={() => subClasses.onClick(item.name, subClasses.name)} class="subclass"> 
+                            <button on:click={() => menuClick(mitem.name, subClasses.name)} class="subclass"> 
                                 {subClasses.displayText}
                             </button>
                         </li>

@@ -1,4 +1,3 @@
-<script context="module">
 import { TOKENS } from "../constants/constants";
 
 export function sortOrder(content_array) {
@@ -192,5 +191,3 @@ export function filterContent(filters, contents) {
     })
     return result;
 }
-
-</script>

@@ -24,8 +24,8 @@ export let id;
         arrow: false
     }}
     on:click={(e) => {
-        e.stopPropagation(); 
-        click();
+        // e.stopPropagation(); 
+        click(e);
     }}
 ></i>
 
@@ -43,12 +43,20 @@ export let id;
     height: 15px;
 }
 
+.action {
+    margin-left: 15px;
+    padding: 5px;
+}
+
 .outline-none {
     border: 0px solid #b1b1b1;
+    padding: 5px;
+    border-radius: 8px;
 }
 
 .outline-show {
     border: 1px solid #b1b1b1;
+    border-radius: 8px;
 }
 
 .fa-exclamation {

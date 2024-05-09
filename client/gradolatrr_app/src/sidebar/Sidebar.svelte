@@ -14,7 +14,7 @@
     import { UPDATE_TERM, UPDATE_COURSE, UPDATE_ASSIGNMENT } from "../constants/queries_put";
     import { DELETE_TERM, DELETE_COURSE, DELETE_ASSIGN } from "../constants/queries_delete";
     import TooltipIcon from "../utils/TooltipIcon.svelte";
-    import { maxOrderContent } from '../utils/utils.svelte';
+    import { maxOrderContent } from '../utils/utils';
 
     const dispatch = createEventDispatcher();
 

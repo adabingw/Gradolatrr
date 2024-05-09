@@ -12,6 +12,7 @@
     import HeaderField from "../utils/HeaderField.svelte";
     import Folder from "../utils/Folder.svelte";
     import ContextMenu from "../utils/ContextMenu.svelte";
+    import TooltipIcon from "../utils/TooltipIcon.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -146,42 +147,19 @@
         }
         sorts[name] = sort;
         localStorage.setItem("sort", JSON.stringify(sorts));
-        sortCourses();
+        sortCourses((sort == 1 || sort == 2) ? 'name' : 'mark', (sort == 1 || sort == 3) ? 1 : (sort == 0) ? 0 : 2);
     }
 
-    function sortCourses() {
-        /**
-         * 0: default
-         * 1: alphabetical asc
-         * 2: alphabetical desc
-         * 3: grade asc
-         * 4: grade desc
-        */
-        if (sort == 0) {
-            courses = info["getTerm"]["courses"];
-        } else if (sort == 1) {
+    function sortCourses(key, _sort) {
+        // 0: default; 1: asc; 2: desc
+        if (_sort == 0) courses = info["getTerm"]["courses"];
+        else if (_sort == 1) {
             courses.sort(function(a, b){
-                if(a.name < b.name) { return -1; }
-                if(a.name > b.name) { return 1; }
-                return 0;
+                return (a[key] < b[key]) ? -1 : 1;
             })
-        } else if (sort == 2) {
+        } else if (_sort == 2) {
             courses.sort(function(a, b){
-                if(a.name < b.name) { return 1; }
-                if(a.name > b.name) { return -1; }
-                return 0;
-            })
-        } else if (sort == 3) {
-            courses.sort(function(a, b){
-                if(a.grade < b.grade) { return -1; }
-                if(a.grade > b.grade) { return 1; }
-                return 0;
-            })
-        } else if (sort == 4) {
-            courses.sort(function(a, b){
-                if(a.grade < b.grade) { return 1; }
-                if(a.grade > b.grade) { return -1; }
-                return 0;
+                return (a[key] < b[key]) ? 1 : -1;
             })
         }
         courses = [...courses];
@@ -192,7 +170,7 @@
             info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
             last_info = JSON.parse(JSON.stringify(info));
             courses = info["getTerm"]["courses"];
-            sortCourses();
+            sortCourses((sort == 1 || sort == 2) ? 'name' : 'mark', (sort == 1 || sort == 3) ? 1 : (sort == 0) ? 0 : 2);;
         }
     }
 
@@ -208,14 +186,6 @@
             sorts[name] = sort
         };
         localStorage.setItem("sort", JSON.stringify(sorts));
-    }
-
-    $: {
-        showMenu;
-        if (!showMenu) {
-            let body = document.getElementById('homepage');
-            if (body) body.style.overflowY = 'auto';
-        }
     }
 
 </script>

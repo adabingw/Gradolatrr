@@ -14,8 +14,8 @@
     import { DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
     import { DEFAULT_GRADING, TYPES } from '../constants/constants';
-    import { dragstart, sortOrder } from '../utils/utils.svelte';
-    import { tokenize, filterContent } from "../utils/utils.svelte";
+    import { dragstart, sortOrder } from '../utils/utils';
+    import { tokenize, filterContent } from "../utils/utils";
     import Modal from '../utils/Modal.svelte';
     import Grading from '../utils/Grading.svelte';
     import Multiselect2 from '../utils/Multiselect2.svelte';
@@ -87,21 +87,22 @@
 
     async function saveAssignChanges(i, assign_id, assign_name, index) {
         if (index) {
-            console.log(!content[i]['name'], index)
             if (index == -2 && !content[i]['name']) {
                 alert('Name cannot be left empty');
+                return;
             } else if (index == -1 && content[i]['data'] && !content[i]['data']['mark']['content'] && content[i]['data']['mark']['content'] != 0) {
                 alert('Mark cannot be left empty');
+                return;
             }
-            return;
         }
 
-        if (index && index[1]['required']) {
+        if (index.length > 1 && index[1]['required']) {
             if (content[i]['data'] && content[i]['data'][index[0]] && !content[i]['data'][index[0]]['content']) {
                 alert('Field cannot be left blank because it is required (by you?)');
                 return;
             }
         }
+        console.log(content[i]['data'])
 
         try {
             await update_assign({
@@ -285,62 +286,17 @@
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'auto';
 
-        let index = e.detail.sort;
+        let sortItem = e.detail.index;
         let context = e.detail.context;
 
-        if (sort[0] == index && sort[1] == context) return;   
-        if (context == 'alpha_asc') {
-            sort = [index, 1];
-        } else if (context == 'alpha_desc') {
-            sort = [index, 2];
-        } else if (context == 'grade_asc') {
-            sort = [index, 3];
-        } else if (context == 'grade_desc') {
-            sort = [index, 4];
-        } else if (context == 'custom') {
-            sort = [index, 5];
-        }
-        sorts[name] = sort;
-        localStorage.setItem("sort-course", JSON.stringify(sorts));
-        sortCourses();
-    }
+        console.log(sortItem, sort)
 
-    function sortItems() {
-        /**
-         * 0: default
-         * 1: alphabetical asc
-         * 2: alphabetical desc
-         * 3: grade asc
-         * 4: grade desc
-        */
-        if (sort == 0) {
-            courses = info["getTerm"]["courses"];
-        } else if (sort == 1) {
-            courses.sort(function(a, b){
-                if(a.name < b.name) { return -1; }
-                if(a.name > b.name) { return 1; }
-                return 0;
-            })
-        } else if (sort == 2) {
-            courses.sort(function(a, b){
-                if(a.name < b.name) { return 1; }
-                if(a.name > b.name) { return -1; }
-                return 0;
-            })
-        } else if (sort == 3) {
-            courses.sort(function(a, b){
-                if(a.grade < b.grade) { return -1; }
-                if(a.grade > b.grade) { return 1; }
-                return 0;
-            })
-        } else if (sort == 4) {
-            courses.sort(function(a, b){
-                if(a.grade < b.grade) { return 1; }
-                if(a.grade > b.grade) { return -1; }
-                return 0;
-            })
-        }
-        courses = [...courses];
+        // if (sort[0] == sortItem[0] && sort[1] == sortItem[1]) return;   
+    
+        sortItem[0] = context;
+        sorts[name] = sortItem;
+        localStorage.setItem("sort-course", JSON.stringify(sorts));
+        sortList(context, sortItem[1]);
     }
 
     function contextController(e) {
@@ -362,6 +318,22 @@
             filterInput = e.detail.filters;
             localStorage.setItem(`${id}-filter`, JSON.stringify(filterInput));
         }
+    }
+
+    function sortList(key, sort) {
+        if ((key == 0 || key == "0")) return;
+        // 0: default; 1: asc; 2: desc
+        console.log(key, sort)
+        if (sort == 0) {
+            content.sort(function(a, b){
+                return (a['data'][key]['content'] < b['data'][key]['content']) ? -1 : 1;
+            })
+        } else if (sort == 1) {
+            content.sort(function(a, b){
+                return (a['data'][key]['content'] < b['data'][key]['content']) ? 1 : -1;
+            })
+        } 
+        content = [...content];
     }
 
     async function textChange(i, key, value, assign_id) {
@@ -417,7 +389,7 @@
         if ($query_result.loading == true) return;
         info = JSON.parse(JSON.stringify(Object.assign({}, $query_result.data)));
         last_info = JSON.parse(JSON.stringify(info));
-        content = JSON.parse(JSON.stringify($query_result["data"]["getCourse"]["assignments"]))
+        content = JSON.parse(JSON.stringify(info["getCourse"]["assignments"]))
         content_info = JSON.parse($query_result["data"]["getCourse"]["content_info"]);
         for (let i = 0; i < content.length; i++) {
             if (content[i]['data']) content[i]['data'] = JSON.parse(content[i]['data'])
@@ -436,6 +408,17 @@
         for (let i = 0; i < content_array.length; i++) {
             if (content_array[i][1]["checked"]) cols += 1;
         }
+        sorts = localStorage.getItem(`sort-course`);
+        if (sorts) sorts = JSON.parse(sorts);
+        if (sorts && sorts[name]) sort = sorts[name];
+        else if (!sorts) {
+            sorts = {};
+            sorts[name] = sort;
+        } else if (!sorts[name]) {
+            sorts[name] = sort
+        };
+        // localStorage.setItem(`sort-course`, JSON.stringify(sorts));
+        sortList(sort[0], sort[1])
         regrade(false);
     }
 
@@ -452,11 +435,24 @@
     function dragleave (ev, i) {
         ev.preventDefault();
         ev.dataTransfer.dropEffect = 'move';
-
         let target = document.getElementById(`${content_array[i][0]}`);
         if (target) {
             target.style.borderLeft = '0px solid blue';
         }
+    }
+
+    function openSortMenu(e) {
+        e.stopPropagation(); 
+        sortmenu.openMenu(e, [...content_array, [
+            'name', { type: 'text' }
+        ], [
+            'mark', { type: 'number'}
+        ]], sort);
+    }
+
+    function openFilterMenu(e) {
+        filter = true;
+        filtermenu.openMenu(e, content_array);
     }
 
     $: {
@@ -468,6 +464,7 @@
 
     $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
+            console.log("yipee")
             loadData();
         }
     }
@@ -479,17 +476,6 @@
             filterInput = JSON.parse(filterInput)
         }
         last_info = info;
-
-        sorts = localStorage.getItem('sort-course');
-        if (sorts) sorts = JSON.parse(sorts);
-        if (sorts && sorts[name]) sort = sorts[name];
-        else if (!sorts) {
-            sorts = {};
-            sorts[name] = sort;
-        } else if (!sorts[name]) {
-            sorts[name] = sort
-        };
-        localStorage.setItem("sort-course", JSON.stringify(sorts));
     }
 
 </script>
@@ -516,22 +502,18 @@
     {#if content != undefined || content != null}
         {#if content_array != undefined || content_array != null}
             {#if content_array.length == -1}
-            <div class="empty">
-                Empty
-            </div>
+                <div class="empty">
+                    Empty
+                </div>
                 <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
                 <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
             {:else}
             <div class={`table_actions-${(search || filter) ? 'show' : 'hide'}`} id="actions">
-                <TooltipIcon icon='fa-solid fa-filter' className={`outline-${(filterInput && filterInput.length > 0) ? 'show' : 'none'}`}
+                <TooltipIcon icon='fa-solid fa-filter' className={`action outline-${(filterInput && filterInput.length > 0) ? 'show' : 'none'}`}
                     position='top' text='save'
-                    on:click={(e) => {
-                        e.stopPropagation(); 
-                        filter = true;
-                        filtermenu.openMenu(e, content_array);
-                    }}
+                    on:click={openFilterMenu}
                 />
-                <TooltipIcon icon='fa-solid fa-magnifying-glass' position='top' text='search'
+                <TooltipIcon icon='fa-solid fa-magnifying-glass' position='top' text='search' className='action'
                     click={() => {
                         let element = document.getElementById('search_input');
                         if (element && !search) {
@@ -549,17 +531,10 @@
                 />
                 <input type="text" id="search_input" placeholder="search by name" bind:value={searchInput}/>
                 <TooltipIcon icon='fa-solid fa-arrow-up-wide-short' position='top' text='sort'
-                    click={(e) => {
-                        e.stopPropagation(); 
-                        sortmenu.openMenu(e, sort, [...content_array, [
-                            'name', { type: 'text' }
-                        ], [
-                            'mark', { type: 'number'}
-                        ]]);
-                    }}
+                    click={openSortMenu} className={`action outline-${(sort && sort[0] != 0) ? 'show' : 'none'}`}
                 />
-                <TooltipIcon icon='fa-solid fa-layer-group' position='top' text='group (coming soon?)' />
-                <TooltipIcon icon='fa-solid fa-toilet-paper' position='top' text='paging (coming soon?)' />
+                <TooltipIcon icon='fa-solid fa-layer-group' position='top' text='group (coming soon?)' className='action'/>
+                <TooltipIcon icon='fa-solid fa-toilet-paper' position='top' text='paging (coming soon?)' className='action'/>
             </div>
 
             <div class="wrapper" style={`grid-template-columns: repeat(${cols}, minmax(200px, 1fr));`}>
@@ -600,8 +575,8 @@
                         </span>
                         </div>
                         <div class="box">
-                            <input type="number" value={content[i]["data"]["mark"]["content"]} 
-                                on:blur={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], -1)} />
+                            <input type="number" bind:value={content[i]["data"]["mark"]["content"]} 
+                                on:blur={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], -1)} />
                         </div>
                         {#each content_array as j}
                             {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
@@ -612,10 +587,10 @@
                                             on:blur={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)}/>
                                     </div>
                                     {:else if content[i]["data"][j[0]] != undefined && j[1]["type"] == "number"}
-                                        <input type="number" value={content[i]["data"][j[0]]["content"]} 
+                                        <input type="number" bind:value={content[i]["data"][j[0]]["content"]} 
                                         on:blur={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)} />
                                     {:else if content[i]["data"][j[0]] != undefined && j[1]["type"] == "date"}
-                                        <DateComp date={content[i]["data"][j[0]]["content"]} 
+                                        <DateComp bind:date={content[i]["data"][j[0]]["content"]} 
                                         on:message={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)} />
                                     {:else if content[i]["data"][j[0]] == undefined}
                                         something has gone wrong
@@ -676,6 +651,7 @@
 #search_input {
     width: 0px;
     display: none;
+    margin-top: -3px;
 }
 
 .name_row {
@@ -754,8 +730,6 @@
 
 i {
     margin-left: 8px;
-    padding: 5px;
-    border-radius: 8px;
 }
 
 i:hover {

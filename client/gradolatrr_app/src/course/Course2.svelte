@@ -11,8 +11,8 @@
     import { DELETE_ASSIGN } from '../constants/queries_delete';
     import { UPDATE_COURSE, UPDATE_ASSIGNMENT } from '../constants/queries_put';
     import { DEFAULT_GRADING } from '../constants/constants';
-    import { dragover, dragstart, sortOrder } from '../utils/utils.svelte';
-    import { tokenize } from "../utils/utils.svelte";
+    import { dragover, dragstart, sortOrder } from '../utils/utils';
+    import { tokenize } from "../utils/utils";
     import Modal from '../utils/Modal.svelte';
     import Grading from '../utils/Grading.svelte';
     import Multiselect2 from '../utils/Multiselect2.svelte';

@@ -5,7 +5,7 @@
     import { mutation } from "svelte-apollo";
 
     import { UPDATE_ASSIGNMENT, UPDATE_COURSE, UPDATE_TERM } from "../constants/queries_put";
-    import { sortOrder, dragstart, drop, maxOrder } from "./utils.svelte";
+    import { sortOrder, dragstart, drop, maxOrder } from "./utils";
     import TextArea from "./TextArea.svelte";
     import TextField from "./TextField.svelte";
     import Properties from "./Properties.svelte";
@@ -260,7 +260,7 @@
                             {/if}
                             <p>{data[0]}</p>
                             
-                            {#if content_info[data[0]] && content_info[data[0]]['required']}
+                            {#if (cmd == 'assign' || cmd == 'bundle') && content_info[data[0]] && content_info[data[0]]['required']}
                                 <TooltipIcon icon='fa-solid fa-exclamation' position='top' text='this field is required'/>
                             {/if}
                         </span>

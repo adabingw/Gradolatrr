@@ -5,7 +5,7 @@
 
     import Button from "./Button.svelte";
     import { DEFAULT_GRADING } from "../constants/constants";
-    import { tokenize } from "./utils.svelte";
+    import { tokenize } from "./utils";
 
     export let grading;
     export let variables;

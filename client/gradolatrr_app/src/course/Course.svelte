@@ -57,6 +57,7 @@
     let sortmenu;
     let filtermenu;
     let filter;
+    let showSort = false;
 
     let filterInput = [];
 
@@ -86,23 +87,20 @@
     }
 
     async function saveAssignChanges(i, assign_id, assign_name, index) {
-        if (index) {
+        if (index && index[1]['type'] != 'checkbox') {
             if (index == -2 && !content[i]['name']) {
                 alert('Name cannot be left empty');
                 return;
             } else if (index == -1 && content[i]['data'] && !content[i]['data']['mark']['content'] && content[i]['data']['mark']['content'] != 0) {
                 alert('Mark cannot be left empty');
                 return;
+            } else if (index.length > 1 && index[1]['required'] && content[i]['data'] && content[i]['data'][index[0]]) {
+                if (!content[i]['data'][index[0]]['content'] && content[i]['data'][index[0]]['content'] != 0) {
+                    alert('Field cannot be left blank because it is required (by you?)');
+                    return;
+                }
             }
         }
-
-        if (index.length > 1 && index[1]['required']) {
-            if (content[i]['data'] && content[i]['data'][index[0]] && !content[i]['data'][index[0]]['content']) {
-                alert('Field cannot be left blank because it is required (by you?)');
-                return;
-            }
-        }
-        console.log(content[i]['data'])
 
         try {
             await update_assign({
@@ -283,13 +281,12 @@
     }
 
     function sortController(e) {     
+        showSort = false;
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'auto';
 
         let sortItem = e.detail.index;
         let context = e.detail.context;
-
-        console.log(sortItem, sort)
 
         // if (sort[0] == sortItem[0] && sort[1] == sortItem[1]) return;   
     
@@ -334,30 +331,6 @@
             })
         } 
         content = [...content];
-    }
-
-    async function textChange(i, key, value, assign_id) {
-        let new_content = content[i]["data"]
-        new_content[key]["content"] = value;
-        if (key == "mark" && !value) new_content[key]["content"] = 0; 
-        content[i]["data"] = JSON.stringify(new_content)
-        if (key == "name") content[i]["name"] = value;
-        try {
-            await update_assign({
-                variables: {
-                    input: {
-                        id: assign_id, 
-                        type: "item",
-                        course_id: id,
-                        term_id: term_id, 
-                        name: content[i]["name"], 
-                        data: JSON.stringify(content[i]["data"]),
-                    }
-                }
-            });
-        } catch(error) {
-            console.error(error);
-        }
     }
 
     async function duplicateAssign(index, item) {
@@ -442,6 +415,7 @@
     }
 
     function openSortMenu(e) {
+        showSort = true;
         e.stopPropagation(); 
         sortmenu.openMenu(e, [...content_array, [
             'name', { type: 'text' }
@@ -508,7 +482,7 @@
                 <Link to={`/new_assign/${term_id}/${term_name}/${id}/${name}`}><i class="fa-solid fa-plus fa-xs"></i> <span class="add">item </span> </Link>
                 <Link to={`/new_assignbundle/${term_id}/${term_name}/${id}/${name}`}><i class="fa-regular fa-file-zipper fa-xs"></i> <span class="add">bundle </span> </Link>
             {:else}
-            <div class={`table_actions-${(search || filter) ? 'show' : 'hide'}`} id="actions">
+            <div class={`table_actions-${(search || filter || showSort) ? 'show' : 'hide'}`} id="actions">
                 <TooltipIcon icon='fa-solid fa-filter' className={`action outline-${(filterInput && filterInput.length > 0) ? 'show' : 'none'}`}
                     position='top' text='save'
                     on:click={openFilterMenu}
@@ -607,8 +581,8 @@
                                         on:assign={(e) => saveAssignChanges(e.detail.i, e.detail.data.assign_id, e.detail.data.assign_name, j)} 
                                         on:course={saveCourseChanges} max=1/>
                                     {:else if j[1]["type"] == "checked"}
-                                        <input type="checkbox" checked={content[i]["data"][j[0]]["content"]}
-                                            on:change={(e) => textChange(i, j[0], e.target.checked, content[i]["id"])}
+                                        <input type="checkbox" bind:checked={content[i]["data"][j[0]]["content"]}
+                                            on:change={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)}
                                         />
                                     {/if}
                                 </div>

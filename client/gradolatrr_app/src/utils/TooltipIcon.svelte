@@ -25,7 +25,9 @@ export let id;
     }}
     on:click={(e) => {
         // e.stopPropagation(); 
-        click(e);
+        if (click) {
+            click(e);
+        }
     }}
 ></i>
 

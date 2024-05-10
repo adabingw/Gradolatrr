@@ -101,7 +101,6 @@
     function updateChange(event) {
         info["getAssignment"]["data"] = JSON.stringify(event.detail.data);
         saveChanges();
-            
         if (event.detail.key != undefined) {
             let content_info = JSON.parse(info["getAssignment"]["course"]["content_info"])
             content_info[event.detail.key]["tag_info"] = event.detail.data[event.detail.key]["tag_info"];

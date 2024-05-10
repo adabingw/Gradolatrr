@@ -6,17 +6,32 @@
     export let x;
     export let y;
     export let showMenu = false;
-    export let properties;
     export let prevfilters;
 
+    let properties;
     let style = "";
-    let filters = (prevfilters && prevfilters.length > 0) ? prevfilters : [['', '0', '']];
+    let type = 'text';
+    let conditions = CONDITION[0];
+    let filters = (prevfilters && prevfilters.length > 0) ? prevfilters : [['name', '0', []]];
 
     const dispatch = createEventDispatcher();
 
     function onChange(e, i, index) {
         if (index < filters[i].length) {
+            console.log(e.target.value)
             filters[i][index] = e.target.value;
+            if (i == 0) {
+                for (const p of properties) {
+                    if (p[0] == e.target.value) {
+                        type = p[1]['type']
+                        if (p[1]['type'] == 'text') conditions = CONDITION[0];
+                        else if (p[1]['type'] == 'number') conditions = CONDITION[1];
+                        else if (p[1]['type'] == 'date') conditions = CONDITION[3];
+                        else if (p[1]['type'] == 'checkbox') conditions = CONDITION[4];
+                        else conditions = CONDITION[2];
+                    }
+                }
+            }
         }
     }
 
@@ -28,16 +43,16 @@
         })
     }
 
-    export function openMenu(e, properties) {
+    export function openMenu(e, properties2) {
         showMenu = false;
         e.preventDefault();
         x = e.clientX;
         y = e.clientY;
-        properties = [...properties, [
+        properties = [[
             'name', { type: 'text' }
         ], [
             'mark', { type: 'number'}
-        ]]
+        ], ...properties2]
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'hidden';
         showMenu = true;
@@ -58,6 +73,113 @@
 
 </script>
 
+{#if showMenu}
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div style={style} class:show={showMenu} use:clickOutside on:click_outside={onPageClick}>
+    <div class={`navbar`} id="navbar">
+        <ul>
+            {#each filters as filter, index}
+            {#if index == 0}
+                <div class="filter_row">
+                    <div class="row">
+                        Where
+                        {#if typeof properties == 'object'}
+                        <select value={filter[0]} on:change={(e) => onChange(e, index, 0)}>
+                            {#each properties as property, i}
+                                <option value={property[0].toString()}>{property[0]}</option>
+                            {/each}
+                        </select>
+                        {/if}
+                        <select value={filter[1]} on:change={(e) => onChange(e, index, 1)}>
+                            {#each conditions as c, i}
+                                <option value={i.toString()}>{c}</option>
+                            {/each}
+                        </select>
+                        {#if type == 'text'}
+                        <!-- TODO: UPDATE THE [2] TO BE THE ARRAY -->
+                            <input type="text" placeholder="value" bind:value={filter[2]} 
+                                on:change={(e) => onChange(e, index, 2)}/>
+                        {:else if type == 'number'}
+                            {#if filters[index][1] == 5}
+                                <input type="number" placeholder="value" bind:value={filter[2]} 
+                                    on:change={(e) => onChange(e, index, 2)}/>
+                                AND
+                                <input type="number" placeholder="value" bind:value={filter[2]} 
+                                    on:change={(e) => onChange(e, index, 2)}/>
+                            {:else}
+                                <input type="number" placeholder="value" bind:value={filter[2]} 
+                                    on:change={(e) => onChange(e, index, 2)}/>
+                            {/if}
+                        {:else if type == 'date'}
+                            {#if filters[index][1] == 2}
+                        
+                                AND
+                                
+                            {:else}
+                                <input type="number" placeholder="value" bind:value={filter[2]} 
+                                    on:change={(e) => onChange(e, index, 2)}/>
+                            {/if}
+                        {:else if type == 'multiselect' || type == 'singleselect'}
+                            <!-- dropdown? -->
+                        {/if}
+                    </div>
+                    {#if filters.length > 1}
+                        <i class="fa-solid fa-trash"
+                        on:click={() => {
+                            filters.splice(index, 1);
+                            filters[0].splice(0, 1);
+                            filters = filters;
+                        }}
+                        ></i>
+                    {/if}
+                </div>
+            {:else}
+                <div class="filter_row">
+                    <div class="row">
+                    <select value={filter[0]} on:change={(e) => onChange(e, index, 0)}>
+                        {#each LOGIC as l, i}
+                            <option value={i.toString()}>{l}</option>
+                        {/each}
+                    </select>  
+                    <select value={filter[1]} on:change={(e) => onChange(e, index, 0)}>
+                        {#each properties as property, i}
+                            <option value={property[0].toString()}>{property[0]}</option>
+                        {/each}
+                    </select>
+                    <select value={filter[2]} on:change={(e) => onChange(e, index, 0)}>
+                        {#each conditions as c, i}
+                            <option value={i.toString()}>{c}</option>
+                        {/each}
+                    </select>
+                    <input type="text" placeholder="value" bind:value={filter[3]} on:change={(e) => onChange(e, index, 0)}/>
+                    <i class="fa-solid fa-trash"
+                        on:click={() => {
+                            filters.splice(index, 1);
+                            filters = filters;
+                        }}
+                    ></i>
+                    </div>
+                </div>
+            {/if}
+            {/each}
+            <div on:click={() => {
+                filters.push(['', '0', '0', ''])
+                filters = filters;
+            }} class="filter_action">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <div class="filter_action trash" on:click={(e) => {
+                filters = [];
+                onPageClick(e)
+            }}>
+                <i class="fa-solid fa-trash"></i> delete
+            </div>
+        </ul>
+    </div>
+</div>
+{/if}
+
 <style>
 * {
     padding: 0;
@@ -77,7 +199,7 @@
 }
 
 select:focus {
-  outline: none;
+    outline: none;
 }
 
 select {
@@ -136,83 +258,3 @@ input {
 }
 
 </style>
-
-{#if showMenu}
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div style={style} class:show={showMenu} use:clickOutside on:click_outside={onPageClick}>
-    <div class={`navbar`} id="navbar">
-        <ul>
-            {#each filters as filter, index}
-            {#if index == 0}
-                <div class="filter_row">
-                    <div class="row">
-                        Where 
-                        <select value={filter[0]} on:change={(e) => onChange(e, index, 0)}>
-                            {#each properties as property, i}
-                                <option value={property[0].toString()}>{property[0]}</option>
-                            {/each}
-                        </select>
-                        <select value={filter[1]} on:change={(e) => onChange(e, index, 1)}>
-                            {#each CONDITION as c, i}
-                                <option value={i.toString()}>{c}</option>
-                            {/each}
-                        </select>
-                        <input type="text" placeholder="value" bind:value={filter[2]} 
-                            on:change={(e) => onChange(e, index, 2)}/>
-                    </div>
-                    {#if filters.length > 1}
-                        <i class="fa-solid fa-trash"
-                        on:click={() => {
-                            filters.splice(index, 1);
-                            filters[0].splice(0, 1);
-                            filters = filters;
-                        }}
-                        ></i>
-                    {/if}
-                </div>
-            {:else}
-                <div class="filter_row">
-                    <div class="row">
-                    <select value={filter[0]} on:change={(e) => onChange(e, index, 0)}>
-                        {#each LOGIC as l, i}
-                            <option value={i.toString()}>{l}</option>
-                        {/each}
-                    </select>  
-                    <select value={filter[1]} on:change={(e) => onChange(e, index, 0)}>
-                        {#each properties as property, i}
-                            <option value={property[0].toString()}>{property[0]}</option>
-                        {/each}
-                    </select>
-                    <select value={filter[2]} on:change={(e) => onChange(e, index, 0)}>
-                        {#each CONDITION as c, i}
-                            <option value={i.toString()}>{c}</option>
-                        {/each}
-                    </select>
-                    <input type="text" placeholder="value" bind:value={filter[3]} on:change={(e) => onChange(e, index, 0)}/>
-                    <i class="fa-solid fa-trash"
-                        on:click={() => {
-                            filters.splice(index, 1);
-                            filters = filters;
-                        }}
-                    ></i>
-                    </div>
-                </div>
-            {/if}
-            {/each}
-            <div on:click={() => {
-                filters.push(['', '0', '0', ''])
-                filters = filters;
-            }} class="filter_action">
-                <i class="fa-solid fa-plus"></i>
-            </div>
-            <div class="filter_action trash" on:click={(e) => {
-                filters = [];
-                onPageClick(e)
-            }}>
-                <i class="fa-solid fa-trash"></i> delete
-            </div>
-        </ul>
-    </div>
-</div>
-{/if}

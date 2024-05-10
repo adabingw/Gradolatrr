@@ -105,9 +105,6 @@
             </div>
             {/if}            
             {#each menuItem as mitem, i}
-                {#if mitem.name == "hr"}
-                    <hr>
-                {:else}
                     <li>
                         {#if mitem.subClasses != undefined} 
                             <button> 
@@ -137,7 +134,6 @@
                         </li>
                     {/each}
                     {/if}
-                {/if}
             {/each}
             {#if menuNum == 6}
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -244,28 +240,6 @@ ul li button:hover{
 
 ul li button i{
     padding: 0px 15px 0px 10px;
-}
-
-ul li button i.fa-square{
-    color: #fff;
-}
-
-ul li button:hover > i.fa-square{
-    color: #eee;
-}
-
-ul li button:hover > i.warning{
-    color: crimson;
-}
-
-:global(ul li button.info:hover){
-    color: navy;
-}
-
-hr{
-    border: none;
-    border-bottom: 1px solid #ccc;
-    margin: 5px 0px;
 }
 
 .menu-5 {

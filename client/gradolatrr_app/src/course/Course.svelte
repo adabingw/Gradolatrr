@@ -426,14 +426,15 @@
     function openSortMenu(e) {
         showSort = true;
         e.stopPropagation(); 
-        sortmenu.openMenu(e, [...content_array, [
+        sortmenu.openMenu(e, [[
             'name', { type: 'text' }
         ], [
             'mark', { type: 'number'}
-        ]], sort);
+        ], ...content_array], sort);
     }
 
     function openFilterMenu(e) {
+        console.log("buh")
         filter = true;
         filtermenu.openMenu(e, content_array);
     }
@@ -463,7 +464,7 @@
 </script>
 
 <ContextMenu menuNum={2} on:context={contextController} bind:this={contextmenu}/>
-<Filter bind:this={filtermenu} bind:prevfilters={filterInput} on:context={filterController}/>
+<Filter bind:this={filtermenu} bind:prevfilters={filterInput} on:context={filterController} />
 <ContextMenu menuNum={6} on:context={sortController} bind:this={sortmenu}/>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -492,8 +493,8 @@
             {:else}
             <div class={`table_actions-${(search || filter || showSort) ? 'show' : 'hide'}`} id="actions">
                 <TooltipIcon icon='fa-solid fa-filter' className={`action outline-${(filterInput && filterInput.length > 0) ? 'show' : 'none'}`}
-                    position='top' text='save'
-                    on:click={openFilterMenu}
+                    position='top' text='filter'
+                    click={openFilterMenu}
                 />
                 <TooltipIcon icon='fa-solid fa-magnifying-glass' position='top' text='search' className='action'
                     click={() => {

@@ -33,7 +33,7 @@ let CONDITION = [
     // 'IS EMPTY', 
     // 'IS NOT EMPTY'
     ['IS', 'LESS THAN', 'LESS THAN / EQUAL TO', 'GREATER THAN', 'GREATER THAN / EQUAL TO', 'BETWEEN'],
-    ['HAS PROPERTY'],
+    ['HAS ALL', 'HAS'],
     ['BEFORE', 'AFTER', 'BETWEEN', 'ON'],
     ['CHECKED', 'UNCHECKED']
 

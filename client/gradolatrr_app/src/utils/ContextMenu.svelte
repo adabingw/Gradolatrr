@@ -35,7 +35,6 @@
         let body = document.getElementById('homepage');
         if (body) body.style.overflowY = 'auto';
         if (menuNum == 6) {
-            console.log(index)
             dispatch('context', {
                 index: index, 
                 item: item,
@@ -105,7 +104,6 @@
                 {/each}
             </div>
             {/if}            
-            {index}
             {#each menuItem as mitem, i}
                 {#if mitem.name == "hr"}
                     <hr>
@@ -141,6 +139,15 @@
                     {/if}
                 {/if}
             {/each}
+            {#if menuNum == 6}
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <div class="filter_action trash" on:click={(e) => {
+                    selectedItem = undefined;
+                    onPageClick(e)
+                }}>
+                    <i class="fa-solid fa-trash"></i> delete sort
+                </div>
+            {/if}
         </ul>
     </div>
 </div>
@@ -150,6 +157,18 @@
 * {
     padding: 0;
     margin: 0;
+}
+
+.trash {
+    margin-top: 15px;
+    padding-top: 8px;
+    color: #717171;
+    border-top: 1px solid #d1d1d1;
+    margin-bottom: 8px;
+}
+
+.trash:hover {
+    cursor: pointer;
 }
 
 .sort_item {

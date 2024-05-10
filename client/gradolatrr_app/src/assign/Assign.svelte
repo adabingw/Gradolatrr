@@ -32,7 +32,7 @@
     let update_assign = mutation(UPDATE_ASSIGNMENT);
     let delete_assign = mutation(DELETE_ASSIGN);
 
-    async function deleteAssignment(assign_id) {
+    async function deleteAssignment() {
         let confirmDelete = confirm("Delete this assignment?");
         if (!confirmDelete) return;
         del = true;

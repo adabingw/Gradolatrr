@@ -58,13 +58,14 @@
     let filtermenu;
     let filter;
     let showSort = false;
+    let sorting = false;
 
     let filterInput = [];
 
     let search = false;
     let searchInput = '';
 
-    let sort = [0, 0];
+    let sort = ['name', 0];
     let sorts = {};
 
     async function deleteAssignment(assign_id) {
@@ -288,6 +289,15 @@
         let sortItem = e.detail.index;
         let context = e.detail.context;
 
+        if (!context) {
+            sorting = false;
+            content = JSON.parse(JSON.stringify(info["getCourse"]["assignments"]));
+            for (let i = 0; i < content.length; i++) {
+                if (content[i]['data']) content[i]['data'] = JSON.parse(content[i]['data'])
+            }
+            return;
+        }
+        sorting = true;
         // if (sort[0] == sortItem[0] && sort[1] == sortItem[1]) return;   
     
         sortItem[0] = context;
@@ -320,7 +330,6 @@
     function sortList(key, sort) {
         if ((key == 0 || key == "0")) return;
         // 0: default; 1: asc; 2: desc
-        console.log(key, sort)
         if (sort == 0) {
             content.sort(function(a, b){
                 return (a['data'][key]['content'] < b['data'][key]['content']) ? -1 : 1;
@@ -438,7 +447,6 @@
 
     $: {
         if ($query_result.data != undefined && (JSON.stringify(last_info) == JSON.stringify(info))) {
-            console.log("yipee")
             loadData();
         }
     }
@@ -505,7 +513,7 @@
                 />
                 <input type="text" id="search_input" placeholder="search by name" bind:value={searchInput}/>
                 <TooltipIcon icon='fa-solid fa-arrow-up-wide-short' position='top' text='sort'
-                    click={openSortMenu} className={`action outline-${(sort && sort[0] != 0) ? 'show' : 'none'}`}
+                    click={openSortMenu} className={`action outline-${(sorting) ? 'show' : 'none'}`}
                 />
                 <TooltipIcon icon='fa-solid fa-layer-group' position='top' text='group (coming soon?)' className='action'/>
                 <TooltipIcon icon='fa-solid fa-toilet-paper' position='top' text='paging (coming soon?)' className='action'/>

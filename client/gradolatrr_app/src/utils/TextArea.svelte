@@ -24,7 +24,6 @@
         style={`width: ${style}`}
         bind:value={inputText} on:change={dataChange} on:input={dataChange} bind:this={textarea}
         on:focusout={() => {
-            console.log("toiquoequrowe")
             dispatch('blur', {
                 text: "blur"
             });

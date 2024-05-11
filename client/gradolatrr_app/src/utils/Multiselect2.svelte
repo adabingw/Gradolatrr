@@ -1,20 +1,18 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+  import { clickOutside } from './utils';
 
     export let properties;
     export let selections;
     export let content = {};
     export let j;
-    export let i = 0;
-    export let max;
-    export let extshowmulti = 0;
+    export let max = 0;
 
     let properties_map;
     let showmulti = false;
 	let inputValue = "";
 
     const dispatch = createEventDispatcher();
-
     let filteredItems = selections.filter(item => item.toLowerCase().includes(inputValue.toLowerCase()));
 
     const handleInput = () => {
@@ -32,14 +30,10 @@
     const createTag = (thing) => {
         if (!selections.includes(thing)) {
             selections.push(thing);
-
             dispatch('course', {
-                text: "data changed",
-                data: content, 
-                selections: selections
+                text: "course",
             });
         }
-
         addTag(thing);
         inputValue = ""
         filteredItems = [];
@@ -48,52 +42,36 @@
     const deleteTag = (thing) => {
         selections = selections.filter(item => !item.toLowerCase().match(thing.toLowerCase()));        
         properties[j[0]]["tag_info"] = selections;
-
         dispatch('course', {
-            text: "data changed",
-            data: content,
-            selections: selections
+            text: "course"
         });
-
         deleteSelectedTag(thing);
     }
 
     const deleteSelectedTag = (thing) => {
         properties_map = properties_map.filter(item => !item.toLowerCase().match(thing.toLowerCase()));	
         properties[j[0]]["content"] = properties_map;
-
         dispatch('assign', {
-            text: "data changed",
-            data: content,
-            i: i,
+            text: "assign",
         });
     }
 
     const addTag = (thing) => {
         if(properties_map.includes(thing)) return;
         if (max == 1) properties_map = [];
-
         properties_map.push(thing);	
         properties[j[0]]["content"] = properties_map;
-
         dispatch('assign', {
-            text: "data changed",
-            data: content,
-            i: i
+            text: "assign",
         });
-    }
-
-    const bubbleUp = () => {
-        dispatch('press', {
-            text: "clicked"
-        })
     }
 
     const unshow = () => {
-        dispatch('close', {
-            text: "clicked"
-        });
         showmulti = false;
+    }
+
+    const show = () => {
+        showmulti = true;
     }
 
     $: {
@@ -106,27 +84,21 @@
             }
         }
     }
-
-    $: {
-        extshowmulti;
-        showmulti = extshowmulti == i;
-    }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="multiselect">
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="tags" on:click={(e) => {e.stopPropagation(); bubbleUp(); } }>
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<div class="multiselect" use:clickOutside on:click_outside={unshow} on:click={(e) => {e.stopPropagation(); show(); } }>
+<div class="tags" on:click={(e) => {e.stopPropagation(); } }>
     {#if properties_map.length == 0 && !showmulti}
-        <input type="text" placeholder="Click to add tag..." readonly bind:value={inputValue} on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
+        <input type="text" placeholder="Click to add tag..." readonly bind:value={inputValue} on:click={show} on:input={handleInput} />
     {:else}
         {#each properties_map as thing}
             <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={(e) => {e.stopPropagation(); deleteSelectedTag(thing)}}></i></p>
         {/each}
     {/if}
     {#if showmulti }
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="multiselect_search" on:click={(e) => e.stopPropagation()}>
         <input type="text" placeholder="Search/create a tag" bind:value={inputValue} on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
         <div id="myDropdown" class="dropdown-content">		

@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+  import { clickOutside } from './utils';
 
     export let properties; // properties to choose from
     export let selections; // properties we've selected
@@ -49,9 +50,11 @@
             text: "clicked"
         });
         showmulti = false;
+        console.log("welp")
     }
 
     const show = () => {
+        console.log("fqoiwr")
         showmulti = true;
     }
 
@@ -68,8 +71,8 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="multiselect">
-<div class="tags" on:click={(e) => {e.stopPropagation(); bubbleUp(); } }>
+<div class="multiselect" use:clickOutside on:click_outside={unshow} on:click={(e) => {e.stopPropagation(); show(); } }>
+<div class="tags" >
     {#if properties.length == 0}
         <p style='margin-left: 8px;'>no tags available</p>
     {:else if selections_list.length != 0}

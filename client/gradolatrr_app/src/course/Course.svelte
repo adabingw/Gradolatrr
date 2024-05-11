@@ -30,41 +30,39 @@
     export let name;
     export let reload;
 
-    let showmulti = -1;
-    let cols = 2;
-
-    let query_result = query(COURSE_CONTENT, {
+    let query_result = query(COURSE_CONTENT, {              // read only querying
         variables: { id }
     });
-    let grade;
-    let showModal = false;
-    let info;                   // query_results.data (query_results is read only)
-    let last_info;              // prevent rerendering and refetching
-    let content;                // the assignments of a course
-    let content_info;           // the headers
-    let content_array = [];
-    let sortKey = 'name';       // default sort key
-    let sortDirection = 1;      // default sort direction (ascending)
-    let grading_scheme = DEFAULT_GRADING;
-    let delete_assign = mutation(DELETE_ASSIGN);
-    const add_assign = mutation(ADD_ASSIGNMENT);
-    let update_course = mutation(UPDATE_COURSE);
-    let update_assign = mutation(UPDATE_ASSIGNMENT);
-    const config = { };
-    const math = create(all, config);
+    const delete_assign = mutation(DELETE_ASSIGN);          // delete assignment query
+    const add_assign = mutation(ADD_ASSIGNMENT);            // add assignment query
+    const update_course = mutation(UPDATE_COURSE);          // update course query
+    const update_assign = mutation(UPDATE_ASSIGNMENT);      // update assignment query
+    
+    let cols = 2;                                           // number of columns (min 2)
 
-    let contextmenu;
-    let sortmenu;
-    let filtermenu;
-    let filter;
+    let grade;                                              // grade of course
+    const math = create(all, {});
+    let grading_scheme = DEFAULT_GRADING;                   // grading scheme of course
+
+    let info;                                               // query_results.data (query_results is read only)
+    let last_info;                                          // prevent rerendering and refetching
+    let content;                                            // the assignments of a course
+    let content_info;                                       // contents of an assignment
+    let content_array = [];                                 // 
+    let sortKey = 'name';                                   // default sort key
+    let sortDirection = 1;                                  // default sort direction (ascending)
+
+    let contextmenu;                                        // contextmenu component
+    let sortmenu;                                           // sortmenu component
+    let filtermenu;                                         // filtermenu component
+
+    let showModal = false;                                  // wehther or not we show the modal
+    let filter;                                             // am filtering
     let showSort = false;
-    let sorting = false;
-
+    let sorting = false;                                    // am sorting
     let filterInput = [];
-
-    let search = false;
+    let search = false;                                     // am searching
     let searchInput = '';
-
     let sort = ['name', 0];
     let sorts = {};
 
@@ -577,10 +575,9 @@
                                         something has gone wrong
                                     {:else if j[1]["type"] == "multiselect"}
                                         <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
-                                            bind:j={j} bind:content={content[i]} bind:i={i} bind:extshowmulti={showmulti}
-                                            on:assign={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)} 
-                                            on:course={saveCourseChanges} max=0 
-                                            on:press={() => { showmulti = i;}} on:close={() => { showmulti = -1; }}
+                                            bind:j={j} bind:content={content[i]} 
+                                            on:assign={() => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)} 
+                                            on:course={saveCourseChanges}  
                                         />
                                     {:else if j[1]["type"] == "singleselect"}
                                         <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 

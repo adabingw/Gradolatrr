@@ -78,48 +78,18 @@
         data_array = return_info[1];
         data_array = sortOrder(data_array);
 
-        if (cmd == "term") {
-            try {
-                await update({
-                    variables: {
-                        input: {
-                            id: info["id"], 
-                            type: "term", 
-                            data: info["data"]
-                        }
+        try {
+            await update({
+                variables: {
+                    input: {
+                        id: info["id"], 
+                        type: `${cmd == 'assign' ? 'item' : cmd}`, 
+                        data: info["data"]
                     }
-                });
-            } catch(error) {
-                console.error(error);
-            }
-        } else if (cmd == "course") {
-            try {
-                await update({
-                    variables: {
-                        input: {
-                            id: info["id"], 
-                            type: "course", 
-                            data: info["data"]
-                        }
-                    }
-                });
-            } catch(error) {
-                console.error(error);
-            }
-        } else if (cmd == "assign") {
-            try {
-                await update({
-                    variables: {
-                        input: {
-                            id: info["id"], 
-                            type: "item", 
-                            data: info["data"]
-                        }
-                    }
-                });
-            } catch(error) {
-                console.error(error);
-            }
+                }
+            });
+        } catch(error) {
+            console.error(error);
         }
     }
 

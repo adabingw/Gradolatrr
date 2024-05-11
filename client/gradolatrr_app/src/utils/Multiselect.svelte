@@ -22,7 +22,6 @@
     const deleteSelectedTag = (thing) => {
         selections_list = selections_list.filter(item => !item.toLowerCase().match(thing.toLowerCase()));	
         dispatch('select', {
-            text: "data changed",
             selected: selections_list.join(';')
         });
     }
@@ -31,18 +30,9 @@
     const addTag = (thing) => {
         if(selections_list.includes(thing)) return;
         selections_list.push(thing);	
-        console.log(selections_list.join(';'))
-
         dispatch('select', {
-            text: "data changed",
             selected: selections_list.join(';')
         });
-    }
-
-    const bubbleUp = () => {
-        dispatch('press', {
-            text: "clicked"
-        })
     }
 
     const unshow = () => {
@@ -50,20 +40,16 @@
             text: "clicked"
         });
         showmulti = false;
-        console.log("welp")
     }
 
     const show = () => {
-        console.log("fqoiwr")
         showmulti = true;
     }
 
     $: {
         selections;
-        console.log(selections)
         if (selections != undefined && selections.length > 0) {
             selections_list = selections.split(';')
-            console.log(selections_list)
         }
     }
 </script>
@@ -171,5 +157,3 @@
 }
 
 </style>
-
-<svelte:window on:click={(e) => unshow()} />

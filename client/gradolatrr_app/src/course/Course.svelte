@@ -136,7 +136,6 @@
 
     async function changeGradeScheme(e) {
         let equation = e.detail.equation;
-
         if (equation != undefined) {
             try {
                 await update_course({ 
@@ -160,9 +159,7 @@
     async function drop (ev, key2, index2) {
         ev.preventDefault();
         let target = document.getElementById(`${content_array[index2][0]}`);
-        if (target) {
-            target.style.borderLeft = '0px solid blue';
-        }
+        if (target) target.style.borderLeft = '0px solid blue';
 
         var key = ev.dataTransfer.getData("key");
         if (key2 == key) return;

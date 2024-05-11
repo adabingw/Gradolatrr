@@ -209,5 +209,3 @@
 }
 
 </style>
-
-<svelte:window on:click={(e) => unshow()} />

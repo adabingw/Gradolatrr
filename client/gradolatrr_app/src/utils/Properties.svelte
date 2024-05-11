@@ -58,7 +58,6 @@
         }
 
         content_info[info_name] = new_info;
-
         dispatch('info', {
             info: 'saved',
             new_info: new_info, 
@@ -200,8 +199,7 @@
                 <i class="fa-solid fa-exclamation" on:click={() => toggleRequired(item)}></i>
             </td>
             <td class="info-name">
-                <TextField bind:inputText={item} type="text" text={item} on:message={(e) => changeInfo(e, item)}
-                    min="" max=""  focus={true}/>
+                <TextField bind:inputText={item} type="text" text={item} on:message={(e) => changeInfo(e, item)} min="" max=""  focus={true}/>
             </td>
             <td>
             <div class="change-type">

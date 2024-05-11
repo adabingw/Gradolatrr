@@ -34,7 +34,6 @@
         const info_type = event.detail.type;
         const visible = event.detail.visibility; 
         const required = event.detail.required;
-
         if (info_name == undefined) {
             alert("Name is required");
             return;
@@ -134,8 +133,6 @@
             info: 'delete',
             data: name
         })
-
-        info_name = "";
     }
 
 </script>

@@ -3,11 +3,11 @@
 
     export let properties;
     export let selections;
-    export let content;
+    export let content = {};
     export let j;
-    export let i;
+    export let i = 0;
     export let max;
-    export let extshowmulti;
+    export let extshowmulti = 0;
 
     let properties_map;
     let showmulti = false;
@@ -15,16 +15,16 @@
 
     const dispatch = createEventDispatcher();
 
-    let filteredItems = [];
+    let filteredItems = selections.filter(item => item.toLowerCase().includes(inputValue.toLowerCase()));
 
     const handleInput = () => {
-		filteredItems = selections.filter(item => item.toLowerCase().match(inputValue.toLowerCase()));	
+		filteredItems = selections.filter(item => item.toLowerCase().includes(inputValue.toLowerCase()));	
 	}
 
     const onkeydown = (e) => {
         if (e.key == "Enter") {
             if (!inputValue) return;
-
+            inputValue = inputValue.replaceAll(';', '');
             createTag(inputValue)
         }
     }
@@ -46,11 +46,8 @@
     }
 
     const deleteTag = (thing) => {
-        selections = selections.filter(item => !item.toLowerCase().match(thing.toLowerCase()));
-        
-        let new_properties = JSON.parse(properties);
-        new_properties[j[0]]["tag_info"] = selections;
-        properties = JSON.stringify(new_properties);
+        selections = selections.filter(item => !item.toLowerCase().match(thing.toLowerCase()));        
+        properties[j[0]]["tag_info"] = selections;
 
         dispatch('course', {
             text: "data changed",
@@ -63,10 +60,7 @@
 
     const deleteSelectedTag = (thing) => {
         properties_map = properties_map.filter(item => !item.toLowerCase().match(thing.toLowerCase()));	
-
-        let new_properties = JSON.parse(properties);
-        new_properties[j[0]]["content"] = properties_map;
-        properties = JSON.stringify(new_properties);
+        properties[j[0]]["content"] = properties_map;
 
         dispatch('assign', {
             text: "data changed",
@@ -77,15 +71,10 @@
 
     const addTag = (thing) => {
         if(properties_map.includes(thing)) return;
-
         if (max == 1) properties_map = [];
 
         properties_map.push(thing);	
-
-        let new_properties = JSON.parse(properties);
-
-        new_properties[j[0]]["content"] = properties_map;
-        properties = JSON.stringify(new_properties);
+        properties[j[0]]["content"] = properties_map;
 
         dispatch('assign', {
             text: "data changed",
@@ -110,10 +99,10 @@
     $: {
         properties;
         if (properties != undefined) {
-            if (JSON.parse(properties)[j[0]] == undefined) {                
+            if (properties[j[0]] == undefined) {                
                 properties_map = []
             } else {
-                properties_map = JSON.parse(properties)[j[0]]["content"]
+                properties_map = properties[j[0]]["content"]
             }
         }
     }
@@ -195,14 +184,11 @@
 
 .create {
     font-weight: 500;
+    margin-right: 10px;
 }
 
 .multiselect_search {
     position: relative;
-}
-
-.click_to_add_tags {
-    color: #717171;
 }
 
 .item {

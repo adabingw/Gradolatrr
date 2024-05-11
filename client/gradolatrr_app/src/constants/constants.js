@@ -24,14 +24,7 @@ let WEIGHTED_GRADING = "mark * weight";
 let TOKENS = ['+', '-', '/', '*', '[', ']', '(', ')', '#']
 
 let CONDITION = [
-    ['CONTAINS', 
-    'DOES NOT CONTAIN', 
-    'IS', 
-    'IS NOT'], 
-    // 'STARTS WITH', 
-    // 'ENDS WITH', 
-    // 'IS EMPTY', 
-    // 'IS NOT EMPTY'
+    ['CONTAINS', 'DOES NOT CONTAIN', 'IS', 'IS NOT'],
     ['IS', 'LESS THAN', 'LESS THAN / EQUAL TO', 'GREATER THAN', 'GREATER THAN / EQUAL TO', 'BETWEEN'],
     ['HAS ALL', 'HAS'],
     ['BEFORE', 'AFTER', 'BETWEEN', 'ON'],

@@ -1,158 +1,121 @@
 <script>
     import { createEventDispatcher } from 'svelte';
 
-    export let properties;
-    export let selections;
-    export let max;
+    export let properties; // properties to choose from
+    export let selections; // properties we've selected
+
+    let selections_list = [];
     let showmulti = false;
-	let inputValue = "";
+	let inputValue = '';
 
     const dispatch = createEventDispatcher();
 
-    let filteredItems = [];
+    let filteredItems = properties.filter(item => item.toLowerCase().includes(inputValue.toLowerCase()));
 
+    // filter dropdown selection on search
     const handleInput = () => {
-		filteredItems = selections.filter(item => item.toLowerCase().match(inputValue.toLowerCase()));	
+		filteredItems = properties.filter(item => item.toLowerCase().includes(inputValue.toLowerCase()));	
 	}
 
-    const onkeydown = (e) => {
-        if (e.key == "Enter") {
-            if (!inputValue) return;
-            createTag(inputValue);
-        }
-    }
-
-    const createTag = (thing) => {
-        if (!selections.includes(thing)) {
-            selections.push(thing);
-        }
-
-        if (max == 1) properties = [];
-        properties.push(thing);
-        dispatch('course', {
-            text: "data changed",
-            data: properties, 
-            selections: selections
-        });
-        inputValue = "";
-        filteredItems = [];
-    }
-
-    const deleteTag = (thing) => {
-        selections = selections.filter(item => !item.toLowerCase().match(thing.toLowerCase()));
-        dispatch('course', {
-            text: "data changed",
-            data: properties,
-            selections: selections
-        });
-
-        deleteSelectedTag(thing);
-    }
-
+    // delete tag from selected tags
     const deleteSelectedTag = (thing) => {
-        properties = properties.filter(item => !item.toLowerCase().match(thing.toLowerCase()));	
-        dispatch('assign', {
+        selections_list = selections_list.filter(item => !item.toLowerCase().match(thing.toLowerCase()));	
+        dispatch('select', {
             text: "data changed",
-            data: properties,
+            selected: selections_list.join(';')
         });
     }
 
+    // add tag to selected tags
     const addTag = (thing) => {
-        if(properties.includes(thing)) return;
-        if (max == 1) properties = [];
+        if(selections_list.includes(thing)) return;
+        selections_list.push(thing);	
 
-        properties.push(thing);	
-
-        dispatch('assign', {
+        dispatch('select', {
             text: "data changed",
-            data: properties,
+            selected: selections_list.join(';')
         });
     }
 
+    const bubbleUp = () => {
+        dispatch('press', {
+            text: "clicked"
+        })
+    }
+
+    const unshow = () => {
+        dispatch('close', {
+            text: "clicked"
+        });
+        showmulti = false;
+    }
+
+    const show = () => {
+        showmulti = true;
+    }
+
+    $: {
+        selections_list;
+        if (selections_list != undefined && selections_list.length > 0) {
+            selections_list = selections.split(';')
+        }
+    }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="multiselect">
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="tags" on:click={(e) => {e.stopPropagation(); showmulti = true; } }>
-    {#if properties.length == 0 && !showmulti}
-        <p class="click_to_add_tags">click to add tags...</p>
+<div class="multiselect">
+<div class="tags" on:click={(e) => {e.stopPropagation(); bubbleUp(); } }>
+    {#if properties.length == 0}
+        <p style='margin-left: 8px;'>no tags available</p>
+    {:else if selections_list.length == 0 && !showmulti}
+        <input type="text" placeholder="Click to add tag..." readonly bind:value={inputValue} on:click={show} on:input={handleInput} />
     {:else}
-        {#each properties as thing}
-            <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={() => deleteSelectedTag(thing)}></i></p>
+        {#each selections_list as thing}
+            <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={(e) => {e.stopPropagation(); deleteSelectedTag(thing)}}></i></p>
         {/each}
     {/if}
-</div>
-
-{#if showmulti}
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<div class="multiselect_search" on:click={(e) => e.stopPropagation()}>
-    <input type="text" placeholder="Search/create a tag" bind:value={inputValue} on:keydown={(e) => onkeydown(e)} on:input={handleInput} />
-    <div id="myDropdown" class="dropdown-content">		
-        {#if filteredItems.length > 0}
-            {#each filteredItems as item}
-                <p class="item" on:click={() => addTag(item)}>{item} 
-                    <i class="fa-solid fa-xmark" on:click={() => deleteTag(item)}></i>
-                </p>
-            {/each}
-        {:else if filteredItems.length == 0 && inputValue != ""}
-            <span class="create_tag" on:click={() => createTag(inputValue)}>Create<p class="create">&nbsp;{inputValue}</p></span>
-        {:else if selections != undefined}
-            {#each selections as item}
-                <p class="item" on:click={() => addTag(item)}>{item} 
-                    <i class="fa-solid fa-xmark" on:click={() => deleteTag(item)}></i>
-                </p>
-            {/each}
-        {/if}		
-    </div>	
-</div>
-{/if}
+    {#if showmulti }
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div class="multiselect_search" on:click={(e) => e.stopPropagation()}>
+        <input type="text" placeholder="Search/create a tag" bind:value={inputValue} on:input={handleInput} />
+        <div id="myDropdown" class="dropdown-content">		
+            {#if filteredItems.length > 0}
+                {#each filteredItems as item}
+                    <p class="item" on:click={() => addTag(item)}>{item}</p>
+                {/each}
+            {:else if selections != undefined}
+                {#each selections as item}
+                    <p class="item" on:click={() => addTag(item)}>{item}</p>
+                {/each}
+            {/if}		
+        </div>	
+    </div>
+    {/if}
+    </div>
 </div>
 
 <style>		
 .dropdown-content {
-    margin-top: 5px;
     position: absolute;
+    left: 0;
     background-color: #ffffff;
-    min-width: 200px;
     border: 1px solid #ddd;
     z-index: 1;
 }
 
-.create_tag {
-    display: flex;
-    flex-direction: row;
-    padding-left: 8px;
-    padding-bottom: 5px;
-    padding-top: 0px;
-    align-items: center;
-}
-
-.create_tag:hover {
-    background-color: #F7F6F3;
-    cursor: pointer;
-}
-
 .multiselect {
     width: 210px;
-    padding-left: 5px;
-    max-width: 500px;
-}
-
-.create {
-    font-weight: 500;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
 }
 
 .multiselect_search {
-    margin-top: -10px;
-    margin-left: -3px;
-    margin-bottom: 3px;
-}
-
-.click_to_add_tags {
-    color: #717171;
+    position: relative;
 }
 
 .item {
@@ -160,7 +123,8 @@
     flex-direction: row;
     padding-left: 8px;
     padding-bottom: 5px;
-    padding-top: 0px;
+    padding-right: 8px;
+    padding-top: 5px;
     align-items: center;
     justify-content: space-between;
 }
@@ -189,12 +153,9 @@
 }
 
 .tags {
-    min-height: 15px;
     display: flex; 
     flex-direction: row;
     flex-wrap: wrap;
-    padding-top: -5px;
-    padding-bottom: 8px;
     text-wrap: wrap;
     overflow-wrap: break-word;
 }
@@ -205,4 +166,4 @@
 
 </style>
 
-<svelte:window on:click={(e) => showmulti = false} />
+<svelte:window on:click={(e) => unshow()} />

@@ -87,7 +87,7 @@
         regrade(true); 
     }
 
-    async function saveAssignChanges(i, assign_id, assign_name, index) {
+    async function saveAssignChanges(i, assign_id, index) {
         if (index && index[1]['type'] != 'checkbox') {
             if (index == -2 && !content[i]['name']) {
                 alert('Name cannot be left empty');
@@ -109,9 +109,6 @@
                     input: {
                         id: assign_id, 
                         type: "item",
-                        course_id: id,
-                        term_id: term_id, 
-                        name: assign_name, 
                         data: JSON.stringify(content[i]["data"]),
                     }
                 }
@@ -342,7 +339,7 @@
         content = [...content];
     }
 
-    async function duplicateAssign(index, item) {
+    async function duplicateAssign(item) {
         let id = uuidv4();
         let assign = {
                 id: id, 
@@ -434,7 +431,6 @@
     }
 
     function openFilterMenu(e) {
-        console.log("buh")
         filter = true;
         filtermenu.openMenu(e, content_array);
     }
@@ -464,7 +460,7 @@
 </script>
 
 <ContextMenu menuNum={2} on:context={contextController} bind:this={contextmenu}/>
-<Filter bind:this={filtermenu} bind:prevfilters={filterInput} on:context={filterController} />
+<Filter bind:this={filtermenu} bind:prevfilters={filterInput} on:context={filterController} content_info={content_info}/>
 <ContextMenu menuNum={6} on:context={sortController} bind:this={sortmenu}/>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -563,7 +559,7 @@
                         </div>
                         {#each content_array as j}
                             {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
-                                <div class="box">
+                                <div class="box">                                    
                                     {#if content[i]["data"][j[0]] != undefined && j[1]["type"] == "text"}
                                     <div class="name_row">
                                         <TextArea bind:inputText={content[i]["data"][j[0]]["content"]} style={`${1000 * 0.8 / (cols)}px`}
@@ -580,14 +576,14 @@
                                     {:else if j[1]["type"] == "multiselect"}
                                         <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                             bind:j={j} bind:content={content[i]} bind:i={i} bind:extshowmulti={showmulti}
-                                            on:assign={(e) => saveAssignChanges(e.detail.i, e.detail.data.assign_id, e.detail.data.assign_name, j)} 
+                                            on:assign={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)} 
                                             on:course={saveCourseChanges} max=0 
                                             on:press={() => { showmulti = i;}} on:close={() => { showmulti = -1; }}
                                         />
                                     {:else if j[1]["type"] == "singleselect"}
                                         <Multiselect2 bind:selections={j[1]["tag_info"]} bind:properties={content[i]["data"]} 
                                         bind:j={j} bind:content={content[i]} bind:i={i}
-                                        on:assign={(e) => saveAssignChanges(e.detail.i, e.detail.data.assign_id, e.detail.data.assign_name, j)} 
+                                        on:assign={(e) => saveAssignChanges(i, content[i]['id'], content[i]['name'], j)} 
                                         on:course={saveCourseChanges} max=1/>
                                     {:else if j[1]["type"] == "checked"}
                                         <input type="checkbox" bind:checked={content[i]["data"][j[0]]["content"]}

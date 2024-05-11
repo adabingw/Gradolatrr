@@ -11,7 +11,7 @@
 
     let style = "";
     let name; 
-    let type = 0;
+    let type = 'text';
     let visible = true;
     let required = false;
 
@@ -32,7 +32,7 @@
 
         dispatch('context', {
             name: name, 
-            type: types[type][0],
+            type: type,
             visibility: visible,
             required: required
         });
@@ -87,7 +87,7 @@
         <ul>
             <input type="text" placeholder="Name" bind:value={name} />
             {#each Object.keys(types) as t, i}
-            <div class={`type ${type == i ? 'selected' : ''}`} on:click={() => type = i }>
+            <div class={`type ${type == t ? 'selected' : ''}`} on:click={() => type = t }>
                 <i class={types[t]} />
                 {t}
             </div>

@@ -130,9 +130,6 @@
     }
 
     function contextController(e) {     
-        let body = document.getElementById('homepage');
-        if (body) body.style.overflowY = 'auto';
-
         if (sort == e.detail.context) return;   
         if (e.detail.context == 'alpha_asc') {
             sort = 1;

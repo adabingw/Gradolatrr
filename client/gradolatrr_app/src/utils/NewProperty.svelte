@@ -41,6 +41,8 @@
 
     function onPageClick(e) {
         showMenu = false;
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'auto';
     }
 
     export function openMenu(e) {

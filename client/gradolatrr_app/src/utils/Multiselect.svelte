@@ -30,6 +30,7 @@
     const addTag = (thing) => {
         if(selections_list.includes(thing)) return;
         selections_list.push(thing);	
+        console.log(selections_list.join(';'))
 
         dispatch('select', {
             text: "data changed",
@@ -55,9 +56,11 @@
     }
 
     $: {
-        selections_list;
-        if (selections_list != undefined && selections_list.length > 0) {
+        selections;
+        console.log(selections)
+        if (selections != undefined && selections.length > 0) {
             selections_list = selections.split(';')
+            console.log(selections_list)
         }
     }
 </script>
@@ -69,16 +72,16 @@
 <div class="tags" on:click={(e) => {e.stopPropagation(); bubbleUp(); } }>
     {#if properties.length == 0}
         <p style='margin-left: 8px;'>no tags available</p>
+    {:else if selections_list.length != 0}
+        <span on:click={show}>
+            {#each selections_list as thing}
+                <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={(e) => {e.stopPropagation(); deleteSelectedTag(thing)}}></i></p>
+            {/each}
+        </span>
     {:else if selections_list.length == 0 && !showmulti}
         <input type="text" placeholder="Click to add tag..." readonly bind:value={inputValue} on:click={show} on:input={handleInput} />
-    {:else}
-        {#each selections_list as thing}
-            <p class="tag">{thing} <i class="fa-solid fa-xmark" on:click={(e) => {e.stopPropagation(); deleteSelectedTag(thing)}}></i></p>
-        {/each}
     {/if}
     {#if showmulti }
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="multiselect_search" on:click={(e) => e.stopPropagation()}>
         <input type="text" placeholder="Search/create a tag" bind:value={inputValue} on:input={handleInput} />
         <div id="myDropdown" class="dropdown-content">		

@@ -7,33 +7,25 @@
     export let x;
     export let y;
     export let showMenu = false;
-    export let prevfilters;
     export let content_info = {}; 
 
     let tag_info = {};
+    let prevfilters = [];
     let properties;
     let style = "";
-    let filters = (prevfilters && prevfilters.length > 0) ? prevfilters : [['name', '0', ['', ''], 'text']];
+    let filters;
 
     const dispatch = createEventDispatcher();
 
-    function onChange(e, i, index, which) {
+    function onChange(e, i, index) {
         if (index < filters[i].length) {
             filters[i][index] = e.target.value;
-            if ((i == 0 && which == 0) || (i == 1 && which == 1)) {
+            if (i == 0) {
                 for (const p of properties) {
-                    console.log(p[0], e.target.value)
                     if (p[0] == e.target.value) {
-                        console.log(p[1]['type'])
-                        if (which == 0) {
-                            filters[i][1] = '0'
-                            filters[i][2] = ['', '']
-                            filters[i][3] = p[1]['type']
-                        } else if (which == 1) {
-                            filters[i][2] = '0'
-                            filters[i][3] = ['', '']
-                            filters[i][4] = p[1]['type']
-                        }
+                        filters[i][1] = '0'
+                        filters[i][2] = ['', '']
+                        filters[i][3] = p[1]['type']
                     }
                 }
             }
@@ -42,6 +34,9 @@
 
     function onPageClick(e) {
         showMenu = false;
+        let body = document.getElementById('homepage');
+        if (body) body.style.overflowY = 'auto';
+        console.log(filters)
         dispatch('context', {
             action: 'filters',
             filters: filters 
@@ -49,14 +44,17 @@
     }
 
     function selectUpdate(e, i) {
+        console.log(e.detail.selected);
         filters[i][2][0] = e.detail.selected;
     }
 
-    export function openMenu(e, properties2) {
+    export function openMenu(e, properties2, filterInput) {
         showMenu = false;
         e.preventDefault();
         x = e.clientX;
         y = e.clientY;
+        prevfilters = filterInput;
+        filters = (prevfilters && prevfilters.length > 0) ? prevfilters : [['name', '0', ['', ''], 'text']]
         properties = [[
             'name', { type: 'text' }
         ], [
@@ -105,76 +103,33 @@
         <ul>
             {#each filters as filter, index}
             {@const conditions = getConditions(index == 0 ? filter[3] : filter[4])}
-            {#if index == 0}
-                <div class="filter_row">
-                    <div class="row">
+            <div class="filter_row">
+                <div class="row">
+                    {#if index == 0}
                         Where
-                        {#if typeof properties == 'object'}
-                        <select value={filter[0]} on:change={(e) => onChange(e, index, 0, 0)}>
-                            {#each properties as property, i}
-                                <option value={property[0].toString()}>{property[0]}</option>
+                    {:else}
+                        <select value={filter[4]} on:change={(e) => onChange(e, index, 4)}>
+                            {#each LOGIC as l, i}
+                                <option value={i.toString()}>{l}</option>
                             {/each}
                         </select>
-                        {/if}
-                        <select value={filter[1]} on:change={(e) => onChange(e, index, 1, 0)}>
-                            {#each conditions as c, i}
-                                <option value={i.toString()}>{c}</option>
-                            {/each}
-                        </select>
-                        {#if filter[3] == 'text'}
-                            <input type="text" placeholder="value" bind:value={filter[2][0]}  />
-                        {:else if filter[3] == 'number'}
-                            {#if filter[1] == 5}
-                                <input type="number" placeholder="value" bind:value={filter[2][0]} />
-                                AND
-                                <input type="number" placeholder="value" bind:value={filter[2][1]} />
-                            {:else}
-                                <input type="number" placeholder="value" bind:value={filter[2][0]} />
-                            {/if}
-                        {:else if filter[3] == 'date'}
-                            {#if filter[1] == 2}
-                                <input type="date" placeholder="value" bind:value={filter[2][0]} />
-                                AND
-                                <input type="date" placeholder="value" bind:value={filter[2][1]} />
-                            {:else}
-                                <input type="date" placeholder="value" bind:value={filter[2][0]} />
-                            {/if}
-                        {:else if filter[3] == 'multiselect' || filter[3] == 'singleselect'}
-                            <Multiselect selections={filter[2][0]} properties={tag_info[filter[0]]} 
-                                on:select={(e) => selectUpdate(e, index)}/>
-                        {/if}
-                    </div>
-                    {#if filters.length > 1}
-                        <i class="fa-solid fa-trash"
-                        on:click={() => {
-                            filters.splice(index, 1);
-                            filters[0].splice(0, 1);
-                            filters = filters;
-                        }}
-                        ></i>
                     {/if}
-                </div>
-            {:else}
-                <div class="filter_row">
-                    <div class="row">
-                    <select value={filter[0]} on:change={(e) => onChange(e, index, 0, 1)}>
-                        {#each LOGIC as l, i}
-                            <option value={i.toString()}>{l}</option>
-                        {/each}
-                    </select>  
-                    <select value={filter[1]} on:change={(e) => onChange(e, index, 1, 1)}>
+
+                    {#if typeof properties == 'object'}
+                    <select value={filter[0]} on:change={(e) => onChange(e, index, 0)}>
                         {#each properties as property, i}
                             <option value={property[0].toString()}>{property[0]}</option>
                         {/each}
                     </select>
-                    <select value={filter[2]} on:change={(e) => onChange(e, index, 2, 1)}>
+                    {/if}
+                    <select value={filter[1]} on:change={(e) => onChange(e, index, 1)}>
                         {#each conditions as c, i}
                             <option value={i.toString()}>{c}</option>
                         {/each}
                     </select>
-                    {#if filter[4] == 'text'}
+                    {#if filter[3] == 'text'}
                         <input type="text" placeholder="value" bind:value={filter[2][0]}  />
-                    {:else if filter[4] == 'number'}
+                    {:else if filter[3] == 'number'}
                         {#if filter[1] == 5}
                             <input type="number" placeholder="value" bind:value={filter[2][0]} />
                             AND
@@ -182,7 +137,7 @@
                         {:else}
                             <input type="number" placeholder="value" bind:value={filter[2][0]} />
                         {/if}
-                    {:else if filter[4] == 'date'}
+                    {:else if filter[3] == 'date'}
                         {#if filter[1] == 2}
                             <input type="date" placeholder="value" bind:value={filter[2][0]} />
                             AND
@@ -190,22 +145,24 @@
                         {:else}
                             <input type="date" placeholder="value" bind:value={filter[2][0]} />
                         {/if}
-                    {:else if filter[4] == 'multiselect' || filter[4] == 'singleselect'}
+                    {:else if filter[3] == 'multiselect' || filter[3] == 'singleselect'}
                         <Multiselect selections={filter[2][0]} properties={tag_info[filter[0]]} 
                             on:select={(e) => selectUpdate(e, index)}/>
                     {/if}
-                    <i class="fa-solid fa-trash"
-                        on:click={() => {
-                            filters.splice(index, 1);
-                            filters = filters;
-                        }}
-                    ></i>
-                    </div>
                 </div>
-            {/if}
+                {#if filters.length > 1}
+                    <i class="fa-solid fa-trash"
+                    on:click={() => {
+                        filters.splice(index, 1);
+                        // filters[0].splice(4, 1);
+                        filters = filters;
+                    }}
+                    ></i>
+                {/if}
+            </div>
             {/each}
             <div on:click={() => {
-                filters.push(['0', 'name', '0', ['', ''], 'text'])
+                filters.push(['name', '0', ['', ''], 'text', '0'])
                 filters = filters;
             }} class="filter_action">
                 <i class="fa-solid fa-plus"></i>

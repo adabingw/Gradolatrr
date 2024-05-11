@@ -154,39 +154,96 @@ export function clickOutside(node) {
     }
 }
 
-export function evalFilter(what, content, value){
-    let result;
-    if (what == 0) {
-        result = content.includes(value);
-    } else if (what == 1) {
-        result = !content.includes(value);
-    } else if (what == 2) {
-        result = content == value;
-    } else if (what == 3) {
-        result = content != value;
-    } else if (what == 4) {
-        result = content == undefined || content == null || (typeof content == 'string' && content.length == 0);
-    } else {
-        result = !(content == undefined || content == null || (typeof content == 'string' && content.length == 0))
+export function evalFilter(what, content, value, type){
+    let [val1, val2] = value;
+    if (!val1 && val1 != 0) return true;
+    let result = true;
+    switch(type) {
+        case 'text': // ['CONTAINS', 'DOES NOT CONTAIN', 'IS', 'IS NOT']
+            if (what == 0) {
+                result = content.includes(val1);
+            } else if (what == 1) {
+                result = !content.includes(val1);
+            } else if (what == 2) {
+                result = content == val1;
+            } else if (what == 3) {
+                result = content != val1;
+            } else if (what == 4) {
+                result = content == undefined || content == null || (typeof content == 'string' && content.length == 0);
+            } else {
+                result = !(content == undefined || content == null || (typeof content == 'string' && content.length == 0))
+            }
+            break;
+        case 'number': // ['IS', 'LESS THAN', 'LESS THAN / EQUAL TO', 'GREATER THAN', 'GREATER THAN / EQUAL TO', 'BETWEEN']
+            if (what == 0) {
+                result = content == val1;
+            } else if (what == 1) {
+                result = content < val1;
+            } else if (what == 2) {
+                result = content <= val1;
+            } else if (what == 3) {
+                result = content > val1;
+            } else if (what == 4) {
+                result = content >= val1;
+            } else {
+                if (!val2 && val2 != 0) result = true;
+                else result > val1 && result < val2;
+            }
+            break;
+        case 'date': // ['BEFORE', 'AFTER', 'BETWEEN', 'ON'],
+            if (what == 0) {
+                result = content < val1;
+            } else if (what == 1) {
+                result = content > val1;
+            } else if (what == 2) {
+                if (!val2 && val2 != 0) result = true;
+                else result = content > val1 && content < val2;
+            } else if (what == 3) {
+                result = content == val1;
+            }
+            break;
+        case 'checked': // ['CHECKED', 'UNCHECKED']
+            if (what == 0) {
+                result = content == true;
+            } else if (what == 1) {
+                result = content == false;
+            }
+            break;
+        default: // ['HAS', 'DOES NOT HAVE']
+            if (val1 != undefined && val1.length > 0) {
+                val1 = val1.split(';');
+            } else {
+                return true;
+            }
+            if (what == 0) {
+                result = false;
+                for (const v of val1) {
+                    if (content.includes(v)) result = true;
+                }
+            } else if (what == 1) {
+                result = true;
+                for (const v of val1) {
+                    if (content.includes(v)) result = false;
+                }
+            }
+            break;
     }
     return result;
 }
 
 export function filterContent(filters, contents) {
     if (!filters || !(filters.length > 0)) return true;
-
-    return true;
-
-    let content = JSON.parse(contents['data'])
-    const [ property, what, value ] = filters[0]
+    let content = contents['data'];
+    const [ property, what, value, type ] = filters[0];
 
     if (!content[property] && !content[property]['content']) return false;
 
-    let result = evalFilter(what, content[property]['content'], value);   
+    let result = evalFilter(what, content[property]['content'], value, type);   
     filters.forEach((filter, index) => {
         if (index != 0) {
-            const [ logic, property, what, value ] = filter;
-            result = logic == 'AND' ? result && evalFilter(what, property, value) : result || evalFilter(what, property, value)
+            const [ property, what, value, type, logic ] = filter;
+            let res = evalFilter(what, property, value, type);
+            result = logic == 'AND' ? result && res : result || res;
         }
     })
     return result;

@@ -26,7 +26,7 @@ let TOKENS = ['+', '-', '/', '*', '[', ']', '(', ')', '#']
 let CONDITION = [
     ['CONTAINS', 'DOES NOT CONTAIN', 'IS', 'IS NOT'],
     ['IS', 'LESS THAN', 'LESS THAN / EQUAL TO', 'GREATER THAN', 'GREATER THAN / EQUAL TO', 'BETWEEN'],
-    ['HAS ALL', 'HAS'],
+    ['HAS', 'DOES NOT HAVE'],
     ['BEFORE', 'AFTER', 'BETWEEN', 'ON'],
     ['CHECKED', 'UNCHECKED']
 

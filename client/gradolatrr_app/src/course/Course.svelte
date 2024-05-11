@@ -238,15 +238,21 @@
             return;
         }
 
+        let stop = false;
         for (let assign of content) {
             for (let v of variables.message) {
-                if (assign["data"][v] == undefined) continue;
+                if (!assign["data"][v]) continue;
                 
-                if (assign["data"][v]["content"] == undefined) {
-                    parser.clear();
+                if (!assign["data"][v]["content"] && assign["data"][v]["content"] != 0) {
+                    stop = true;
                     continue;
                 }
                 parser.set(`${v}`, `${assign["data"][v]["content"]}`);
+            }
+
+            if (stop) {
+                stop = false;
+                continue;
             }
 
             if (equation.includes('#')) {
@@ -280,8 +286,6 @@
 
     function sortController(e) {     
         showSort = false;
-        let body = document.getElementById('homepage');
-        if (body) body.style.overflowY = 'auto';
 
         let sortItem = e.detail.index;
         let context = e.detail.context;
@@ -303,10 +307,7 @@
         sortList(context, sortItem[1]);
     }
 
-    function contextController(e) {
-        let body = document.getElementById('homepage');
-        if (body) body.style.overflowY = 'auto';
-                
+    function contextController(e) {                
         if (e.detail.context == 'trash') {
             deleteAssignment(e.detail.index);
         } else if (e.detail.context == 'edit') {
@@ -321,6 +322,7 @@
             filter = false;
             filterInput = e.detail.filters;
             localStorage.setItem(`${id}-filter`, JSON.stringify(filterInput));
+
         }
     }
 
@@ -432,7 +434,7 @@
 
     function openFilterMenu(e) {
         filter = true;
-        filtermenu.openMenu(e, content_array);
+        filtermenu.openMenu(e, content_array, filterInput);
     }
 
     $: {
@@ -460,7 +462,7 @@
 </script>
 
 <ContextMenu menuNum={2} on:context={contextController} bind:this={contextmenu}/>
-<Filter bind:this={filtermenu} bind:prevfilters={filterInput} on:context={filterController} content_info={content_info}/>
+<Filter bind:this={filtermenu} on:context={filterController} content_info={content_info}/>
 <ContextMenu menuNum={6} on:context={sortController} bind:this={sortmenu}/>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -559,7 +561,7 @@
                         </div>
                         {#each content_array as j}
                             {#if j[1]["checked"] && j[0] != "name" && j[0] != "mark"}
-                                <div class="box">                                    
+                                <div class="box">
                                     {#if content[i]["data"][j[0]] != undefined && j[1]["type"] == "text"}
                                     <div class="name_row">
                                         <TextArea bind:inputText={content[i]["data"][j[0]]["content"]} style={`${1000 * 0.8 / (cols)}px`}
